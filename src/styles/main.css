@@ -295,7 +295,7 @@ select {
   transform: translate(-50%, -50%);
 }
 
-img.lazyPanda {
+img.lazy-panda {
   height: 240px;
   width: 300px;
 }
@@ -303,4 +303,15 @@ img.lazyPanda {
 .all-complete-container > p {
   font-size: 0.8rem;
   color: var(--grey);
+}
+
+@media only screen and (max-width: 600px) {
+  .sidebar{
+    max-width: fit-content;
+  }
+
+  img.lazy-panda{
+    max-width: 100px;
+    height: 80px;
+  }
 }
