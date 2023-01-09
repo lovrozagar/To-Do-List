@@ -1,6 +1,10 @@
+import { compareAsc, format } from 'date-fns';
+import createTask from './modules/dom';
+
 import './styles/reset.css';
 import './styles/main.css';
-import { compareAsc, format } from 'date-fns';
+import './assets/editPen.png';
+import './assets/trash.png';
 
 const projectDefault = [];
 console.log(projectDefault);
@@ -24,7 +28,7 @@ function validateForm(name, description, dueDate, priority) {
 }
 
 function formatDate(date) {
-  return `${format(new Date(date), 'MMM d')} 📅`;
+  return `📅 ${format(new Date(date), 'd MMM')}`;
 }
 
 function addTaskInProjectArray() {
@@ -46,56 +50,6 @@ function addTaskInProjectArray() {
   }
 }
 
-function createTask(name, description, dueDate, priority) {
-  // TASK CONTAINER
-  const taskContainer = document.createElement('div');
-  taskContainer.classList.add('task-container');
-
-  // CHECKBOX SECTION
-  const checkboxContainer = document.createElement('div');
-  checkboxContainer.classList.add('checkbox-container');
-
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.setAttribute('id', 'checkbox');
-  checkbox.classList.add('checkbox');
-
-  const checkboxLabel = document.createElement('label');
-  checkboxLabel.setAttribute('for', 'checkbox');
-
-  checkboxContainer.appendChild(checkbox);
-  checkboxContainer.appendChild(checkboxLabel);
-
-  // TASK INFORMATION SECTION
-  const taskInfoContainer = document.createElement('div');
-  taskInfoContainer.classList.add('task-info-container');
-
-  const taskNamePara = document.createElement('p');
-  taskNamePara.textContent = name;
-  taskNamePara.classList.add('task-name');
-
-  const taskDescriptionPara = document.createElement('p');
-  taskDescriptionPara.textContent = description;
-  taskDescriptionPara.classList.add('task-description');
-
-  const taskDatePara = document.createElement('p');
-  taskDatePara.textContent = dueDate;
-  taskDatePara.classList.add('task-date');
-
-  const taskPriority = document.createElement('p');
-  taskPriority.textContent = priority;
-  taskPriority.classList.add('task-priority');
-
-  taskInfoContainer.appendChild(taskNamePara);
-  taskInfoContainer.appendChild(taskDescriptionPara);
-  taskInfoContainer.appendChild(taskDatePara);
-  taskInfoContainer.appendChild(taskPriority);
-
-  taskContainer.appendChild(checkboxContainer);
-  taskContainer.appendChild(taskInfoContainer);
-
-  return taskContainer;
-}
 
 function displayTask() {
   const tasks = document.getElementById('tasks');

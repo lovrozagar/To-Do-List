@@ -2,6 +2,7 @@
   --black: #202020;
   --white: hsla(0, 0%, 100%, 0.87);
   --grey: #808080;
+  --dark-grey: #242424;
 }
 
 * {
@@ -16,6 +17,21 @@ html {
 
 body {
   background-color: var(--black);
+  font-size: 24px;
+}
+
+.content {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar{
+  width: 300px;
+  background-color: var(--dark-grey);
+}
+
+.tasks{
+  flex: 1;
 }
 
 .modal {
@@ -26,18 +42,31 @@ body {
   display: block;
 }
 
-.tasks{
-  padding: 1rem;
+.tasks {
+  padding: 0.25rem 0.25rem;
 }
 
 .task-container {
   padding: 1rem;
+  margin-bottom: 0.25rem;
   width: 100%;
   display: flex;
-  border: 1.5px solid var(--grey);
+  border-bottom: 1px solid var(--grey);
+}
+
+.task-name {
+  font-size: 1.25rem;
+}
+
+.task-description,
+.task-date,
+.task-priority {
+  margin-top: 0.25rem;
+  font-size: 1rem;
 }
 
 .task-info-container {
+  padding-left: 0.25rem;
   flex: 1;
 }
 
@@ -109,4 +138,17 @@ body {
 
 .checkbox-container input[type='checkbox']:checked + label::after {
   opacity: 1;
+}
+
+.edit-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+img {
+  display: inline-block;
+  height: 32px;
+  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)
+    brightness(105%) contrast(85%);
 }
