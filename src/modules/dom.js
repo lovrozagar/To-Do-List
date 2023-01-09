@@ -43,9 +43,11 @@ function createTask(name, description, dueDate, priority) {
   changeContainer.classList.add('edit-container');
 
   const editImg = document.createElement('img');
+  editImg.classList.add('edit');
   editImg.src = './assets/editPen.png';
 
   const removeImg = document.createElement('img');
+  removeImg.classList.add('remove');
   removeImg.src = './assets/trash.png';
 
   changeContainer.appendChild(editImg);

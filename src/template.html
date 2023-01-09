@@ -8,29 +8,69 @@
   </head>
   <body>
     <div id="content" class="content">
-      <div id="sidebar" class="sidebar">
-        <h1>Default</h1>
-      </div>
-      <div id="tasks" class="tasks">
-        <div id="btn-add-container" class="btn-add-container">
-          <button id="btn-open-modal" class="btn-add-task active">
-            + Add Task
-          </button>
+      <header id="header" class="header">
+        <h1>Pan Do App</h1>
+      </header>
+      <main id="main" class="main">
+        <div id="sidebar" class="sidebar">
+          <h1>Default</h1>
         </div>
-        <div id="modal" class="modal">
-          <form id="dialog" action="">
-            <input id="taskName" type="text" placeholder="Task name" required="true"/>
-            <input id="taskDescription" type="text" placeholder="Description" />
-            <input type="date" name="date" id="taskDueDate" aria-required="true"/>
-            <select name="priority" id="priority">
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </form>
-          <button type="submit" id="btn-close-modal">Add Task</button>
+        <div id="tasks" class="tasks">
+          <div id="btn-add-container" class="btn-add-container">
+            <button id="btn-open-modal" class="btn-add-task active">
+              <span class="red">+</span> Add Task
+            </button>
+          </div>
+          <div id="modal" class="modal">
+            <form id="dialog" action="">
+              <div class="task-text">
+                <input
+                  id="taskName"
+                  type="text"
+                  placeholder="Task name"
+                  required="true"
+                />
+                <input
+                  id="taskDescription"
+                  type="text"
+                  placeholder="Description"
+                />
+              </div>
+              <input
+                type="date"
+                name="date"
+                id="taskDueDate"
+                aria-required="true"
+              />
+              <select name="priority" id="priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </form>
+            <div id="btn-remove-container" class="btn-remove-container">
+              <button
+                type="button"
+                id="btn-cancel-modal"
+                class="btn-cancel-task"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="btn-close-modal"
+                class="btn-remove-task"
+              >
+                Add task
+              </button>
+            </div>
+          </div>
+          <div class="all-complete-container">
+            <img class="lazyPanda" src="./assets/lazyPanda.png" alt="" />
+            <p>The valley is safe. Inner peace... Inner peace...</p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   </body>
 </html>

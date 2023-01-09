@@ -5,6 +5,7 @@ import './styles/reset.css';
 import './styles/main.css';
 import './assets/editPen.png';
 import './assets/trash.png';
+import './assets/lazyPanda.png';
 
 const projectDefault = [];
 console.log(projectDefault);
@@ -18,20 +19,14 @@ const taskPriority = document.getElementById('priority');
 const btnAddContainer = document.getElementById('btn-add-container');
 const openModal = document.getElementById('btn-open-modal');
 const closeModal = document.getElementById('btn-close-modal');
+const cancelModal = document.getElementById('btn-cancel-modal');
 
 const task = (title, description, dueDate, priority) => {
   return { title, description, dueDate, priority };
 };
 
 function validateForm(name, description, dueDate, priority) {
-  if (
-    name !== '' &&
-    name.length < 50 &&
-    description !== '' &&
-    description.length < 50 &&
-    dueDate !== '' &&
-    priority !== ''
-  ) {
+  if (name !== '' && name.length < 50 && dueDate !== '' && priority !== '') {
     return true;
   }
   return false;
@@ -63,7 +58,7 @@ function addTaskInProjectArray() {
 }
 
 function removeTasks(el) {
-  let elements = el.getElementsByClassName('task-container');
+  const elements = el.getElementsByClassName('task-container');
   while (elements[0]) {
     elements[0].parentNode.removeChild(elements[0]);
   }
@@ -83,10 +78,24 @@ function displayTask() {
   }
 }
 
+function resetTaskDialog() {
+  taskName.value = '';
+  taskDescription.value = '';
+  taskDueDate.value = '';
+  taskPriority.value = 'Medium';
+}
+
 function listenForAddTask() {
   openModal.addEventListener('click', () => {
     modal.classList.toggle('active');
     openModal.classList.toggle('active');
+    resetTaskDialog();
+  });
+
+  cancelModal.addEventListener('click', () => {
+    modal.classList.remove('active');
+    openModal.classList.toggle('active');
+    resetTaskDialog();
   });
 
   closeModal.addEventListener('click', (e) => {
@@ -96,6 +105,7 @@ function listenForAddTask() {
       modal.classList.remove('active');
       openModal.classList.toggle('active');
       displayTask();
+      resetTaskDialog();
     }
   });
 }

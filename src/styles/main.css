@@ -3,6 +3,9 @@
   --white: hsla(0, 0%, 100%, 0.87);
   --grey: #808080;
   --dark-grey: #242424;
+  --medium-dark-grey: #282828;
+  --green: #228b22;
+  --tasks-width: 800px;
 }
 
 * {
@@ -20,40 +23,122 @@ body {
   font-size: 24px;
 }
 
-.content {
-  display: flex;
-  min-height: 100vh;
+button,
+select {
+  border: none;
+  outline: none;
 }
 
-.sidebar{
+.header {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding-left: 1rem;
+  background-color: var(--medium-dark-grey);
+  font-weight: bold;
+}
+
+.main {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+.sidebar {
+  padding: 1rem;
+  font-size: 1.25rem;
+  font-weight: 500;
   width: 300px;
   background-color: var(--dark-grey);
 }
 
-.tasks{
+.tasks {
+  position: relative;
+  max-width: var(--tasks-width);
+  margin: 0 auto;
+  padding: 1rem;
   flex: 1;
 }
 
-.modal, .btn-add-task {
+.btn-add-container {
+  display: flex;
+}
+
+.btn-add-task {
+  flex: 1;
+  text-align: start;
+  color: var(--grey);
+  background-color: transparent;
+}
+
+.red {
+  color: var(--red);
+}
+
+.modal,
+.btn-add-task {
   display: none;
 }
 
-.modal.active, .btn-add-task.active {
+.modal.active,
+.btn-add-task.active {
   display: block;
 }
 
-.tasks {
-  padding: 0.25rem 0.25rem;
+form {
+  border: 1px solid var(--grey);
+  padding: 0.75rem;
+  border-radius: 10px;
 }
 
-.task-container {
-  padding: 1rem;
-  margin-bottom: 0.25rem;
-  width: 100%;
+.btn-remove-container {
   display: flex;
-  border-bottom: 1px solid var(--grey);
+  justify-content: flex-end;
 }
 
+.btn-cancel-task,
+.btn-remove-task {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 5px;
+  margin: 0.5rem 0 0 0.75rem;
+}
+
+.btn-cancel-task {
+  background-color: var(--medium-dark-grey);
+  color: var(--white);
+}
+
+.btn-remove-task {
+  background-color: var(--green);
+  color: var(--white);
+}
+
+input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--white);
+}
+
+.task-text {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+input[type='text']:first-child {
+  font-size: 1rem;
+}
+input[type='text']:nth-child(2) {
+  font-size: 0.75rem;
+}
+
+input[type='text'],
+input[type='date'] {
+  margin-bottom: 0.5rem;
+}
+
+/* MADE TASKS */
 .task-name {
   font-size: 1.25rem;
 }
@@ -65,9 +150,57 @@ body {
   font-size: 1rem;
 }
 
+/* Removes the clear button from date inputs */
+input[type='date']::-webkit-clear-button {
+  display: none;
+}
+
+/* Removes the spin button */
+input[type='date']::-webkit-inner-spin-button {
+  display: none;
+}
+
+/* Always display the drop down caret */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+}
+
+/* A few custom styles for date inputs */
+input[type='date'] {
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--grey);
+  border: 1px solid var(--grey);
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 0.5rem;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--grey);
+  padding: 5px;
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--grey);
+}
+
 .task-info-container {
   padding-left: 0.25rem;
   flex: 1;
+}
+
+.task-info-container > p{
+  margin-top: 0.5rem;
+}
+
+.task-container {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid var(--grey);
 }
 
 .task-description,
@@ -140,14 +273,34 @@ body {
   opacity: 1;
 }
 
-.edit-container{
+.edit-container {
   display: flex;
 }
 
-img {
+.edit,
+.remove {
   margin-left: 1rem;
   display: inline-block;
-  height: 32px;
+  height: 24px;
   filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)
     brightness(105%) contrast(85%);
+}
+
+.all-complete-container {
+  max-width: 800px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+img.lazyPanda {
+  height: 240px;
+  width: 300px;
+}
+
+.all-complete-container > p {
+  font-size: 0.8rem;
+  color: var(--grey);
 }
