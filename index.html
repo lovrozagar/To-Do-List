@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do</title>
+  <script defer src="bundle88cfb9e92ec75f133adc.js"></script></head>
+  <body>
+    <div id="content" class="content">
+      <header id="header" class="header">
+        <h1>Pan Do App</h1>
+      </header>
+      <main id="main" class="main">
+        <div id="sidebar" class="sidebar">
+          <h1>Default</h1>
+        </div>
+        <div id="tasks" class="tasks">
+          <div id="btn-add-container" class="btn-add-container">
+            <button id="btn-open-modal" class="btn-add-task active">
+              <span class="red">+</span> Add Task
+            </button>
+          </div>
+          <div id="modal" class="modal">
+            <form id="dialog" action="">
+              <div class="task-text">
+                <input
+                  id="taskName"
+                  type="text"
+                  placeholder="Task name"
+                  required="true"
+                />
+                <input
+                  id="taskDescription"
+                  type="text"
+                  placeholder="Description"
+                />
+              </div>
+              <input
+                type="date"
+                name="date"
+                id="taskDueDate"
+                aria-required="true"
+              />
+              <select name="priority" id="priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </form>
+            <div id="btn-remove-container" class="btn-remove-container">
+              <button
+                type="button"
+                id="btn-cancel-modal"
+                class="btn-cancel-task"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                id="btn-close-modal"
+                class="btn-remove-task"
+              >
+                Add task
+              </button>
+            </div>
+          </div>
+          <div class="all-complete-container">
+            <img class="lazyPanda" src="./assets/lazyPanda.png" alt="" />
+            <p>The valley is safe. Inner peace... Inner peace...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
