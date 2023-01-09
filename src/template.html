@@ -7,6 +7,26 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <div id="content" class="content"></div>
+    <div id="content" class="content">
+      <h1>Default</h1>
+      <button id="btn-open-modal">Add to default</button>
+
+      <div id="tasks" class="tasks"></div>
+
+      <div id="modal" class="modal">
+        <h2>Add a task</h2>
+        <form id="dialog" action="">
+          <input id="taskName" type="text" placeholder="Task name" />
+          <input id="taskDescription" type="text" placeholder="Description" />
+          <input type="date" name="date" id="taskDueDate">
+          <select name="priority" id="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </form>
+        <button id="btn-close-modal">Add Task</button>
+      </div>
+    </div>
   </body>
 </html>
