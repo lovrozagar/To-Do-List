@@ -10,22 +10,25 @@
     <div id="content" class="content">
       <div id="sidebar" class="sidebar">
         <h1>Default</h1>
-        <button id="btn-open-modal">Add to default</button>
       </div>
       <div id="tasks" class="tasks">
+        <div id="btn-add-container" class="btn-add-container">
+          <button id="btn-open-modal" class="btn-add-task active">
+            + Add Task
+          </button>
+        </div>
         <div id="modal" class="modal">
-          <h2>Add a task</h2>
           <form id="dialog" action="">
-            <input id="taskName" type="text" placeholder="Task name" />
+            <input id="taskName" type="text" placeholder="Task name" required="true"/>
             <input id="taskDescription" type="text" placeholder="Description" />
-            <input type="date" name="date" id="taskDueDate" />
+            <input type="date" name="date" id="taskDueDate" aria-required="true"/>
             <select name="priority" id="priority">
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
             </select>
           </form>
-          <button id="btn-close-modal">Add Task</button>
+          <button type="submit" id="btn-close-modal">Add Task</button>
         </div>
       </div>
     </div>

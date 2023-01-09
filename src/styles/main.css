@@ -34,11 +34,11 @@ body {
   flex: 1;
 }
 
-.modal {
+.modal, .btn-add-task {
   display: none;
 }
 
-.modal.active {
+.modal.active, .btn-add-task.active {
   display: block;
 }
 
@@ -142,11 +142,10 @@ body {
 
 .edit-container{
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 img {
+  margin-left: 1rem;
   display: inline-block;
   height: 32px;
   filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)

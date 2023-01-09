@@ -63,4 +63,4 @@ function createTask(name, description, dueDate, priority) {
   return taskContainer;
 }
 
-export default createTask;
+export { createTask };
