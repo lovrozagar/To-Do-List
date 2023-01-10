@@ -4,7 +4,7 @@
   --grey: #808080;
   --dark-grey: #242424;
   --medium-dark-grey: #282828;
-  --green: #228b22;
+  --green: #32cd32;
   --tasks-width: 800px;
 }
 
@@ -192,7 +192,7 @@ select {
   flex: 1;
 }
 
-.task-info-container > p {
+.task-info-container > p:not(:first-child) {
   margin-top: 0.5rem;
 }
 
@@ -266,8 +266,8 @@ select {
 }
 
 .checkbox-container input[type='checkbox']:checked + label {
-  background-color: grey;
-  border-color: grey;
+  background-color: var(--green);
+  border-color: var(--green);
 }
 
 .checkbox-container input[type='checkbox']:checked + label::after {
@@ -294,6 +294,7 @@ select {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: -10;
 }
 
 img.lazy-panda {
@@ -308,7 +309,7 @@ img.lazy-panda {
 
 @media only screen and (max-width: 600px) {
   .sidebar {
-    max-width: fit-content;
+    max-width: 100px;
   }
 
   img.lazy-panda {
@@ -325,4 +326,9 @@ li {
 .active-list {
   font-weight: bold;
   color: var(--white);
+}
+
+.completed {
+  text-decoration: line-through;
+  color: var(--grey);
 }
