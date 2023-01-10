@@ -1,5 +1,7 @@
 import { compareAsc, format } from 'date-fns';
 import { createTask } from './modules/dom';
+import saveAndRender from './modules/lists';
+
 
 import './styles/reset.css';
 import './styles/main.css';
@@ -110,4 +112,5 @@ function listenForAddTask() {
   });
 }
 
+saveAndRender();
 listenForAddTask();

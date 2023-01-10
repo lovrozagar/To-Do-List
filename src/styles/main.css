@@ -64,6 +64,7 @@ select {
 }
 
 .btn-add-task {
+  font-size: 1rem;
   flex: 1;
   text-align: start;
   color: var(--grey);
@@ -191,7 +192,7 @@ select {
   flex: 1;
 }
 
-.task-info-container > p{
+.task-info-container > p {
   margin-top: 0.5rem;
 }
 
@@ -306,12 +307,22 @@ img.lazy-panda {
 }
 
 @media only screen and (max-width: 600px) {
-  .sidebar{
+  .sidebar {
     max-width: fit-content;
   }
 
-  img.lazy-panda{
+  img.lazy-panda {
     max-width: 100px;
     height: 80px;
   }
+}
+
+li {
+  color: var(--grey);
+  cursor: pointer;
+}
+
+.active-list {
+  font-weight: bold;
+  color: var(--white);
 }

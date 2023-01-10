@@ -13,7 +13,17 @@
       </header>
       <main id="main" class="main">
         <div id="sidebar" class="sidebar">
-          <h1>Default</h1>
+          <ul class="task-list" data-lists></ul>
+          <form action="" data-new-list-form>
+            <input
+              type="text"
+              class="new list"
+              data-new-list-input
+              placeholder="New list"
+              aria-label="New list"
+            />
+            <button class="btn create" aria-label="create new list">+</button>
+          </form>
         </div>
         <div id="tasks" class="tasks">
           <div id="btn-add-container" class="btn-add-container">
