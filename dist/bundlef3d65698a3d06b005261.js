@@ -10,62 +10,153 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createTask": () => (/* binding */ createTask)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function createTask(name, description, dueDate, priority) {
-  // TASK CONTAINER
-  var taskContainer = document.createElement('div');
-  taskContainer.classList.add('task-container');
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
 
-  // CHECKBOX SECTION
-  var checkboxContainer = document.createElement('div');
-  checkboxContainer.classList.add('checkbox-container');
-  var checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.setAttribute('id', 'checkbox');
-  checkbox.classList.add('checkbox');
-  var checkboxLabel = document.createElement('label');
-  checkboxLabel.setAttribute('for', 'checkbox');
-  checkboxContainer.appendChild(checkbox);
-  checkboxContainer.appendChild(checkboxLabel);
 
-  // TASK INFORMATION SECTION
-  var taskInfoContainer = document.createElement('div');
-  taskInfoContainer.classList.add('task-info-container');
-  var taskNamePara = document.createElement('h2');
-  taskNamePara.textContent = name;
-  taskNamePara.classList.add('task-name');
-  var taskDescriptionPara = document.createElement('p');
-  taskDescriptionPara.textContent = description;
-  taskDescriptionPara.classList.add('task-description');
-  var taskDatePara = document.createElement('p');
-  taskDatePara.textContent = dueDate;
-  taskDatePara.classList.add('task-date');
-  var taskPriority = document.createElement('p');
-  taskPriority.textContent = priority;
-  taskPriority.classList.add('task-priority');
+var dom = function () {
+  function createTask(name, description, dueDate, priority, completed) {
+    // TASK CONTAINER
+    var taskContainer = createDiv('task-container', '');
 
-  // EDIT SECTION
-  var changeContainer = document.createElement('div');
-  changeContainer.classList.add('edit-container');
-  var editImg = document.createElement('img');
-  editImg.classList.add('edit');
-  editImg.src = './assets/editPen.png';
-  var removeImg = document.createElement('img');
-  removeImg.classList.add('remove');
-  removeImg.src = './assets/trash.png';
-  changeContainer.appendChild(editImg);
-  changeContainer.appendChild(removeImg);
-  taskInfoContainer.appendChild(taskNamePara);
-  taskInfoContainer.appendChild(taskDescriptionPara);
-  taskInfoContainer.appendChild(taskDatePara);
-  taskInfoContainer.appendChild(taskPriority);
-  taskContainer.appendChild(checkboxContainer);
-  taskContainer.appendChild(taskInfoContainer);
-  taskContainer.appendChild(changeContainer);
-  return taskContainer;
-}
+    // CHECKBOX SECTION
+    var checkboxContainer = createDiv('checkbox-container', '');
+    var checkboxId = crypto.randomUUID(); // make IDS connect with for and be unique
+    var checkbox = createInput('checkbox', checkboxId, 'checkbox');
+    checkbox.checked = _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].styleIfCompleted(taskContainer, completed); // If task was checked render it as checked again and apply checked styling to the whole task container
+    var checkboxLabel = document.createElement('label');
+    checkboxLabel.setAttribute('for', checkboxId);
+    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(checkboxLabel);
 
+    // TASK INFORMATION SECTION
+    var taskInfoContainer = createDiv('task-info-container', '');
+    var taskNamePara = createPara('task-name', '', name);
+    var taskDescriptionPara = createPara('task-description', '', description);
+    var taskDatePara = createPara('task-date', '', dueDate);
+    var taskPriority = createPara('task-priority', '', priority);
+
+    // EDIT SECTION
+    var changeContainer = createDiv('edit-container', '');
+    var editImg = document.createElement('img');
+    editImg.classList.add('edit');
+    editImg.src = './assets/editPen.png';
+    var removeImg = document.createElement('img');
+    removeImg.classList.add('remove');
+    removeImg.src = './assets/trash.png';
+    changeContainer.appendChild(editImg);
+    changeContainer.appendChild(removeImg);
+    taskInfoContainer.appendChild(taskNamePara);
+    taskInfoContainer.appendChild(taskDescriptionPara);
+    taskInfoContainer.appendChild(taskDatePara);
+    taskInfoContainer.appendChild(taskPriority);
+    taskContainer.appendChild(checkboxContainer);
+    taskContainer.appendChild(taskInfoContainer);
+    taskContainer.appendChild(changeContainer);
+    return taskContainer;
+  }
+  function createDiv(className, idName) {
+    var div = document.createElement('div');
+    div.classList.add(className);
+    if (idName && typeof idName === 'string') {
+      div.setAttribute('id', idName);
+    }
+    return div;
+  }
+  function createPara(className, idName, text) {
+    var para = document.createElement('p');
+    para.classList.add(className);
+    if (idName && typeof idName === 'string') {
+      para.setAttribute('id', idName);
+    }
+    if (text) {
+      para.textContent = text;
+    }
+    return para;
+  }
+  function createInput(className, idName, type) {
+    var input = document.createElement('input');
+    input.type = type;
+    input.classList.add(className);
+    if (idName && typeof idName === 'string') {
+      input.setAttribute('id', idName);
+    }
+    return input;
+  }
+  return {
+    createTask: createTask
+  };
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dom);
+
+/***/ }),
+
+/***/ "./src/modules/listeners.js":
+/*!**********************************!*\
+  !*** ./src/modules/listeners.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
+
+var listeners = function () {
+  var btnAddContainer = document.getElementById('btn-add-container');
+  var modal = document.getElementById('modal');
+  var openModal = document.getElementById('btn-open-modal');
+  var closeModal = document.getElementById('btn-close-modal');
+  var cancelModal = document.getElementById('btn-cancel-modal');
+  function listenForAddTask() {
+    openModal.addEventListener('click', function () {
+      modal.classList.toggle('active');
+      openModal.classList.toggle('active');
+      _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].resetTaskDialog();
+    });
+    cancelModal.addEventListener('click', function () {
+      modal.classList.remove('active');
+      openModal.classList.toggle('active');
+      _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].resetTaskDialog();
+    });
+    closeModal.addEventListener('click', function (e) {
+      var isValid = _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].addTaskInProjectArray();
+      if (isValid === 'valid') {
+        e.preventDefault;
+        modal.classList.remove('active');
+        openModal.classList.toggle('active');
+        _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].displayTask();
+        _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].resetTaskDialog();
+        listenForTaskCheckbox();
+      }
+    });
+  }
+  function listenForTaskCheckbox() {
+    var checkboxes = document.querySelectorAll('input[type=checkbox]');
+    console.log(checkboxes);
+    var _loop = function _loop(i) {
+      checkboxes[i].addEventListener('change', function () {
+        var taskContainer = checkboxes[i].closest('.task-container');
+        if (checkboxes[i].checked) {
+          taskContainer.classList.add('completed');
+          _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].projectDefault[i].completed = true;
+        } else {
+          taskContainer.classList.remove('completed');
+          _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].projectDefault[i].completed = false;
+        }
+      });
+    };
+    for (var i = 0; i < checkboxes.length; i += 1) {
+      _loop(i);
+    }
+  }
+  return {
+    listenForAddTask: listenForAddTask
+  };
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (listeners);
 
 /***/ }),
 
@@ -79,62 +170,161 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-var listsContainer = document.querySelector('[data-lists]');
-var newListForm = document.querySelector('[data-new-list-form]');
-var newListInput = document.querySelector('[data-new-list-input]');
-var LOCAL_STORAGE_LIST_KEY = 'task.lists';
-var LOCAL_STORAGE_SELECTED_LIST_ID_KEY = 'task.selectedListId';
-var lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
-var selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY);
-listsContainer.addEventListener('click', function (e) {
-  if (e.target.tagName.toLowerCase() === 'li') {
-    console.log(e.target);
-    selectedListId = e.target.dataset.listId;
-    saveAndRender();
-    console.log(selectedListId);
-  }
-});
-function clearElement(element) {
-  while (element.lastChild) {
-    element.removeChild(element.lastChild);
-  }
-}
-function save() {
-  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists));
-  localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedListId);
-}
-function render() {
-  clearElement(listsContainer);
-  lists.forEach(function (list) {
-    var listElement = document.createElement('li');
-    listElement.dataset.listId = list.id;
-    listElement.classList.add('list-name');
-    listElement.innerText = list.name;
-    if (list.id === selectedListId) listElement.classList.add('active-list');
-    listsContainer.appendChild(listElement);
+var lists = function () {
+  var listsContainer = document.querySelector('[data-lists]');
+  var newListForm = document.querySelector('[data-new-list-form]');
+  var newListInput = document.querySelector('[data-new-list-input]');
+  var LOCAL_STORAGE_LIST_KEY = 'task.lists';
+  var LOCAL_STORAGE_SELECTED_LIST_ID_KEY = 'task.selectedListId';
+  var lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
+  var selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY);
+  listsContainer.addEventListener('click', function (e) {
+    if (e.target.tagName.toLowerCase() === 'li') {
+      console.log(e.target);
+      selectedListId = e.target.dataset.listId;
+      saveAndRender();
+      console.log(selectedListId);
+    }
   });
-}
-function saveAndRender() {
-  save();
-  render();
-}
-function createList(name) {
+  function clearElement(element) {
+    while (element.lastChild) {
+      element.removeChild(element.lastChild);
+    }
+  }
+  function save() {
+    localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists));
+    localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedListId);
+  }
+  function render() {
+    clearElement(listsContainer);
+    lists.forEach(function (list) {
+      var listElement = document.createElement('li');
+      listElement.dataset.listId = list.id;
+      listElement.classList.add('list-name');
+      listElement.innerText = list.name;
+      if (list.id === selectedListId) listElement.classList.add('active-list');
+      listsContainer.appendChild(listElement);
+    });
+  }
+  function saveAndRender() {
+    save();
+    render();
+  }
+  function createList(name) {
+    return {
+      id: Date.now().toString(),
+      name: name,
+      tasks: []
+    };
+  }
+
+  // newListForm.addEventListener('submit', (e) => {
+  //   e.preventDefault();
+  //   const listName = newListInput.value;
+  //   if (listName === null || listName === '') return;
+  //   const list = createList(listName);
+  //   newListInput.value = null;
+  //   lists.push(list);
+  //   saveAndRender();
+  // });
+
   return {
-    id: Date.now().toString(),
-    name: name,
-    tasks: []
+    saveAndRender: saveAndRender
   };
-}
-newListForm.addEventListener('submit', function (e) {
-  e.preventDefault();
-  var listName = newListInput.value;
-  if (listName === null || listName === '') return;
-  var list = createList(listName);
-  newListInput.value = null;
-  lists.push(list);
-  saveAndRender();
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (saveAndRender);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (lists);
+
+/***/ }),
+
+/***/ "./src/modules/tasks.js":
+/*!******************************!*\
+  !*** ./src/modules/tasks.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
+/* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dom */ "./src/modules/dom.js");
+
+
+
+var tasks = function () {
+  var projectDefault = [];
+  console.log(projectDefault);
+  var btnAddContainer = document.getElementById('btn-add-container');
+  var taskName = document.getElementById('taskName');
+  var taskDescription = document.getElementById('taskDescription');
+  var taskDueDate = document.getElementById('taskDueDate');
+  var taskPriority = document.getElementById('priority');
+
+  // TASK FACTORY
+  var task = function task(title, description, dueDate, priority) {
+    var completed = false;
+    return {
+      title: title,
+      description: description,
+      dueDate: dueDate,
+      priority: priority,
+      completed: completed
+    };
+  };
+  function validateForm(name, description, dueDate, priority) {
+    if (name !== '' && name.length < 50 && dueDate !== '' && priority !== '') {
+      return true;
+    }
+    return false;
+  }
+  function formatDate(date) {
+    return "\uD83D\uDCC5 ".concat((0,date_fns__WEBPACK_IMPORTED_MODULE_1__["default"])(new Date(date), 'd MMM'));
+  }
+  function addTaskInProjectArray() {
+    if (validateForm(taskName.value, taskDescription.value, taskDueDate.value, taskPriority.value)) {
+      var newTask = task(taskName.value, taskDescription.value, formatDate(taskDueDate.value), taskPriority.value);
+      projectDefault.push(newTask);
+      return 'valid';
+    }
+    return 'invalid';
+  }
+  function removeTasks(el) {
+    var elements = el.getElementsByClassName('task-container');
+    while (elements[0]) {
+      elements[0].parentNode.removeChild(elements[0]);
+    }
+  }
+  function displayTask() {
+    var tasks = document.getElementById('tasks');
+    removeTasks(tasks);
+    for (var i = 0; i < projectDefault.length; i += 1) {
+      var currentTask = _dom__WEBPACK_IMPORTED_MODULE_0__["default"].createTask(projectDefault[i].title, projectDefault[i].description, projectDefault[i].dueDate, projectDefault[i].priority, projectDefault[i].completed);
+      tasks.insertBefore(currentTask, btnAddContainer);
+    }
+  }
+  function styleIfCompleted(el, isCompleted) {
+    if (isCompleted) {
+      el.classList.add('completed');
+      return true;
+    }
+    el.classList.remove('completed');
+    return false;
+  }
+  function resetTaskDialog() {
+    taskName.value = '';
+    taskDescription.value = '';
+    taskDueDate.value = '';
+    taskPriority.value = 'Medium';
+  }
+  return {
+    projectDefault: projectDefault,
+    addTaskInProjectArray: addTaskInProjectArray,
+    displayTask: displayTask,
+    resetTaskDialog: resetTaskDialog,
+    styleIfCompleted: styleIfCompleted
+  };
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (tasks);
 
 /***/ }),
 
@@ -157,7 +347,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #228b22;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.red {\n  color: var(--red);\n}\n\n.modal,\n.btn-add-task {\n  display: none;\n}\n\n.modal.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.75rem;\n  font-weight: 600;\n  padding: 8px 14px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=text]:first-child {\n  font-size: 1rem;\n}\n\ninput[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type=text],\ninput[type=date] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=date]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=date] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=checkbox]:checked + label {\n  background-color: grey;\n  border-color: grey;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: fit-content;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.active-list {\n  font-weight: bold;\n  color: var(--white);\n}", "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #228b22;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.red {\n  color: var(--red);\n}\n\n.modal,\n.btn-add-task {\n  display: none;\n}\n\n.modal.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.75rem;\n  font-weight: 600;\n  padding: 8px 14px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type='text']:first-child {\n  font-size: 1rem;\n}\ninput[type='text']:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type='text'],\ninput[type='date'] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type='date']::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type='date']::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type='date']::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type='date'] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: '';\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type='checkbox']:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: '';\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type='checkbox'] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type='checkbox']:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type='checkbox']:checked + label {\n  background-color: grey;\n  border-color: grey;\n}\n\n.checkbox-container input[type='checkbox']:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)\n    brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: fit-content;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.active-list {\n  font-weight: bold;\n  color: var(--white);\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.red {\n  color: var(--red);\n}\n\n.modal,\n.btn-add-task {\n  display: none;\n}\n\n.modal.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.75rem;\n  font-weight: 600;\n  padding: 8px 14px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=text]:first-child {\n  font-size: 1rem;\n}\n\ninput[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type=text],\ninput[type=date] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=date]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=date] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=checkbox]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.active-list {\n  font-weight: bold;\n  color: var(--white);\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}", "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.red {\n  color: var(--red);\n}\n\n.modal,\n.btn-add-task {\n  display: none;\n}\n\n.modal.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.75rem;\n  font-weight: 600;\n  padding: 8px 14px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type='text']:first-child {\n  font-size: 1rem;\n}\ninput[type='text']:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type='text'],\ninput[type='date'] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type='date']::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type='date']::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type='date']::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type='date'] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: '';\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type='checkbox']:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: '';\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type='checkbox'] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type='checkbox']:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type='checkbox']:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type='checkbox']:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)\n    brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.active-list {\n  font-weight: bold;\n  color: var(--white);\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3775,14 +3965,14 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
-/* harmony import */ var _modules_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/dom */ "./src/modules/dom.js");
-/* harmony import */ var _modules_lists__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/lists */ "./src/modules/lists.js");
-/* harmony import */ var _styles_reset_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./styles/reset.css */ "./src/styles/reset.css");
-/* harmony import */ var _styles_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styles/main.css */ "./src/styles/main.css");
-/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
-/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
-/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
+/* harmony import */ var _modules_lists__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/lists */ "./src/modules/lists.js");
+/* harmony import */ var _modules_tasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/tasks */ "./src/modules/tasks.js");
+/* harmony import */ var _modules_listeners__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/listeners */ "./src/modules/listeners.js");
+/* harmony import */ var _styles_reset_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styles/reset.css */ "./src/styles/reset.css");
+/* harmony import */ var _styles_main_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styles/main.css */ "./src/styles/main.css");
+/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
+/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
+/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
 
 
 
@@ -3791,88 +3981,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var projectDefault = [];
-console.log(projectDefault);
-var modal = document.getElementById('modal');
-var taskName = document.getElementById('taskName');
-var taskDescription = document.getElementById('taskDescription');
-var taskDueDate = document.getElementById('taskDueDate');
-var taskPriority = document.getElementById('priority');
-var btnAddContainer = document.getElementById('btn-add-container');
-var openModal = document.getElementById('btn-open-modal');
-var closeModal = document.getElementById('btn-close-modal');
-var cancelModal = document.getElementById('btn-cancel-modal');
-var task = function task(title, description, dueDate, priority) {
-  return {
-    title: title,
-    description: description,
-    dueDate: dueDate,
-    priority: priority
-  };
-};
-function validateForm(name, description, dueDate, priority) {
-  if (name !== '' && name.length < 50 && dueDate !== '' && priority !== '') {
-    return true;
-  }
-  return false;
-}
-function formatDate(date) {
-  return "\uD83D\uDCC5 ".concat((0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(new Date(date), 'd MMM'));
-}
-function addTaskInProjectArray() {
-  if (validateForm(taskName.value, taskDescription.value, taskDueDate.value, taskPriority.value)) {
-    var obj = task(taskName.value, taskDescription.value, formatDate(taskDueDate.value), taskPriority.value);
-    projectDefault.push(obj);
-    return 'valid';
-  }
-  return 'invalid';
-}
-function removeTasks(el) {
-  var elements = el.getElementsByClassName('task-container');
-  while (elements[0]) {
-    elements[0].parentNode.removeChild(elements[0]);
-  }
-}
-function displayTask() {
-  var tasks = document.getElementById('tasks');
-  removeTasks(tasks);
-  for (var i = 0; i < projectDefault.length; i += 1) {
-    var currentTask = (0,_modules_dom__WEBPACK_IMPORTED_MODULE_0__.createTask)(projectDefault[i].title, projectDefault[i].description, projectDefault[i].dueDate, projectDefault[i].priority);
-    tasks.insertBefore(currentTask, btnAddContainer);
-  }
-}
-function resetTaskDialog() {
-  taskName.value = '';
-  taskDescription.value = '';
-  taskDueDate.value = '';
-  taskPriority.value = 'Medium';
-}
-function listenForAddTask() {
-  openModal.addEventListener('click', function () {
-    modal.classList.toggle('active');
-    openModal.classList.toggle('active');
-    resetTaskDialog();
-  });
-  cancelModal.addEventListener('click', function () {
-    modal.classList.remove('active');
-    openModal.classList.toggle('active');
-    resetTaskDialog();
-  });
-  closeModal.addEventListener('click', function (e) {
-    var isValid = addTaskInProjectArray();
-    if (isValid === 'valid') {
-      e.preventDefault;
-      modal.classList.remove('active');
-      openModal.classList.toggle('active');
-      displayTask();
-      resetTaskDialog();
-    }
-  });
-}
-(0,_modules_lists__WEBPACK_IMPORTED_MODULE_1__["default"])();
-listenForAddTask();
+_modules_lists__WEBPACK_IMPORTED_MODULE_0__["default"].saveAndRender();
+_modules_listeners__WEBPACK_IMPORTED_MODULE_2__["default"].listenForAddTask();
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle51e399f0edabf7a8152b.js.map
+//# sourceMappingURL=bundlef3d65698a3d06b005261.js.map
