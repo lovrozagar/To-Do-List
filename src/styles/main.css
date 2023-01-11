@@ -75,12 +75,12 @@ select {
   color: var(--red);
 }
 
-.modal,
+.dialog,
 .btn-add-task {
   display: none;
 }
 
-.modal.active,
+.dialog.active,
 .btn-add-task.active {
   display: block;
 }

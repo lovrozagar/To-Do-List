@@ -1,57 +1,75 @@
 import tasks from './tasks';
+import dom from './dom';
 
 const listeners = (() => {
-  const btnAddContainer = document.getElementById('btn-add-container');
-  const modal = document.getElementById('modal');
-  const openModal = document.getElementById('btn-open-modal');
-  const closeModal = document.getElementById('btn-close-modal');
-  const cancelModal = document.getElementById('btn-cancel-modal');
+  // LISTEN FOR ALL CLICKS
+  function listenClicks() {
+    document.addEventListener('click', (event) => {
+      const { target } = event;
+      console.log(target.tagName);
 
-  function listenForAddTask() {
-    openModal.addEventListener('click', () => {
-      modal.classList.toggle('active');
-      openModal.classList.toggle('active');
-      tasks.resetTaskDialog();
-    });
+      // SHOW OR CANCEL ADD TASK DIALOG
+      if (
+        target.hasAttribute('data-btn-add-task') ||
+        target.hasAttribute('data-btn-cancel-task')
+      ) {
+        dom.toggleAddTaskDialog();
+      }
 
-    cancelModal.addEventListener('click', () => {
-      modal.classList.remove('active');
-      openModal.classList.toggle('active');
-      tasks.resetTaskDialog();
-    });
+      // PUSH TASK AND HIDE ADD TASK DIALOG
+      if (target.hasAttribute('data-btn-push-task')) {
+        event.preventDefault();
+        dom.pushTaskInProject();
+      }
 
-    closeModal.addEventListener('click', (e) => {
-      const isValid = tasks.addTaskInProjectArray();
-      if (isValid === 'valid') {
-        e.preventDefault;
-        modal.classList.remove('active');
-        openModal.classList.toggle('active');
-        tasks.displayTask();
-        tasks.resetTaskDialog();
-        listenForTaskCheckbox();
+      // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
+      if (target.tagName === 'INPUT' && target.type === 'checkbox') {
+        console.log(target);
+        const taskContainer = target.closest('.task-container');
+        taskContainer.classList.toggle('completed');
+        const index = [...taskContainer.parentNode.children].indexOf(
+          taskContainer
+        );
+        if (target.checked) {
+          taskContainer.classList.add('completed');
+          tasks.projectDefault[index].completed = true;
+        } else {
+          taskContainer.classList.remove('completed');
+          tasks.projectDefault[index].completed = false;
+        }
+      }
+
+      if (target.hasAttribute('data-remove-task-img')) {
+        const taskContainer = target.closest('.task-container');
+        const index = [...taskContainer.parentNode.children].indexOf(
+          taskContainer
+        );
+        tasks.projectDefault.splice(index, 1);
+        dom.renderTasks();
       }
     });
   }
 
-  function listenForTaskCheckbox() {
-    const checkboxes = document.querySelectorAll('input[type=checkbox]');
-    console.log(checkboxes);
+  // function listenForTaskCheckbox() {
+  //   const checkboxes = document.querySelectorAll('input[type=checkbox]');
+  //   console.log(checkboxes);
 
-    for (let i = 0; i < checkboxes.length; i += 1) {
-      checkboxes[i].addEventListener('change', function () {
-        const taskContainer = checkboxes[i].closest('.task-container');
-        if (checkboxes[i].checked) {
-          taskContainer.classList.add('completed');
-          tasks.projectDefault[i].completed = true;
-        } else {
-          taskContainer.classList.remove('completed');
-          tasks.projectDefault[i].completed = false;
-        }
-      });
-    }
-  }
+  //   for (let i = 0; i < checkboxes.length; i += 1) {
+  //     checkboxes[i].addEventListener('change', function () {
+  //       const taskContainer = checkboxes[i].closest('.task-container');
+  //       if (checkboxes[i].checked) {
+  //         taskContainer.classList.add('completed');
+  //         tasks.projectDefault[i].completed = true;
+  //       } else {
+  //         taskContainer.classList.remove('completed');
+  //         tasks.projectDefault[i].completed = false;
+  //       }
+  //     });
+  //   }
+  // }
 
-  return { listenForAddTask };
+  // return { listenForAddTask };
+  return { listenClicks };
 })();
 
 export default listeners;

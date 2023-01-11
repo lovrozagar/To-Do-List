@@ -29,7 +29,7 @@ const tasks = (() => {
     return `📅 ${format(new Date(date), 'd MMM')}`;
   }
 
-  function addTaskInProjectArray() {
+  function addTaskInProject() {
     if (
       validateForm(
         taskName.value,
@@ -44,32 +44,7 @@ const tasks = (() => {
         formatDate(taskDueDate.value),
         taskPriority.value
       );
-
       projectDefault.push(newTask);
-      return 'valid';
-    }
-    return 'invalid';
-  }
-
-  function removeTasks(el) {
-    const elements = el.getElementsByClassName('task-container');
-    while (elements[0]) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
-  }
-
-  function displayTask() {
-    const tasks = document.getElementById('tasks');
-    removeTasks(tasks);
-    for (let i = 0; i < projectDefault.length; i += 1) {
-      const currentTask = dom.createTask(
-        projectDefault[i].title,
-        projectDefault[i].description,
-        projectDefault[i].dueDate,
-        projectDefault[i].priority,
-        projectDefault[i].completed
-      );
-      tasks.insertBefore(currentTask, btnAddContainer);
     }
   }
 
@@ -91,8 +66,7 @@ const tasks = (() => {
 
   return {
     projectDefault,
-    addTaskInProjectArray,
-    displayTask,
+    addTaskInProject,
     resetTaskDialog,
     styleIfCompleted,
   };

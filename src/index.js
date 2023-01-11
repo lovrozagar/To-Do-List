@@ -9,4 +9,5 @@ import './assets/trash.png';
 import './assets/lazyPanda.png';
 
 lists.saveAndRender();
-listeners.listenForAddTask();
+// listeners.listenForAddTask();
+listeners.listenClicks();
