@@ -1,95 +1,135 @@
-import { id } from 'date-fns/locale';
-import tasks from './tasks';
+import { compareAsc, format } from "date-fns";
+import tasks from "./tasks";
+import projects from "./projects";
 
 const dom = (() => {
-  const _tasks = document.querySelector('[data-tasks]');
-  const taskName = document.getElementById('taskName');
-  const taskDescription = document.getElementById('taskDescription');
-  const taskDueDate = document.getElementById('taskDueDate');
-  const taskPriority = document.getElementById('priority');
+  const tasksContainer = document.querySelector("[data-tasks]");
+  const taskName = document.getElementById("taskName");
+  const taskDescription = document.getElementById("taskDescription");
+  const taskDate = document.getElementById("taskDate");
+  const taskPriority = document.getElementById("priority");
 
-  const btnAddContainer = document.getElementById('btn-add-container');
-  const btnAddTask = document.querySelector('[data-btn-add-task]');
-  const btnCancelTask = document.getElementById('[btn-cancel-task]');
-  const dialog = document.getElementById('dialog');
+  const projectContainer = document.querySelector("[data-lists]");
 
-  function pushTaskInProject() {
-    tasks.addTaskInProject();
+  const btnAddContainer = document.getElementById("btn-add-container");
+  const btnAddTask = document.querySelector("[data-btn-add-task]");
+  const btnCancelTask = document.getElementById("[btn-cancel-task]");
+  const dialog = document.getElementById("dialog");
+
+  function pushTaskInProject(projectIndex = 0) {
+    tasks.addTask(
+      taskName.value,
+      taskDescription.value,
+      taskDate.value,
+      taskPriority.value,
+      projectIndex
+    );
+    renderTasks(projectIndex);
     toggleAddTaskDialog();
-    renderTasks();
-    console.log(tasks.projectDefault);
   }
 
-  function renderTasks() {
-    removeTasks(_tasks);
-    for (let i = 0; i < tasks.projectDefault.length; i += 1) {
-      const currentTask = dom.createTask(
-        tasks.projectDefault[i].title,
-        tasks.projectDefault[i].description,
-        tasks.projectDefault[i].dueDate,
-        tasks.projectDefault[i].priority,
-        tasks.projectDefault[i].completed
+  function renderTasks(index = 0) {
+    removeTasks(tasksContainer, "task-container");
+    console.log(projects.projectList[index].tasks[0]);
+    for (let i = 0; i < projects.projectList[index].tasks.length; i += 1) {
+      const currentTask = createTask(
+        projects.projectList[index].tasks[i].title,
+        projects.projectList[index].tasks[i].description,
+        projects.projectList[index].tasks[i].date,
+        projects.projectList[index].tasks[i].priority,
+        projects.projectList[index].tasks[i].completed,
+        index
       );
-      _tasks.insertBefore(currentTask, btnAddContainer);
+      tasksContainer.insertBefore(currentTask, btnAddContainer);
     }
   }
 
-  function removeTasks(el) {
-    const elements = el.getElementsByClassName('task-container');
+  function removeTasks(el, className) {
+    const elements = el.getElementsByClassName(className);
     while (elements[0]) {
       elements[0].parentNode.removeChild(elements[0]);
     }
   }
 
   function toggleAddTaskDialog() {
-    dialog.classList.toggle('active');
+    dialog.classList.toggle("active");
     toggleBtnAddTask();
     resetAddTaskDialogValues();
   }
 
   function toggleBtnAddTask() {
-    btnAddTask.classList.toggle('active');
+    btnAddTask.classList.toggle("active");
   }
 
   function resetAddTaskDialogValues() {
-    taskName.value = '';
-    taskDescription.value = '';
-    taskDueDate.value = '';
-    taskPriority.value = 'Medium';
+    taskName.value = "";
+    taskDescription.value = "";
+    taskDate.value = "";
+    taskPriority.value = "Medium";
+  }
+
+  function styleIfCompleted(el, isCompleted) {
+    if (isCompleted) {
+      el.classList.add("completed");
+      return true;
+    }
+    el.classList.remove("completed");
+    return false;
+  }
+
+  function renderProjects() {
+    removeTasks(projectContainer, "project-list");
+    for (let i = 0; i < projects.projectList.length; i += 1) {
+      console.log(projects.projectList[i].name);
+      const currentProject = createProject(projects.projectList[i].name);
+    }
+    initInboxDefaultView();
+  }
+
+  function createProject(name) {
+    const project = createLi("project-list");
+    project.textContent = name;
+
+    projectContainer.appendChild(project);
+  }
+
+  function initInboxDefaultView() {
+    const inbox = document.querySelector("li:first-of-type");
+    inbox.classList.add("active-project");
   }
 
   function createTask(name, description, dueDate, priority, completed) {
     // TASK CONTAINER
-    const taskContainer = createDiv('task-container', '');
+    const taskContainer = createDiv("task-container", "");
 
     // CHECKBOX SECTION
-    const checkboxContainer = createDiv('checkbox-container', '');
+    const checkboxContainer = createDiv("checkbox-container", "");
     const checkboxId = crypto.randomUUID(); // make IDS connect with for and be unique
-    const checkbox = createInput('checkbox', checkboxId, 'checkbox');
+    const checkbox = createInput("checkbox", checkboxId, "checkbox");
     taskContainer.dataset.id = checkboxId;
-    checkbox.checked = tasks.styleIfCompleted(taskContainer, completed); // If task was checked render it as checked again and apply checked styling to the whole task container
-    const checkboxLabel = document.createElement('label');
-    checkboxLabel.setAttribute('for', checkboxId);
+    checkbox.checked = styleIfCompleted(taskContainer, completed); // If task was checked render it as checked again and apply checked styling to the whole task container
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.setAttribute("for", checkboxId);
 
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(checkboxLabel);
 
     // TASK INFORMATION SECTION
-    const taskInfoContainer = createDiv('task-info-container', '');
-    const taskNamePara = createPara('task-name', '', name);
-    const taskDescriptionPara = createPara('task-description', '', description);
-    const taskDatePara = createPara('task-date', '', dueDate);
-    const taskPriority = createPara('task-priority', '', priority);
+    const taskInfoContainer = createDiv("task-info-container", "");
+    const taskNamePara = createPara("task-name", "", name);
+    const taskDescriptionPara = createPara("task-description", "", description);
+    const taskDatePara = createPara("task-date", "", dueDate);
+    const taskPriority = createPara("task-priority", "", priority);
 
     // EDIT SECTION
-    const changeContainer = createDiv('edit-container', '');
-    const editImg = document.createElement('img');
-    editImg.classList.add('edit');
-    editImg.src = './assets/editPen.png';
-    const removeImg = document.createElement('img');
-    removeImg.classList.add('remove');
-    removeImg.setAttribute('data-remove-task-img', '');
-    removeImg.src = './assets/trash.png';
+    const changeContainer = createDiv("edit-container", "");
+    const editImg = document.createElement("img");
+    editImg.classList.add("edit");
+    editImg.src = "./assets/editPen.png";
+    const removeImg = document.createElement("img");
+    removeImg.classList.add("remove");
+    removeImg.setAttribute("data-remove-task-img", "");
+    removeImg.src = "./assets/trash.png";
 
     changeContainer.appendChild(editImg);
     changeContainer.appendChild(removeImg);
@@ -107,19 +147,19 @@ const dom = (() => {
   }
 
   function createDiv(className, idName) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.classList.add(className);
-    if (idName && typeof idName === 'string') {
-      div.setAttribute('id', idName);
+    if (idName && typeof idName === "string") {
+      div.setAttribute("id", idName);
     }
     return div;
   }
 
   function createPara(className, idName, text) {
-    const para = document.createElement('p');
+    const para = document.createElement("p");
     para.classList.add(className);
-    if (idName && typeof idName === 'string') {
-      para.setAttribute('id', idName);
+    if (idName && typeof idName === "string") {
+      para.setAttribute("id", idName);
     }
     if (text) {
       para.textContent = text;
@@ -128,16 +168,23 @@ const dom = (() => {
   }
 
   function createInput(className, idName, type) {
-    const input = document.createElement('input');
+    const input = document.createElement("input");
     input.type = type;
     input.classList.add(className);
-    if (idName && typeof idName === 'string') {
-      input.setAttribute('id', idName);
+    if (idName && typeof idName === "string") {
+      input.setAttribute("id", idName);
     }
     return input;
   }
 
-  return { createTask, toggleAddTaskDialog, pushTaskInProject, renderTasks };
+  function createLi(className) {
+    const li = document.createElement("li");
+    li.classList.add(className);
+
+    return li;
+  }
+
+  return { createTask, toggleAddTaskDialog, pushTaskInProject, renderTasks, renderProjects };
 })();
 
 export default dom;

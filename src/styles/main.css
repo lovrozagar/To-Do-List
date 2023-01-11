@@ -2,6 +2,7 @@
   --black: #202020;
   --white: hsla(0, 0%, 100%, 0.87);
   --grey: #808080;
+  --grey-transparent: #80808080;
   --dark-grey: #242424;
   --medium-dark-grey: #282828;
   --green: #32cd32;
@@ -13,8 +14,8 @@
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
   color: var(--white);
 }
 
@@ -51,6 +52,32 @@ select {
   background-color: var(--dark-grey);
 }
 
+li:nth-child(4) {
+  margin-bottom: 3rem;
+}
+
+li:nth-child(5) {
+  position: relative;
+}
+
+li:nth-child(5)::before {
+  content: "Projects";
+  position: absolute;
+  top: -1.5rem;
+  font-size: 1rem;
+  color: var(--green);
+  pointer-events: none;
+}
+
+.active-project {
+  font-weight: bold;
+  color: var(--white);
+}
+
+.project-list {
+  padding: 0.5rem 0;
+}
+
 .tasks {
   position: relative;
   max-width: var(--tasks-width);
@@ -71,10 +98,6 @@ select {
   background-color: transparent;
 }
 
-.red {
-  color: var(--red);
-}
-
 .dialog,
 .btn-add-task {
   display: none;
@@ -86,7 +109,7 @@ select {
 }
 
 form {
-  border: 1px solid var(--grey);
+  border: 1px solid var(--grey-transparent);
   padding: 0.75rem;
   border-radius: 10px;
 }
@@ -98,9 +121,9 @@ form {
 
 .btn-cancel-task,
 .btn-remove-task {
-  font-size: 0.75rem;
+  font-size: 0.825rem;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 10px 12px;
   border-radius: 5px;
   margin: 0.5rem 0 0 0.75rem;
 }
@@ -127,15 +150,15 @@ input {
   grid-template-columns: 1fr;
 }
 
-input[type='text']:first-child {
+input[type="text"]:first-child {
   font-size: 1rem;
 }
-input[type='text']:nth-child(2) {
+input[type="text"]:nth-child(2) {
   font-size: 0.75rem;
 }
 
-input[type='text'],
-input[type='date'] {
+input[type="text"],
+input[type="date"] {
   margin-bottom: 0.5rem;
 }
 
@@ -152,26 +175,26 @@ input[type='date'] {
 }
 
 /* Removes the clear button from date inputs */
-input[type='date']::-webkit-clear-button {
+input[type="date"]::-webkit-clear-button {
   display: none;
 }
 
 /* Removes the spin button */
-input[type='date']::-webkit-inner-spin-button {
+input[type="date"]::-webkit-inner-spin-button {
   display: none;
 }
 
 /* Always display the drop down caret */
-input[type='date']::-webkit-calendar-picker-indicator {
+input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.5);
 }
 
 /* A few custom styles for date inputs */
-input[type='date'] {
+input[type="date"] {
   appearance: none;
   -webkit-appearance: none;
   color: var(--grey);
-  border: 1px solid var(--grey);
+  border: 1px solid var(--grey-transparent);
   padding: 5px;
   border-radius: 5px;
   margin-right: 0.5rem;
@@ -180,7 +203,7 @@ input[type='date'] {
 select {
   appearance: none;
   -webkit-appearance: none;
-  border: 1px solid var(--grey);
+  border: 1px solid var(--grey-transparent);
   padding: 5px;
   border-radius: 5px;
   background-color: transparent;
@@ -201,7 +224,7 @@ select {
   margin-bottom: 0.25rem;
   width: 100%;
   display: flex;
-  border-bottom: 1px solid var(--grey);
+  border-bottom: 1px solid var(--grey-transparent);
 }
 
 .task-description,
@@ -233,7 +256,7 @@ select {
   border: 1.5px solid var(--grey);
   border-top: none;
   border-right: none;
-  content: '';
+  content: "";
   opacity: 0;
   transform: rotate(-45deg);
   position: absolute;
@@ -243,11 +266,11 @@ select {
   width: 6.5px;
 }
 
-.checkbox-container input[type='checkbox']:checked + label::after {
+.checkbox-container input[type="checkbox"]:checked + label::after {
   border: 1.5px solid var(--white);
   border-top: none;
   border-right: none;
-  content: '';
+  content: "";
   opacity: 0;
   transform: rotate(-45deg);
   position: absolute;
@@ -257,20 +280,20 @@ select {
   width: 6.5px;
 }
 
-.checkbox-container input[type='checkbox'] {
+.checkbox-container input[type="checkbox"] {
   visibility: hidden;
 }
 
-.checkbox-container input[type='checkbox']:hover + label::after {
+.checkbox-container input[type="checkbox"]:hover + label::after {
   opacity: 1;
 }
 
-.checkbox-container input[type='checkbox']:checked + label {
+.checkbox-container input[type="checkbox"]:checked + label {
   background-color: var(--green);
   border-color: var(--green);
 }
 
-.checkbox-container input[type='checkbox']:checked + label::after {
+.checkbox-container input[type="checkbox"]:checked + label::after {
   opacity: 1;
 }
 
@@ -283,8 +306,7 @@ select {
   margin-left: 1rem;
   display: inline-block;
   height: 24px;
-  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg)
-    brightness(105%) contrast(85%);
+  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);
 }
 
 .all-complete-container {
@@ -321,11 +343,6 @@ img.lazy-panda {
 li {
   color: var(--grey);
   cursor: pointer;
-}
-
-.active-list {
-  font-weight: bold;
-  color: var(--white);
 }
 
 .completed {
