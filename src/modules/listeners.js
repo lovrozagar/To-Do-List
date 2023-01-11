@@ -23,7 +23,7 @@ const listeners = (() => {
       }
 
       // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
-      if (target.tagName === 'INPUT' && target.type === 'checkbox') {
+      if (target.type === 'checkbox') {
         console.log(target);
         const taskContainer = target.closest('.task-container');
         taskContainer.classList.toggle('completed');

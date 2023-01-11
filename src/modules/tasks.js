@@ -18,8 +18,8 @@ const tasks = (() => {
     return { title, description, dueDate, priority, completed };
   };
 
-  function validateForm(name, description, dueDate, priority) {
-    if (name !== '' && name.length < 50 && dueDate !== '' && priority !== '') {
+  function validateForm(name) {
+    if (name !== '' && name.length < 50) {
       return true;
     }
     return false;
@@ -33,16 +33,16 @@ const tasks = (() => {
     if (
       validateForm(
         taskName.value,
-        taskDescription.value,
-        taskDueDate.value,
-        taskPriority.value
+        // taskDescription.value,
+        // taskDueDate.value,
+        // taskPriority.value
       )
     ) {
       const newTask = task(
         taskName.value,
-        taskDescription.value,
-        formatDate(taskDueDate.value),
-        taskPriority.value
+        // taskDescription.value,
+        // formatDate(taskDueDate.value),
+        // taskPriority.value
       );
       projectDefault.push(newTask);
     }
