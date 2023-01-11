@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundlef3d65698a3d06b005261.js"></script></head>
+  <script defer src="bundle20055ea78f3d9b510c9b.js"></script></head>
   <body>
     <div id="content" class="content">
       <header id="header" class="header">
@@ -13,9 +13,8 @@
       </header>
       <main id="main" class="main">
         <div id="sidebar" class="sidebar">
-          <ul class="task-list" data-lists>
-          </ul>
-          <!-- <form action="" data-new-list-form>
+          <ul class="task-list" data-lists></ul>
+          <form action="" data-new-list-form>
             <input
               type="text"
               class="new list"
@@ -24,16 +23,16 @@
               aria-label="New list"
             />
             <button class="btn create" aria-label="create new list">+</button>
-          </form> -->
+          </form>
         </div>
-        <div id="tasks" class="tasks">
+        <div class="tasks" data-tasks>
           <div id="btn-add-container" class="btn-add-container">
-            <button id="btn-open-modal" class="btn-add-task active">
+            <button class="btn-add-task active" data-btn-add-task>
               <span class="red">+</span> Add Task
             </button>
           </div>
-          <div id="modal" class="modal">
-            <form id="dialog" action="">
+          <div id="dialog" class="dialog">
+            <form id="dialog-form" action="">
               <div class="task-text">
                 <input
                   id="taskName"
@@ -63,15 +62,15 @@
             <div id="btn-remove-container" class="btn-remove-container">
               <button
                 type="button"
-                id="btn-cancel-modal"
                 class="btn-cancel-task"
+                data-btn-cancel-task
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                id="btn-close-modal"
                 class="btn-remove-task"
+                data-btn-push-task
               >
                 Add task
               </button>
