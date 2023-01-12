@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundle20055ea78f3d9b510c9b.js"></script></head>
+  <script defer src="bundlee51595083a4eed8e2409.js"></script></head>
   <body>
     <div id="content" class="content">
       <header id="header" class="header">
@@ -13,7 +13,7 @@
       </header>
       <main id="main" class="main">
         <div id="sidebar" class="sidebar">
-          <ul class="task-list" data-lists></ul>
+          <ul class="project-container" data-lists></ul>
           <form action="" data-new-list-form>
             <input
               type="text"
@@ -34,22 +34,13 @@
           <div id="dialog" class="dialog">
             <form id="dialog-form" action="">
               <div class="task-text">
-                <input
-                  id="taskName"
-                  type="text"
-                  placeholder="Task name"
-                  required="true"
-                />
-                <input
-                  id="taskDescription"
-                  type="text"
-                  placeholder="Description"
-                />
+                <input id="taskName" type="text" placeholder="Task name" required="true" />
+                <input id="taskDescription" type="text" placeholder="Description" />
               </div>
               <input
                 type="date"
                 name="date"
-                id="taskDueDate"
+                id="taskDate"
                 aria-required="true"
                 value="2023-01-01"
               />
@@ -60,20 +51,8 @@
               </select>
             </form>
             <div id="btn-remove-container" class="btn-remove-container">
-              <button
-                type="button"
-                class="btn-cancel-task"
-                data-btn-cancel-task
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="btn-remove-task"
-                data-btn-push-task
-              >
-                Add task
-              </button>
+              <button type="button" class="btn-cancel-task" data-btn-cancel-task>Cancel</button>
+              <button type="button" class="btn-remove-task" data-btn-push-task>Add task</button>
             </div>
           </div>
           <div class="all-complete-container">
