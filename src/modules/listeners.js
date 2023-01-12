@@ -33,7 +33,12 @@ const listeners = (() => {
       // }
 
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
+        dom.closeAddTaskDialog();
         projectIndex = dom.onProjectSelect(target, projectIndex, completedIndex);
+      }
+
+      if (target.hasAttribute("data-new-project-button")) {
+        dom.pushProject();
       }
 
       dom.saveToLocalStorage();

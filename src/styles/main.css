@@ -48,25 +48,30 @@ select {
   padding: 1rem;
   font-size: 1.25rem;
   font-weight: 500;
-  width: 300px;
+  width: 200px;
   background-color: var(--dark-grey);
 }
 
-li:nth-child(4) {
-  margin-bottom: 3rem;
+.project-form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--grey-transparent);
+  padding: 0.25rem;
+  border-radius: 5px;
+  margin-top: 0.5rem;
 }
 
-li:nth-child(5) {
-  position: relative;
+.project-input {
+  flex: 1;
+  margin: 0;
 }
 
-li:nth-child(5)::before {
-  content: "Projects";
-  position: absolute;
-  top: -1.5rem;
+.btn-add-project {
+  background-color: transparent;
   font-size: 1rem;
-  color: var(--green);
-  pointer-events: none;
+  padding-left: 1rem;
+  color: var(--grey);
 }
 
 .active-project {
@@ -75,7 +80,25 @@ li:nth-child(5)::before {
 }
 
 .project-list {
-  padding: 0.5rem 0;
+  font-size: 1rem;
+  padding: 0.25rem 0;
+}
+
+li:nth-child(4) {
+  margin-bottom: 2.25rem;
+  position: relative;
+}
+
+li:nth-child(4)::after {
+  display: inline;
+  content: "Projects";
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  font-size: 1rem;
+  font-weight: normal;
+  color: var(--green);
+  pointer-events: none;
 }
 
 .tasks {
@@ -108,7 +131,7 @@ li:nth-child(5)::before {
   display: block;
 }
 
-form {
+.dialog-form {
   border: 1px solid var(--grey-transparent);
   padding: 0.75rem;
   border-radius: 10px;
@@ -157,8 +180,7 @@ input[type="text"]:nth-child(2) {
   font-size: 0.75rem;
 }
 
-input[type="text"],
-input[type="date"] {
+input {
   margin-bottom: 0.5rem;
 }
 

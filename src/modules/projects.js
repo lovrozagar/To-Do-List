@@ -28,15 +28,15 @@ const projects = (() => {
     projectList = projectsFromStorage;
   }
 
-  const project = (title) => {
+  const project = (name) => {
     const index = projectList.length;
     const tasks = [];
 
-    return { title, index, tasks };
+    return { name, index, tasks };
   };
 
-  function addProject(title) {
-    const newProject = project(title);
+  function addProject(name) {
+    const newProject = project(name);
     projectList.push(newProject);
   }
 
@@ -56,7 +56,7 @@ const projects = (() => {
     projects.projectList[completedIndex].tasks.splice(taskIndex, 1);
   }
 
-  return { projectList, addToCompleted, removeFromCompleted };
+  return { projectList, addToCompleted, removeFromCompleted, addProject };
 })();
 
 export default projects;

@@ -10,11 +10,14 @@ const dom = (() => {
   const taskPriority = document.getElementById("priority");
 
   const projectContainer = document.querySelector("[data-lists]");
+  const newProjectInput = document.querySelector("[data-new-project-input]");
+  const projectForm = document.querySelector("[data-new-project-form]");
 
   const btnAddContainer = document.getElementById("btn-add-container");
   const btnAddTask = document.querySelector("[data-btn-add-task]");
   const btnCancelTask = document.getElementById("[btn-cancel-task]");
   const dialog = document.getElementById("dialog");
+  const dialogForm = document.querySelector("[data-dialog-form]");
 
   function pushTaskInProject(projectIndex = 0) {
     tasks.addTask(
@@ -54,7 +57,12 @@ const dom = (() => {
   function toggleAddTaskDialog() {
     dialog.classList.toggle("active");
     toggleBtnAddTask();
-    resetAddTaskDialogValues();
+    resetForm(dialogForm);
+  }
+
+  function closeAddTaskDialog() {
+    dialog.classList.remove("active");
+    resetForm(dialogForm);
   }
 
   function toggleBtnAddTask() {
@@ -98,11 +106,8 @@ const dom = (() => {
     btnAddTask.classList.add("active");
   }
 
-  function resetAddTaskDialogValues() {
-    taskName.value = "";
-    taskDescription.value = "";
-    taskDate.value = "";
-    taskPriority.value = "Medium";
+  function resetForm(formEl) {
+    formEl.reset();
   }
 
   function styleIfCompleted(el, isCompleted) {
@@ -114,13 +119,18 @@ const dom = (() => {
     return false;
   }
 
+  function pushProject() {
+    projects.addProject(newProjectInput.value);
+    renderProjects();
+    resetForm(projectForm);
+  }
+
   function renderProjects() {
     removeTasks(projectContainer, "project-list");
     for (let i = 0; i < projects.projectList.length; i += 1) {
       console.log(projects.projectList[i].name);
       const currentProject = createProject(projects.projectList[i].name);
     }
-    initInboxDefaultView();
   }
 
   function createProject(name) {
@@ -228,6 +238,7 @@ const dom = (() => {
   return {
     createTask,
     toggleAddTaskDialog,
+    closeAddTaskDialog,
     pushTaskInProject,
     renderTasks,
     renderProjects,
@@ -235,6 +246,8 @@ const dom = (() => {
     hideBtnAddTaskOnCompleted,
     onTaskCheck,
     onProjectSelect,
+    initInboxDefaultView,
+    pushProject,
   };
 })();
 

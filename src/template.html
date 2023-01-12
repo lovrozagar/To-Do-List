@@ -14,16 +14,17 @@
       <main id="main" class="main">
         <div id="sidebar" class="sidebar">
           <ul class="project-container" data-lists></ul>
-          <form action="" data-new-list-form>
+          <form class="project-form" action="" data-new-project-form>
             <input
               type="text"
-              class="new list"
-              data-new-list-input
+              class="project-input"
+              data-new-project-input
               minlength="3"
-              placeholder="New list"
+              size="10"
+              placeholder="New project"
               aria-label="New project"
             />
-            <button class="btn-add-project" aria-label="Create new project">+</button>
+            <button type="button" class="btn-add-project" data-new-project-button aria-label="Create new project">+</button>
           </form>
         </div>
         <div class="tasks" data-tasks>
@@ -33,7 +34,7 @@
             </button>
           </div>
           <div id="dialog" class="dialog">
-            <form id="dialog-form" action="">
+            <form id="dialog-form" action="" data-dialog-form class="dialog-form">
               <div class="task-text">
                 <input id="taskName" type="text" placeholder="Task name" required="true" />
                 <input id="taskDescription" type="text" placeholder="Description" />
@@ -43,7 +44,6 @@
                 name="date"
                 id="taskDate"
                 aria-required="true"
-                value="2023-01-01"
               />
               <select name="priority" id="priority">
                 <option value="Low">Low</option>
