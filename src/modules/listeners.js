@@ -4,11 +4,11 @@ import projects from "./projects";
 
 const listeners = (() => {
   let projectIndex = 0;
+  const completedIndex = 3;
   // LISTEN FOR ALL CLICKS
   function listenClicks() {
     document.addEventListener("click", (event) => {
       const { target } = event;
-      console.log(target.tagName);
 
       // SHOW OR CANCEL ADD TASK DIALOG
       if (target.hasAttribute("data-btn-add-task") || target.hasAttribute("data-btn-cancel-task")) {
@@ -23,38 +23,20 @@ const listeners = (() => {
 
       // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
       if (target.type === "checkbox") {
-        console.log(target);
-        const taskContainer = target.closest(".task-container");
-        taskContainer.classList.toggle("completed");
-        const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
-        console.log(index);
-        if (target.checked) {
-          taskContainer.classList.add("completed");
-          projects.projectList[0].tasks[index].completed = true;
-        } else {
-          taskContainer.classList.remove("completed");
-          projects.projectList[0].tasks[index].completed = false;
-        }
+        dom.onTaskCheck(target, projectIndex, completedIndex);
       }
 
-      if (target.hasAttribute("data-remove-task-img")) {
-        const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
-        tasks.projectDefault.splice(index, 1);
-        dom.renderTasks();
-      }
+      // if (target.hasAttribute("data-remove-task-img")) {
+      //   const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
+      //   tasks.projectDefault.splice(index, 1);
+      //   dom.renderTasks();
+      // }
 
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
-        console.log(target);
-        const projects = document.querySelectorAll("li");
-        projects.forEach((project) => {
-          project.classList.remove("active-project");
-        });
-        target.classList.add("active-project");
-
-        const index = [...target.parentNode.children].indexOf(target);
-        projectIndex = index;
-        dom.renderTasks(projectIndex);
+        projectIndex = dom.onProjectSelect(target, projectIndex, completedIndex);
       }
+
+      dom.saveToLocalStorage();
     });
   }
 
@@ -77,6 +59,7 @@ const listeners = (() => {
   // }
 
   // return { listenForAddTask };
+
   return { listenClicks };
 })();
 

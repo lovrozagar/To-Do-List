@@ -61,6 +61,43 @@ const dom = (() => {
     btnAddTask.classList.toggle("active");
   }
 
+  function onTaskCheck(target, projectIndex, completedIndex) {
+    const taskContainer = target.closest(".task-container");
+    const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
+    if (target.checked) {
+      styleIfCompleted(taskContainer, true);
+      projects.projectList[projectIndex].tasks[index].completed = true;
+      projects.addToCompleted(projectIndex, completedIndex, index);
+    } else {
+      styleIfCompleted(taskContainer, false);
+      projects.projectList[projectIndex].tasks[index].completed = false;
+      projects.removeFromCompleted(completedIndex, index);
+    }
+    dom.renderTasks(projectIndex);
+  }
+
+  function onProjectSelect(target, projectIndex, completedIndex) {
+    const projects = document.querySelectorAll("li");
+    projects.forEach((project) => {
+      project.classList.remove("active-project");
+    });
+    target.classList.add("active-project");
+
+    const index = [...target.parentNode.children].indexOf(target);
+    projectIndex = index;
+    renderTasks(projectIndex);
+    hideBtnAddTaskOnCompleted(projectIndex, completedIndex);
+    return projectIndex;
+  }
+
+  function hideBtnAddTaskOnCompleted(projectIndex, completedIndex) {
+    if (projectIndex === completedIndex) {
+      btnAddTask.classList.remove("active");
+      return;
+    }
+    btnAddTask.classList.add("active");
+  }
+
   function resetAddTaskDialogValues() {
     taskName.value = "";
     taskDescription.value = "";
@@ -184,7 +221,21 @@ const dom = (() => {
     return li;
   }
 
-  return { createTask, toggleAddTaskDialog, pushTaskInProject, renderTasks, renderProjects };
+  function saveToLocalStorage() {
+    localStorage.setItem("projects", JSON.stringify(projects.projectList));
+  }
+
+  return {
+    createTask,
+    toggleAddTaskDialog,
+    pushTaskInProject,
+    renderTasks,
+    renderProjects,
+    saveToLocalStorage,
+    hideBtnAddTaskOnCompleted,
+    onTaskCheck,
+    onProjectSelect,
+  };
 })();
 
 export default dom;

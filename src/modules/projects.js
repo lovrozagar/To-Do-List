@@ -1,5 +1,5 @@
 const projects = (() => {
-  const projectList = [
+  let projectList = [
     {
       name: "Inbox",
       index: 0,
@@ -21,23 +21,12 @@ const projects = (() => {
       index: 3,
       tasks: [],
     },
-    {
-      name: "Filmovi",
-      index: 4,
-      tasks: [],
-      active: true,
-    },
-    {
-      name: "Mjesta",
-      index: 5,
-      tasks: [],
-    },
-    {
-      name: "Kucni poslovi",
-      index: 6,
-      tasks: [],
-    },
   ];
+
+  if (localStorage.getItem("projects") !== null) {
+    const projectsFromStorage = JSON.parse(localStorage.getItem("projects"));
+    projectList = projectsFromStorage;
+  }
 
   const project = (title) => {
     const index = projectList.length;
@@ -57,7 +46,17 @@ const projects = (() => {
     currentProject = [index];
   }
 
-  return { projectList };
+  function addToCompleted(projectIndex, completedIndex, taskIndex) {
+    projects.projectList[completedIndex].tasks.push(
+      projects.projectList[projectIndex].tasks[taskIndex]
+    );
+  }
+
+  function removeFromCompleted(completedIndex, taskIndex) {
+    projects.projectList[completedIndex].tasks.splice(taskIndex, 1);
+  }
+
+  return { projectList, addToCompleted, removeFromCompleted };
 })();
 
 export default projects;

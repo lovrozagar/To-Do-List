@@ -11,4 +11,4 @@ import "./assets/lazyPanda.png";
 
 listeners.listenClicks();
 dom.renderProjects();
-
+dom.renderTasks();
