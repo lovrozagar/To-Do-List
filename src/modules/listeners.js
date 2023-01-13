@@ -7,6 +7,11 @@ const listeners = (() => {
   const completedIndex = 3;
   // LISTEN FOR ALL CLICKS
   function listenClicks() {
+    window.addEventListener("resize", function () {
+      const sidebar = document.getElementById("sidebar");
+      if (window.innerWidth > 600) sidebar.classList.remove("slide-view");
+    });
+
     document.addEventListener("click", (event) => {
       const { target } = event;
 
@@ -24,6 +29,7 @@ const listeners = (() => {
       // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
       if (target.type === "checkbox") {
         dom.onTaskCheck(target, projectIndex, completedIndex);
+        dom.renderCompletedTasks();
       }
 
       if (target.hasAttribute("data-remove-task-img")) {
@@ -35,9 +41,9 @@ const listeners = (() => {
         projectIndex = dom.onProjectSelect(target, projectIndex, completedIndex);
       }
 
-      // if (target.hasAttribute("data-new-project-button")) {
-      //   dom.pushProject();
-      // }
+      if (target.hasAttribute("data-burger-menu-container") || target.hasAttribute("data-tasks")) {
+        dom.toggleSidebar(target);
+      }
 
       dom.saveToLocalStorage();
     });
@@ -45,32 +51,11 @@ const listeners = (() => {
     document.addEventListener("submit", (event) => {
       let { target } = event;
       event.preventDefault();
-      console.log(target);
-      dom.pushProject();
-
+      projectIndex = dom.pushProject();
+      dom.renderTasks(projectIndex);
       dom.saveToLocalStorage();
     });
   }
-
-  // function listenForTaskCheckbox() {
-  //   const checkboxes = document.querySelectorAll('input[type=checkbox]');
-  //   console.log(checkboxes);
-
-  //   for (let i = 0; i < checkboxes.length; i += 1) {
-  //     checkboxes[i].addEventListener('change', function () {
-  //       const taskContainer = checkboxes[i].closest('.task-container');
-  //       if (checkboxes[i].checked) {
-  //         taskContainer.classList.add('completed');
-  //         tasks.projectDefault[i].completed = true;
-  //       } else {
-  //         taskContainer.classList.remove('completed');
-  //         tasks.projectDefault[i].completed = false;
-  //       }
-  //     });
-  //   }
-  // }
-
-  // return { listenForAddTask };
 
   return { listenClicks };
 })();

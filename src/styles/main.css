@@ -12,6 +12,8 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -23,6 +25,8 @@ html {
 
 body {
   background-color: var(--black);
+  min-height: 100vh;
+  display: grid;
 }
 
 button,
@@ -32,25 +36,70 @@ select {
 }
 
 .header {
+  height: 7.5vh;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 60px;
-  padding-left: 1rem;
   background-color: var(--medium-dark-grey);
   font-size: 1.625rem;
   font-weight: bold;
+  padding: 0 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.burger-menu-container {
+  display: none;
+  position: absolute;
+}
+
+.btn-burger-menu {
+  pointer-events: none;
+  width: 30px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bar {
+  height: 3px;
+  width: 100;
+  background-color: var(--white);
+  border-radius: 10px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.score > img {
+  height: 5rem;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
 }
 
 .main {
   display: flex;
-  min-height: calc(100vh - 60px);
+  height: 92.5vh;
 }
 
 .sidebar {
-  padding: 1rem;
   font-weight: 500;
   width: 200px;
+  height: 92.5vh;
   background-color: var(--dark-grey);
+  transition: all 300ms ease-out;
+  overflow: hidden;
+}
+
+.sidebar.slide-view {
+  position: fixed;
+  z-index: 10;
+  height: 92.5vh;
+  transform: translate(0px);
 }
 
 .project-form {
@@ -75,12 +124,16 @@ select {
   color: var(--grey);
 }
 
+.project-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .project-list {
   font-size: 1rem;
   font-weight: 400;
   padding: 0.625rem 0.125rem;
   border-radius: 5px;
-  margin: 0.25rem 0;
 }
 
 .project-list:hover {
@@ -90,16 +143,17 @@ select {
 .active-project {
   color: var(--white);
   font-weight: 500;
+  background-color: var(--grey-hover);
 }
 
-li{
+li {
   position: relative;
   padding-left: 2rem !important;
 }
 
 li::before {
   position: absolute;
-  top: 6.5px;
+  top: 7.5px;
   left: 5px;
   content: "";
   background: url("../assets/listDot.svg");
@@ -148,7 +202,6 @@ li:nth-child(4)::after {
   position: relative;
   max-width: var(--tasks-width);
   margin: 0 auto;
-  padding: 1rem 0 5rem 0;
   flex: 1;
 }
 
@@ -366,6 +419,10 @@ select {
   display: flex;
 }
 
+.hide {
+  display: none;
+}
+
 .edit,
 .remove {
   margin-left: 1rem;
@@ -394,17 +451,6 @@ img.lazy-panda {
   color: var(--grey);
 }
 
-@media only screen and (max-width: 600px) {
-  .sidebar {
-    max-width: 100px;
-  }
-
-  img.lazy-panda {
-    max-width: 100px;
-    height: 80px;
-  }
-}
-
 li {
   color: var(--grey);
   cursor: pointer;
@@ -414,3 +460,41 @@ li {
   text-decoration: line-through;
   color: var(--grey);
 }
+
+@media only screen and (max-width: 600px) {
+  .header > h1 {
+    flex: 1;
+    text-align: right;
+  }
+
+  .burger-menu-container {
+    display: block;
+  }
+
+  .sidebar {
+    position: absolute;
+    transform: translate(-200px);
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  img.lazy-panda {
+    max-width: 100px;
+    height: 80px;
+  }
+}
+/* 
+@media only screen and (min-width: 601px) {
+  .sidebar.slide-view {
+    font-weight: 500;
+    width: 200px;
+    height: 92.5vh;
+    background-color: var(--dark-grey);
+    transition: all 300ms ease-out;
+    overflow: hidden;
+    position: static;
+    display: block;
+    transform: translate(0px);
+    padding: 0rem;
+  }
+} */

@@ -3,6 +3,9 @@ import tasks from "./tasks";
 import projects from "./projects";
 
 const dom = (() => {
+  const completedCount = document.querySelector("[data-completed]");
+  const sidebar = document.getElementById("sidebar");
+
   const tasksContainer = document.querySelector("[data-tasks]");
   const taskName = document.getElementById("taskName");
   const taskDescription = document.getElementById("taskDescription");
@@ -108,9 +111,15 @@ const dom = (() => {
     return projectIndex;
   }
 
-  function hideBtnAddTaskOnCompleted(projectIndex, completedIndex) {
+  function hideBtnAddTaskOnCompleted(projectIndex, completedIndex = 3) {
     if (projectIndex === completedIndex) {
       btnAddTask.classList.remove("active");
+      const changeSections = document.querySelectorAll(".edit-container");
+      console.log(changeSections);
+      changeSections.forEach((section) => {
+        console.log(section);
+        section.classList.add("hide");
+      });
       return;
     }
     btnAddTask.classList.add("active");
@@ -133,6 +142,12 @@ const dom = (() => {
     projects.addProject(newProjectInput.value);
     renderProjects();
     resetForm(projectForm);
+
+    const projectIndex = projects.projectList.length - 1;
+    selectActiveProject(projectIndex);
+    hideBtnAddTaskOnCompleted(projectIndex);
+
+    return projectIndex;
   }
 
   function renderProjects() {
@@ -150,9 +165,17 @@ const dom = (() => {
     projectContainer.appendChild(project);
   }
 
-  function initInboxDefaultView() {
-    const inbox = document.querySelector("li:first-of-type");
-    inbox.classList.add("active-project");
+  function selectActiveProject(child) {
+    const inbox = document.querySelectorAll("li");
+    inbox[child].classList.add("active-project");
+  }
+
+  function renderCompletedTasks() {
+    completedCount.textContent = projects.countCompleted();
+  }
+
+  function domOnLoad() {
+    renderCompletedTasks();
   }
 
   function createTask(name, description, dueDate, priority, completed) {
@@ -245,6 +268,19 @@ const dom = (() => {
     localStorage.setItem("projects", JSON.stringify(projects.projectList));
   }
 
+  function toggleSidebar(target) {
+    if (
+      target.hasAttribute("data-burger-menu-container") ||
+      (target.hasAttribute("data-tasks") && sidebar.classList.contains("slide-view"))
+    ) {
+      slideViewToggle(sidebar);
+    }
+  }
+
+  function slideViewToggle(el) {
+    el.classList.toggle("slide-view");
+  }
+
   return {
     createTask,
     toggleAddTaskDialog,
@@ -256,9 +292,12 @@ const dom = (() => {
     hideBtnAddTaskOnCompleted,
     onTaskCheck,
     onProjectSelect,
-    initInboxDefaultView,
+    selectActiveProject,
     pushProject,
     deleteTask,
+    toggleSidebar,
+    renderCompletedTasks,
+    domOnLoad,
   };
 })();
 

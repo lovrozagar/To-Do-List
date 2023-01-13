@@ -23,6 +23,8 @@ const projects = (() => {
     },
   ];
 
+  const completedIndex = 3;
+
   if (localStorage.getItem("projects") !== null) {
     const projectsFromStorage = JSON.parse(localStorage.getItem("projects"));
     projectList = projectsFromStorage;
@@ -56,7 +58,12 @@ const projects = (() => {
     projects.projectList[completedIndex].tasks.splice(taskIndex, 1);
   }
 
-  return { projectList, addToCompleted, removeFromCompleted, addProject };
+  function countCompleted() {
+    length = projectList[completedIndex].tasks.length;
+    return length;
+  }
+
+  return { projectList, addToCompleted, removeFromCompleted, addProject, countCompleted };
 })();
 
 export default projects;
