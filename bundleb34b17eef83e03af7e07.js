@@ -1322,6 +1322,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
 /* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
 /* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
+/* harmony import */ var _assets_inbox_svg__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/inbox.svg */ "./src/assets/inbox.svg");
+/* harmony import */ var _assets_today_svg__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/today.svg */ "./src/assets/today.svg");
+/* harmony import */ var _assets_thisWeek_svg__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./assets/thisWeek.svg */ "./src/assets/thisWeek.svg");
+/* harmony import */ var _assets_completed_svg__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./assets/completed.svg */ "./src/assets/completed.svg");
+
+
+
+
 
 
 
@@ -1339,4 +1347,4 @@ _modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].initInboxDefaultView();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle3eee29a28035b40a6484.js.map
+//# sourceMappingURL=bundleb34b17eef83e03af7e07.js.map
