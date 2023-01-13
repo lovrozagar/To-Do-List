@@ -30,10 +30,13 @@ var dom = function () {
   var taskDate = document.getElementById("taskDate");
   var taskPriority = document.getElementById("priority");
   var projectContainer = document.querySelector("[data-lists]");
+  var newProjectInput = document.querySelector("[data-new-project-input]");
+  var projectForm = document.querySelector("[data-new-project-form]");
   var btnAddContainer = document.getElementById("btn-add-container");
   var btnAddTask = document.querySelector("[data-btn-add-task]");
   var btnCancelTask = document.getElementById("[btn-cancel-task]");
   var dialog = document.getElementById("dialog");
+  var dialogForm = document.querySelector("[data-dialog-form]");
   function pushTaskInProject() {
     var projectIndex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].addTask(taskName.value, taskDescription.value, taskDate.value, taskPriority.value, projectIndex);
@@ -57,27 +60,50 @@ var dom = function () {
   }
   function toggleAddTaskDialog() {
     dialog.classList.toggle("active");
+    if (dialog.classList.contains("active")) {
+      dialog.scrollIntoView();
+    }
     toggleBtnAddTask();
-    resetAddTaskDialogValues();
+    resetForm(dialogForm);
+  }
+  function closeAddTaskDialog() {
+    dialog.classList.remove("active");
+    resetForm(dialogForm);
   }
   function toggleBtnAddTask() {
     btnAddTask.classList.toggle("active");
   }
-  function onCheck(target, projectIndex, completedIndex) {
+  function onTaskCheck(target, projectIndex, completedIndex) {
     var taskContainer = target.closest(".task-container");
     var index = _toConsumableArray(taskContainer.parentNode.children).indexOf(taskContainer);
     if (target.checked) {
       styleIfCompleted(taskContainer, true);
-      var a = _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].toggleTaskValueCompleted(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed);
-      console.log(a);
+      _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed = true;
       _projects__WEBPACK_IMPORTED_MODULE_1__["default"].addToCompleted(projectIndex, completedIndex, index);
     } else {
       styleIfCompleted(taskContainer, false);
-      _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].toggleTaskValueCompleted(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed);
+      _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed = false;
       _projects__WEBPACK_IMPORTED_MODULE_1__["default"].removeFromCompleted(completedIndex, index);
     }
-    dom.renderTasks(projectIndex);
-    dom.saveToLocalStorage();
+    renderTasks(projectIndex);
+  }
+  function deleteTask(target, projectIndex) {
+    var taskContainer = target.closest(".task-container");
+    var index = _toConsumableArray(taskContainer.parentNode.children).indexOf(taskContainer);
+    _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks.splice(index, 1);
+    renderTasks(projectIndex);
+  }
+  function onProjectSelect(target, projectIndex, completedIndex) {
+    var projects = document.querySelectorAll("li");
+    projects.forEach(function (project) {
+      project.classList.remove("active-project");
+    });
+    target.classList.add("active-project");
+    var index = _toConsumableArray(target.parentNode.children).indexOf(target);
+    projectIndex = index;
+    renderTasks(projectIndex);
+    hideBtnAddTaskOnCompleted(projectIndex, completedIndex);
+    return projectIndex;
   }
   function hideBtnAddTaskOnCompleted(projectIndex, completedIndex) {
     if (projectIndex === completedIndex) {
@@ -86,11 +112,8 @@ var dom = function () {
     }
     btnAddTask.classList.add("active");
   }
-  function resetAddTaskDialogValues() {
-    taskName.value = "";
-    taskDescription.value = "";
-    taskDate.value = "";
-    taskPriority.value = "Medium";
+  function resetForm(formEl) {
+    formEl.reset();
   }
   function styleIfCompleted(el, isCompleted) {
     if (isCompleted) {
@@ -100,13 +123,17 @@ var dom = function () {
     el.classList.remove("completed");
     return false;
   }
+  function pushProject() {
+    _projects__WEBPACK_IMPORTED_MODULE_1__["default"].addProject(newProjectInput.value);
+    renderProjects();
+    resetForm(projectForm);
+  }
   function renderProjects() {
     removeTasks(projectContainer, "project-list");
     for (var i = 0; i < _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList.length; i += 1) {
       console.log(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[i].name);
       var currentProject = createProject(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[i].name);
     }
-    initInboxDefaultView();
   }
   function createProject(name) {
     var project = createLi("project-list");
@@ -198,12 +225,17 @@ var dom = function () {
   return {
     createTask: createTask,
     toggleAddTaskDialog: toggleAddTaskDialog,
+    closeAddTaskDialog: closeAddTaskDialog,
     pushTaskInProject: pushTaskInProject,
     renderTasks: renderTasks,
     renderProjects: renderProjects,
     saveToLocalStorage: saveToLocalStorage,
     hideBtnAddTaskOnCompleted: hideBtnAddTaskOnCompleted,
-    onCheck: onCheck
+    onTaskCheck: onTaskCheck,
+    onProjectSelect: onProjectSelect,
+    initInboxDefaultView: initInboxDefaultView,
+    pushProject: pushProject,
+    deleteTask: deleteTask
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dom);
@@ -223,12 +255,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
 /* harmony import */ var _dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dom */ "./src/modules/dom.js");
 /* harmony import */ var _projects__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./projects */ "./src/modules/projects.js");
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 
 
@@ -253,27 +279,27 @@ var listeners = function () {
 
       // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
       if (target.type === "checkbox") {
-        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onCheck(target, projectIndex, completedIndex);
+        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onTaskCheck(target, projectIndex, completedIndex);
+      }
+      if (target.hasAttribute("data-remove-task-img")) {
+        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].deleteTask(target, projectIndex);
+      }
+      if (target.tagName === "LI" && !target.classList.contains("active-project")) {
+        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].closeAddTaskDialog(); // CLOSE ACTIVE DIALOG ON PROJECT SWITCH
+        projectIndex = _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onProjectSelect(target, projectIndex, completedIndex);
       }
 
-      // if (target.hasAttribute("data-remove-task-img")) {
-      //   const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
-      //   tasks.projectDefault.splice(index, 1);
-      //   dom.renderTasks();
+      // if (target.hasAttribute("data-new-project-button")) {
+      //   dom.pushProject();
       // }
 
-      if (target.tagName === "LI" && !target.classList.contains("active-project")) {
-        console.log(target);
-        var _projects = document.querySelectorAll("li");
-        _projects.forEach(function (project) {
-          project.classList.remove("active-project");
-        });
-        target.classList.add("active-project");
-        var index = _toConsumableArray(target.parentNode.children).indexOf(target);
-        projectIndex = index;
-        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].renderTasks(projectIndex);
-        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].hideBtnAddTaskOnCompleted(projectIndex, completedIndex);
-      }
+      _dom__WEBPACK_IMPORTED_MODULE_1__["default"].saveToLocalStorage();
+    });
+    document.addEventListener("submit", function (event) {
+      var target = event.target;
+      event.preventDefault();
+      console.log(target);
+      _dom__WEBPACK_IMPORTED_MODULE_1__["default"].pushProject();
       _dom__WEBPACK_IMPORTED_MODULE_1__["default"].saveToLocalStorage();
     });
   }
@@ -339,17 +365,17 @@ var projects = function () {
     var projectsFromStorage = JSON.parse(localStorage.getItem("projects"));
     projectList = projectsFromStorage;
   }
-  var project = function project(title) {
+  var project = function project(name) {
     var index = projectList.length;
     var tasks = [];
     return {
-      title: title,
+      name: name,
       index: index,
       tasks: tasks
     };
   };
-  function addProject(title) {
-    var newProject = project(title);
+  function addProject(name) {
+    var newProject = project(name);
     projectList.push(newProject);
   }
   var currentProject = [0];
@@ -365,7 +391,8 @@ var projects = function () {
   return {
     projectList: projectList,
     addToCompleted: addToCompleted,
-    removeFromCompleted: removeFromCompleted
+    removeFromCompleted: removeFromCompleted,
+    addProject: addProject
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (projects);
@@ -411,14 +438,9 @@ var tasks = function () {
     }
     return false;
   }
-  function toggleTaskValueCompleted(task) {
-    console.log(task);
-    task === true ? false : true;
-  }
   return {
     task: task,
-    addTask: addTask,
-    toggleTaskValueCompleted: toggleTaskValueCompleted
+    addTask: addTask
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (tasks);
@@ -439,12 +461,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
 // Imports
 
 
+
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/listDot.svg */ "./src/assets/listDot.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/inbox.svg */ "./src/assets/inbox.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/today.svg */ "./src/assets/today.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_3___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/thisWeek.svg */ "./src/assets/thisWeek.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_4___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/completed.svg */ "./src/assets/completed.svg"), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
+var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
+var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_2___);
+var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_3___);
+var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_4___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\nli:nth-child(4) {\n  margin-bottom: 3rem;\n}\n\nli:nth-child(5) {\n  position: relative;\n}\n\nli:nth-child(5)::before {\n  content: \"Projects\";\n  position: absolute;\n  top: -1.5rem;\n  font-size: 1rem;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.active-project {\n  font-weight: bold;\n  color: var(--white);\n}\n\n.project-list {\n  padding: 0.5rem 0;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=text]:first-child {\n  font-size: 1rem;\n}\n\ninput[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type=text],\ninput[type=date] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=date]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=date] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=checkbox]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}", "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"AAAA;EACE,gBAAA;EACA,gCAAA;EACA,eAAA;EACA,6BAAA;EACA,oBAAA;EACA,2BAAA;EACA,gBAAA;EACA,oBAAA;AACF;;AAEA;EACE,sBAAA;AACF;;AAEA;EACE,wIAAA;EAEA,mBAAA;AAAF;;AAGA;EACE,8BAAA;EACA,eAAA;AAAF;;AAGA;;EAEE,YAAA;EACA,aAAA;AAAF;;AAGA;EACE,aAAA;EACA,mBAAA;EACA,YAAA;EACA,kBAAA;EACA,yCAAA;EACA,iBAAA;AAAF;;AAGA;EACE,aAAA;EACA,8BAAA;AAAF;;AAGA;EACE,aAAA;EACA,kBAAA;EACA,gBAAA;EACA,YAAA;EACA,kCAAA;AAAF;;AAGA;EACE,mBAAA;AAAF;;AAGA;EACE,kBAAA;AAAF;;AAGA;EACE,mBAAA;EACA,kBAAA;EACA,YAAA;EACA,eAAA;EACA,mBAAA;EACA,oBAAA;AAAF;;AAGA;EACE,iBAAA;EACA,mBAAA;AAAF;;AAGA;EACE,iBAAA;AAAF;;AAGA;EACE,kBAAA;EACA,6BAAA;EACA,cAAA;EACA,aAAA;EACA,OAAA;AAAF;;AAGA;EACE,aAAA;AAAF;;AAGA;EACE,eAAA;EACA,OAAA;EACA,iBAAA;EACA,kBAAA;EACA,6BAAA;AAAF;;AAGA;;EAEE,aAAA;AAAF;;AAGA;;EAEE,cAAA;AAAF;;AAGA;EACE,yCAAA;EACA,gBAAA;EACA,mBAAA;AAAF;;AAGA;EACE,aAAA;EACA,yBAAA;AAAF;;AAGA;;EAEE,mBAAA;EACA,gBAAA;EACA,kBAAA;EACA,kBAAA;EACA,0BAAA;AAAF;;AAGA;EACE,yCAAA;EACA,mBAAA;AAAF;;AAGA;EACE,8BAAA;EACA,mBAAA;AAAF;;AAGA;EACE,6BAAA;EACA,YAAA;EACA,aAAA;EACA,mBAAA;AAAF;;AAGA;EACE,aAAA;EACA,0BAAA;AAAF;;AAGA;EACE,eAAA;AAAF;;AAEA;EACE,kBAAA;AACF;;AAEA;;EAEE,qBAAA;AACF;;AAEA,eAAA;AACA;EACE,kBAAA;AACF;;AAEA;;;EAGE,mBAAA;EACA,eAAA;AACF;;AAEA,8CAAA;AACA;EACE,aAAA;AACF;;AAEA,4BAAA;AACA;EACE,aAAA;AACF;;AAEA,uCAAA;AACA;EACE,mBAAA;AACF;;AAEA,wCAAA;AACA;EACE,gBAAA;EACA,wBAAA;EACA,kBAAA;EACA,yCAAA;EACA,YAAA;EACA,kBAAA;EACA,oBAAA;AACF;;AAEA;EACE,gBAAA;EACA,wBAAA;EACA,yCAAA;EACA,YAAA;EACA,kBAAA;EACA,6BAAA;EACA,kBAAA;AACF;;AAEA;EACE,qBAAA;EACA,OAAA;AACF;;AAEA;EACE,kBAAA;AACF;;AAEA;EACE,aAAA;EACA,sBAAA;EACA,WAAA;EACA,aAAA;EACA,gDAAA;AACF;;AAEA;;EAEE,kBAAA;AACF;;AAEA;EACE,kBAAA;AACF;;AAEA;EACE,6BAAA;EACA,6BAAA;EACA,kBAAA;EACA,eAAA;EACA,kBAAA;EACA,OAAA;EACA,MAAA;EACA,WAAA;EACA,YAAA;AACF;;AAEA;EACE,6BAAA;AACF;;AAEA;EACE,+BAAA;EACA,gBAAA;EACA,kBAAA;EACA,WAAA;EACA,UAAA;EACA,yBAAA;EACA,kBAAA;EACA,WAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;AACF;;AAEA;EACE,gCAAA;EACA,gBAAA;EACA,kBAAA;EACA,WAAA;EACA,UAAA;EACA,yBAAA;EACA,kBAAA;EACA,WAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;AACF;;AAEA;EACE,kBAAA;AACF;;AAEA;EACE,UAAA;AACF;;AAEA;EACE,8BAAA;EACA,0BAAA;AACF;;AAEA;EACE,UAAA;AACF;;AAEA;EACE,aAAA;AACF;;AAEA;;EAEE,iBAAA;EACA,qBAAA;EACA,YAAA;EACA,+FAAA;AACF;;AAEA;EACE,gBAAA;EACA,kBAAA;EACA,kBAAA;EACA,QAAA;EACA,SAAA;EACA,gCAAA;EACA,YAAA;AACF;;AAEA;EACE,aAAA;EACA,YAAA;AACF;;AAEA;EACE,iBAAA;EACA,kBAAA;AACF;;AAEA;EACE;IACE,gBAAA;EACF;EAEA;IACE,gBAAA;IACA,YAAA;EAAF;AACF;AAGA;EACE,kBAAA;EACA,eAAA;AADF;;AAIA;EACE,6BAAA;EACA,kBAAA;AADF","sourcesContent":[":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell,\n    \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n}\n\nbody {\n  background-color: var(--black);\n  font-size: 24px;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-size: 1.25rem;\n  font-weight: 500;\n  width: 300px;\n  background-color: var(--dark-grey);\n}\n\nli:nth-child(4) {\n  margin-bottom: 3rem;\n}\n\nli:nth-child(5) {\n  position: relative;\n}\n\nli:nth-child(5)::before {\n  content: \"Projects\";\n  position: absolute;\n  top: -1.5rem;\n  font-size: 1rem;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.active-project {\n  font-weight: bold;\n  color: var(--white);\n}\n\n.project-list {\n  padding: 0.5rem 0;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\nform {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=\"text\"]:first-child {\n  font-size: 1rem;\n}\ninput[type=\"text\"]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput[type=\"text\"],\ninput[type=\"date\"] {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=\"date\"]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=\"date\"]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=\"date\"]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=\"date\"] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=\"checkbox\"]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n  font-size: 16px;\n}\n\nbody {\n  background-color: var(--black);\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-size: 1.625rem;\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-weight: 500;\n  width: 200px;\n  background-color: var(--dark-grey);\n}\n\n.project-form {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  border: 1px solid var(--grey-transparent);\n  padding: 0.25rem;\n  border-radius: 5px;\n  margin-top: 0.5rem;\n}\n\n.project-input {\n  flex: 1;\n  margin: 0;\n}\n\n.btn-add-project {\n  background-color: transparent;\n  font-size: 1rem;\n  padding-left: 1rem;\n  color: var(--grey);\n}\n\n.project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n  margin: 0.25rem 0;\n}\n\n.project-list:hover {\n  background-color: var(--grey-hover);\n}\n\n.active-project {\n  color: var(--white);\n  font-weight: 500;\n}\n\nli {\n  position: relative;\n  padding-left: 2rem !important;\n}\n\nli::before {\n  position: absolute;\n  top: 6.5px;\n  left: 5px;\n  content: \"\";\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  height: 1.25rem;\n  width: 1.25rem;\n  display: inline-block;\n}\n\nli:first-child::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\nli:nth-child(2)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n\nli:nth-child(3)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n\nli:nth-child(4)::after {\n  display: inline;\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  font-size: 1rem;\n  font-weight: normal;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem 0 5rem 0;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\n.dialog-form {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=text]:first-child {\n  font-size: 1rem;\n}\n\ninput[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=date]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=date] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=checkbox]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}", "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32;\n  --tasks-width: 800px;\n}\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell,\n    \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n  font-size: 16px;\n}\n\nbody {\n  background-color: var(--black);\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  padding-left: 1rem;\n  background-color: var(--medium-dark-grey);\n  font-size: 1.625rem;\n  font-weight: bold;\n}\n\n.main {\n  display: flex;\n  min-height: calc(100vh - 60px);\n}\n\n.sidebar {\n  padding: 1rem;\n  font-weight: 500;\n  width: 200px;\n  background-color: var(--dark-grey);\n}\n\n.project-form {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  border: 1px solid var(--grey-transparent);\n  padding: 0.25rem;\n  border-radius: 5px;\n  margin-top: 0.5rem;\n}\n\n.project-input {\n  flex: 1;\n  margin: 0;\n}\n\n.btn-add-project {\n  background-color: transparent;\n  font-size: 1rem;\n  padding-left: 1rem;\n  color: var(--grey);\n}\n\n.project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n  margin: 0.25rem 0;\n}\n\n.project-list:hover {\n  background-color: var(--grey-hover);\n}\n\n.active-project {\n  color: var(--white);\n  font-weight: 500;\n}\n\nli{\n  position: relative;\n  padding-left: 2rem !important;\n}\n\nli::before {\n  position: absolute;\n  top: 6.5px;\n  left: 5px;\n  content: \"\";\n  background: url(\"../assets/listDot.svg\");\n  height: 1.25rem;\n  width: 1.25rem;\n  display: inline-block;\n}\n\nli:first-child::before {\n  background: url(\"../assets/inbox.svg\");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\nli:nth-child(2)::before {\n  background: url(\"../assets/today.svg\");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n\nli:nth-child(3)::before {\n  background: url(\"../assets/thisWeek.svg\");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4)::before {\n  background: url(\"../assets/completed.svg\");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n\nli:nth-child(4)::after {\n  display: inline;\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  font-size: 1rem;\n  font-weight: normal;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  padding: 1rem 0 5rem 0;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\n.dialog-form {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=\"text\"]:first-child {\n  font-size: 1rem;\n}\ninput[type=\"text\"]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=\"date\"]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=\"date\"]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=\"date\"]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=\"date\"] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=\"checkbox\"]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .sidebar {\n    max-width: 100px;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -567,6 +602,41 @@ module.exports = function (cssWithMappingToString) {
     }
   };
   return list;
+};
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/runtime/getUrl.js":
+/*!********************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/getUrl.js ***!
+  \********************************************************/
+/***/ ((module) => {
+
+
+
+module.exports = function (url, options) {
+  if (!options) {
+    options = {};
+  }
+  if (!url) {
+    return url;
+  }
+  url = String(url.__esModule ? url.default : url);
+
+  // If url is already wrapped in quotes, remove them
+  if (/^['"].*['"]$/.test(url)) {
+    url = url.slice(1, -1);
+  }
+  if (options.hash) {
+    url += options.hash;
+  }
+
+  // Should url be wrapped?
+  // See https://drafts.csswg.org/css-values-3/#urls
+  if (/["'() \t\n]|(%20)/.test(url) || options.needQuotes) {
+    return "\"".concat(url.replace(/"/g, '\\"').replace(/\n/g, "\\n"), "\"");
+  }
+  return url;
 };
 
 /***/ }),
@@ -1050,6 +1120,56 @@ function styleTagTransform(css, styleElement) {
 
 module.exports = styleTagTransform;
 
+/***/ }),
+
+/***/ "./src/assets/completed.svg":
+/*!**********************************!*\
+  !*** ./src/assets/completed.svg ***!
+  \**********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "completed.svg";
+
+/***/ }),
+
+/***/ "./src/assets/inbox.svg":
+/*!******************************!*\
+  !*** ./src/assets/inbox.svg ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "inbox.svg";
+
+/***/ }),
+
+/***/ "./src/assets/listDot.svg":
+/*!********************************!*\
+  !*** ./src/assets/listDot.svg ***!
+  \********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "listDot.svg";
+
+/***/ }),
+
+/***/ "./src/assets/thisWeek.svg":
+/*!*********************************!*\
+  !*** ./src/assets/thisWeek.svg ***!
+  \*********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "thisWeek.svg";
+
+/***/ }),
+
+/***/ "./src/assets/today.svg":
+/*!******************************!*\
+  !*** ./src/assets/today.svg ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "today.svg";
+
 /***/ })
 
 /******/ 	});
@@ -1078,6 +1198,9 @@ module.exports = styleTagTransform;
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
@@ -1103,6 +1226,18 @@ module.exports = styleTagTransform;
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -1117,6 +1252,52 @@ module.exports = styleTagTransform;
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript)
+/******/ 				scriptUrl = document.currentScript.src
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"bundle": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		// no on chunks loaded
+/******/ 		
+/******/ 		// no jsonp function
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/nonce */
@@ -1153,8 +1334,9 @@ __webpack_require__.r(__webpack_exports__);
 _modules_listeners__WEBPACK_IMPORTED_MODULE_2__["default"].listenClicks();
 _modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].renderProjects();
 _modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].renderTasks();
+_modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].initInboxDefaultView();
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlee92df9490a40fa0e589e.js.map
+//# sourceMappingURL=bundle3eee29a28035b40a6484.js.map
