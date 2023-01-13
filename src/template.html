@@ -24,9 +24,17 @@
               placeholder="New project"
               aria-label="New project"
             />
-            <button type="button" class="btn-add-project" data-new-project-button aria-label="Create new project">+</button>
+            <button
+              type="submit"
+              class="btn-add-project"
+              data-new-project-button
+              aria-label="Create new project"
+            >
+              +
+            </button>
           </form>
         </div>
+
         <div class="tasks" data-tasks>
           <div id="btn-add-container" class="btn-add-container">
             <button class="btn-add-task active" data-btn-add-task>
@@ -39,12 +47,7 @@
                 <input id="taskName" type="text" placeholder="Task name" required="true" />
                 <input id="taskDescription" type="text" placeholder="Description" />
               </div>
-              <input
-                type="date"
-                name="date"
-                id="taskDate"
-                aria-required="true"
-              />
+              <input type="date" name="date" id="taskDate" aria-required="true" />
               <select name="priority" id="priority">
                 <option value="Low">Low</option>
                 <option value="Medium" selected>Medium</option>

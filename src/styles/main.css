@@ -5,6 +5,7 @@
   --grey-transparent: #80808080;
   --dark-grey: #242424;
   --medium-dark-grey: #282828;
+  --grey-hover: #363636;
   --green: #32cd32;
   --tasks-width: 800px;
 }
@@ -17,11 +18,11 @@ html {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
     "Open Sans", "Helvetica Neue", sans-serif;
   color: var(--white);
+  font-size: 16px;
 }
 
 body {
   background-color: var(--black);
-  font-size: 24px;
 }
 
 button,
@@ -36,6 +37,7 @@ select {
   height: 60px;
   padding-left: 1rem;
   background-color: var(--medium-dark-grey);
+  font-size: 1.625rem;
   font-weight: bold;
 }
 
@@ -46,7 +48,6 @@ select {
 
 .sidebar {
   padding: 1rem;
-  font-size: 1.25rem;
   font-weight: 500;
   width: 200px;
   background-color: var(--dark-grey);
@@ -74,26 +75,68 @@ select {
   color: var(--grey);
 }
 
-.active-project {
-  font-weight: bold;
-  color: var(--white);
-}
-
 .project-list {
   font-size: 1rem;
-  padding: 0.25rem 0;
+  font-weight: 400;
+  padding: 0.625rem 0.125rem;
+  border-radius: 5px;
+  margin: 0.25rem 0;
+}
+
+.project-list:hover {
+  background-color: var(--grey-hover);
+}
+
+.active-project {
+  color: var(--white);
+  font-weight: 500;
+}
+
+li{
+  position: relative;
+  padding-left: 2rem !important;
+}
+
+li::before {
+  position: absolute;
+  top: 6.5px;
+  left: 5px;
+  content: "";
+  background: url("../assets/listDot.svg");
+  height: 1.25rem;
+  width: 1.25rem;
+  display: inline-block;
+}
+
+li:first-child::before {
+  background: url("../assets/inbox.svg");
+  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);
+}
+
+li:nth-child(2)::before {
+  background: url("../assets/today.svg");
+  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);
+}
+
+li:nth-child(3)::before {
+  background: url("../assets/thisWeek.svg");
+  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);
+}
+
+li:nth-child(4)::before {
+  background: url("../assets/completed.svg");
+  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);
 }
 
 li:nth-child(4) {
-  margin-bottom: 2.25rem;
-  position: relative;
+  margin-bottom: 2.5rem;
 }
 
 li:nth-child(4)::after {
   display: inline;
   content: "Projects";
   position: absolute;
-  top: 2.5rem;
+  top: 3.5rem;
   left: 0;
   font-size: 1rem;
   font-weight: normal;
@@ -105,7 +148,7 @@ li:nth-child(4)::after {
   position: relative;
   max-width: var(--tasks-width);
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 0 5rem 0;
   flex: 1;
 }
 

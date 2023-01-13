@@ -26,20 +26,27 @@ const listeners = (() => {
         dom.onTaskCheck(target, projectIndex, completedIndex);
       }
 
-      // if (target.hasAttribute("data-remove-task-img")) {
-      //   const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
-      //   tasks.projectDefault.splice(index, 1);
-      //   dom.renderTasks();
-      // }
+      if (target.hasAttribute("data-remove-task-img")) {
+        dom.deleteTask(target, projectIndex);
+      }
 
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
-        dom.closeAddTaskDialog();
+        dom.closeAddTaskDialog(); // CLOSE ACTIVE DIALOG ON PROJECT SWITCH
         projectIndex = dom.onProjectSelect(target, projectIndex, completedIndex);
       }
 
-      if (target.hasAttribute("data-new-project-button")) {
-        dom.pushProject();
-      }
+      // if (target.hasAttribute("data-new-project-button")) {
+      //   dom.pushProject();
+      // }
+
+      dom.saveToLocalStorage();
+    });
+
+    document.addEventListener("submit", (event) => {
+      let { target } = event;
+      event.preventDefault();
+      console.log(target);
+      dom.pushProject();
 
       dom.saveToLocalStorage();
     });

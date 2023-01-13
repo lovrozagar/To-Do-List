@@ -56,6 +56,9 @@ const dom = (() => {
 
   function toggleAddTaskDialog() {
     dialog.classList.toggle("active");
+    if (dialog.classList.contains("active")) {
+      dialog.scrollIntoView();
+    }
     toggleBtnAddTask();
     resetForm(dialogForm);
   }
@@ -81,7 +84,14 @@ const dom = (() => {
       projects.projectList[projectIndex].tasks[index].completed = false;
       projects.removeFromCompleted(completedIndex, index);
     }
-    dom.renderTasks(projectIndex);
+    renderTasks(projectIndex);
+  }
+
+  function deleteTask(target, projectIndex) {
+    const taskContainer = target.closest(".task-container");
+    const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
+    projects.projectList[projectIndex].tasks.splice(index, 1);
+    renderTasks(projectIndex);
   }
 
   function onProjectSelect(target, projectIndex, completedIndex) {
@@ -248,6 +258,7 @@ const dom = (() => {
     onProjectSelect,
     initInboxDefaultView,
     pushProject,
+    deleteTask,
   };
 })();
 
