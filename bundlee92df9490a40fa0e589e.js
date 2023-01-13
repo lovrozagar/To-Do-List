@@ -14,6 +14,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
 /* harmony import */ var _projects__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./projects */ "./src/modules/projects.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 
 
@@ -56,6 +62,29 @@ var dom = function () {
   }
   function toggleBtnAddTask() {
     btnAddTask.classList.toggle("active");
+  }
+  function onCheck(target, projectIndex, completedIndex) {
+    var taskContainer = target.closest(".task-container");
+    var index = _toConsumableArray(taskContainer.parentNode.children).indexOf(taskContainer);
+    if (target.checked) {
+      styleIfCompleted(taskContainer, true);
+      var a = _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].toggleTaskValueCompleted(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed);
+      console.log(a);
+      _projects__WEBPACK_IMPORTED_MODULE_1__["default"].addToCompleted(projectIndex, completedIndex, index);
+    } else {
+      styleIfCompleted(taskContainer, false);
+      _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].toggleTaskValueCompleted(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[projectIndex].tasks[index].completed);
+      _projects__WEBPACK_IMPORTED_MODULE_1__["default"].removeFromCompleted(completedIndex, index);
+    }
+    dom.renderTasks(projectIndex);
+    dom.saveToLocalStorage();
+  }
+  function hideBtnAddTaskOnCompleted(projectIndex, completedIndex) {
+    if (projectIndex === completedIndex) {
+      btnAddTask.classList.remove("active");
+      return;
+    }
+    btnAddTask.classList.add("active");
   }
   function resetAddTaskDialogValues() {
     taskName.value = "";
@@ -172,7 +201,9 @@ var dom = function () {
     pushTaskInProject: pushTaskInProject,
     renderTasks: renderTasks,
     renderProjects: renderProjects,
-    saveToLocalStorage: saveToLocalStorage
+    saveToLocalStorage: saveToLocalStorage,
+    hideBtnAddTaskOnCompleted: hideBtnAddTaskOnCompleted,
+    onCheck: onCheck
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dom);
@@ -203,11 +234,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var listeners = function () {
   var projectIndex = 0;
+  var completedIndex = 3;
   // LISTEN FOR ALL CLICKS
   function listenClicks() {
     document.addEventListener("click", function (event) {
       var target = event.target;
-      console.log(target.tagName);
 
       // SHOW OR CANCEL ADD TASK DIALOG
       if (target.hasAttribute("data-btn-add-task") || target.hasAttribute("data-btn-cancel-task")) {
@@ -222,24 +253,15 @@ var listeners = function () {
 
       // TOGGLE CHECKBOX AND IS COMPLETED OBJ PROPERTY
       if (target.type === "checkbox") {
-        console.log(target);
-        var _taskContainer = target.closest(".task-container");
-        _taskContainer.classList.toggle("completed");
-        var index = _toConsumableArray(_taskContainer.parentNode.children).indexOf(_taskContainer);
-        console.log(index);
-        if (target.checked) {
-          _taskContainer.classList.add("completed");
-          _projects__WEBPACK_IMPORTED_MODULE_2__["default"].projectList[projectIndex].tasks[index].completed = true;
-        } else {
-          _taskContainer.classList.remove("completed");
-          _projects__WEBPACK_IMPORTED_MODULE_2__["default"].projectList[projectIndex].tasks[index].completed = false;
-        }
+        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onCheck(target, projectIndex, completedIndex);
       }
-      if (target.hasAttribute("data-remove-task-img")) {
-        var _index = _toConsumableArray(taskContainer.parentNode.children).indexOf(taskContainer);
-        _tasks__WEBPACK_IMPORTED_MODULE_0__["default"].projectDefault.splice(_index, 1);
-        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].renderTasks();
-      }
+
+      // if (target.hasAttribute("data-remove-task-img")) {
+      //   const index = [...taskContainer.parentNode.children].indexOf(taskContainer);
+      //   tasks.projectDefault.splice(index, 1);
+      //   dom.renderTasks();
+      // }
+
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
         console.log(target);
         var _projects = document.querySelectorAll("li");
@@ -247,9 +269,10 @@ var listeners = function () {
           project.classList.remove("active-project");
         });
         target.classList.add("active-project");
-        var _index2 = _toConsumableArray(target.parentNode.children).indexOf(target);
-        projectIndex = _index2;
+        var index = _toConsumableArray(target.parentNode.children).indexOf(target);
+        projectIndex = index;
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].renderTasks(projectIndex);
+        _dom__WEBPACK_IMPORTED_MODULE_1__["default"].hideBtnAddTaskOnCompleted(projectIndex, completedIndex);
       }
       _dom__WEBPACK_IMPORTED_MODULE_1__["default"].saveToLocalStorage();
     });
@@ -333,8 +356,16 @@ var projects = function () {
   function setCurrentProject(index) {
     currentProject = [index];
   }
+  function addToCompleted(projectIndex, completedIndex, taskIndex) {
+    projects.projectList[completedIndex].tasks.push(projects.projectList[projectIndex].tasks[taskIndex]);
+  }
+  function removeFromCompleted(completedIndex, taskIndex) {
+    projects.projectList[completedIndex].tasks.splice(taskIndex, 1);
+  }
   return {
-    projectList: projectList
+    projectList: projectList,
+    addToCompleted: addToCompleted,
+    removeFromCompleted: removeFromCompleted
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (projects);
@@ -380,9 +411,14 @@ var tasks = function () {
     }
     return false;
   }
+  function toggleTaskValueCompleted(task) {
+    console.log(task);
+    task === true ? false : true;
+  }
   return {
     task: task,
-    addTask: addTask
+    addTask: addTask,
+    toggleTaskValueCompleted: toggleTaskValueCompleted
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (tasks);
@@ -1121,4 +1157,4 @@ _modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].renderTasks();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlee51595083a4eed8e2409.js.map
+//# sourceMappingURL=bundlee92df9490a40fa0e589e.js.map
