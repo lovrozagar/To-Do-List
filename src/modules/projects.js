@@ -42,7 +42,20 @@ const projects = (() => {
     projectList.push(newProject);
   }
 
-  let currentProject = [0];
+  const levels = {
+    currentLevel: 1,
+    1: 1,
+    2: 2,
+    3: 3,
+    4: 4,
+  };
+
+  const levelCharacters = {
+    animal: "panda",
+    charactersAvailable: 5,
+    2: "./assets/master.png",
+    3: "./assets/viking.png",
+  };
 
   function setCurrentProject(index) {
     currentProject = [index];
@@ -59,8 +72,22 @@ const projects = (() => {
   }
 
   function countCompleted() {
-    length = projectList[completedIndex].tasks.length;
-    return length;
+    let points = projectList[completedIndex].tasks.length;
+    console.log(levels.currentLevel);
+    return `${incrementLevel(points)}/${levels[levels.currentLevel]}`;
+  }
+
+  function incrementLevel(currentPoints) {
+    if (currentPoints / levels[levels.currentLevel] >= 1) {
+      currentPoints = currentPoints % levels[levels.currentLevel];
+      levels.currentLevel += 1;
+      const charImg = document.getElementById("character-img");
+      charImg.src = levelCharacters[levels.currentLevel];
+      console.log[levels.currentLevel];
+    }
+    let a = 1;
+    console.log(levelCharacters[a]);
+    return currentPoints;
   }
 
   return { projectList, addToCompleted, removeFromCompleted, addProject, countCompleted };

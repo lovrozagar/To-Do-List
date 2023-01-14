@@ -9,6 +9,8 @@ import "./assets/editPen.png";
 import "./assets/trash.png";
 import "./assets/lazyPanda.png";
 import "./assets/pandaBeginner.png";
+import "./assets/master.png";
+import "./assets/viking.png";
 import "./assets/inbox.svg";
 import "./assets/today.svg";
 import "./assets/thisWeek.svg";
