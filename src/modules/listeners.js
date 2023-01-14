@@ -32,15 +32,18 @@ const listeners = (() => {
         dom.renderCompletedTasks();
       }
 
+      // DELETE TASK
       if (target.hasAttribute("data-remove-task-img")) {
         dom.deleteTask(target, projectIndex);
       }
 
+      // SELECT PROJECT
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
         dom.closeAddTaskDialog(); // CLOSE ACTIVE DIALOG ON PROJECT SWITCH
         projectIndex = dom.onProjectSelect(target, projectIndex, completedIndex);
       }
 
+      // HAMBURGER MENU TOGGLE
       if (target.hasAttribute("data-burger-menu-container") || target.hasAttribute("data-tasks")) {
         dom.toggleSidebar(target);
       }

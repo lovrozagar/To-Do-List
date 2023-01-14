@@ -42,24 +42,29 @@ const projects = (() => {
     projectList.push(newProject);
   }
 
+  const levelIndex = 0;
+  const levelTitle = 1;
+
   const levels = {
     currentLevel: 1,
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 4,
+    1: [2, "Novice"],
+    2: [5, "Student"],
+    3: [10, "Apprentice"],
+    4: [20, "Brawler"],
+    5: [50, "Warrior"],
+    6: [100, "Boss"],
   };
 
   const levelCharacters = {
     animal: "panda",
     charactersAvailable: 5,
-    2: "./assets/master.png",
-    3: "./assets/viking.png",
+    1: "./assets/novice.png",
+    2: "./assets/student.png",
+    3: "./assets/master.png",
+    4: "./assets/bandit.png",
+    5: "./assets/viking.png",
+    6: "./assets/boss.png",
   };
-
-  function setCurrentProject(index) {
-    currentProject = [index];
-  }
 
   function addToCompleted(projectIndex, completedIndex, taskIndex) {
     projects.projectList[completedIndex].tasks.push(
@@ -73,21 +78,35 @@ const projects = (() => {
 
   function countCompleted() {
     let points = projectList[completedIndex].tasks.length;
-    console.log(levels.currentLevel);
-    return `${incrementLevel(points)}/${levels[levels.currentLevel]}`;
+    return [
+      `${incrementLevel(points)}/${levels[levels.currentLevel][levelIndex]}`,
+      `${levels[levels.currentLevel][levelTitle]}`,
+    ];
   }
 
-  function incrementLevel(currentPoints) {
-    if (currentPoints / levels[levels.currentLevel] >= 1) {
-      currentPoints = currentPoints % levels[levels.currentLevel];
+  function incrementLevel(totalPoints) {
+    let newLvlPoints = 0;
+    levels.currentLevel = 1;
+
+    while (totalPoints / getNextLevelScore(levels.currentLevel) >= 1) {
       levels.currentLevel += 1;
-      const charImg = document.getElementById("character-img");
-      charImg.src = levelCharacters[levels.currentLevel];
-      console.log[levels.currentLevel];
     }
-    let a = 1;
-    console.log(levelCharacters[a]);
-    return currentPoints;
+
+    newLvlPoints = totalPoints % getNextLevelScore(levels.currentLevel);
+
+    const charImg = document.getElementById("character-img");
+    charImg.src = levelCharacters[levels.currentLevel];
+
+    return newLvlPoints;
+  }
+
+  function getNextLevelScore(level) {
+    let nextLevelScore = 0;
+    if (level > 0) {
+      nextLevelScore += levels[level][levelIndex];
+      level -= 1;
+    }
+    return nextLevelScore;
   }
 
   return { projectList, addToCompleted, removeFromCompleted, addProject, countCompleted };

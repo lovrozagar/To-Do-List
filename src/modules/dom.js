@@ -4,6 +4,7 @@ import projects from "./projects";
 
 const dom = (() => {
   const completedCount = document.querySelector("[data-completed]");
+  const characterTitle = document.querySelector("[data-character-title]");
   const sidebar = document.getElementById("sidebar");
 
   const tasksContainer = document.querySelector("[data-tasks]");
@@ -36,7 +37,6 @@ const dom = (() => {
 
   function renderTasks(index = 0) {
     removeTasks(tasksContainer, "task-container");
-    console.log(projects.projectList[index].tasks[0]);
     for (let i = 0; i < projects.projectList[index].tasks.length; i += 1) {
       const currentTask = createTask(
         projects.projectList[index].tasks[i].title,
@@ -59,9 +59,6 @@ const dom = (() => {
 
   function toggleAddTaskDialog() {
     dialog.classList.toggle("active");
-    if (dialog.classList.contains("active")) {
-      dialog.scrollIntoView();
-    }
     toggleBtnAddTask();
     resetForm(dialogForm);
   }
@@ -115,9 +112,7 @@ const dom = (() => {
     if (projectIndex === completedIndex) {
       btnAddTask.classList.remove("active");
       const changeSections = document.querySelectorAll(".edit-container");
-      console.log(changeSections);
       changeSections.forEach((section) => {
-        console.log(section);
         section.classList.add("hide");
       });
       return;
@@ -153,7 +148,6 @@ const dom = (() => {
   function renderProjects() {
     removeTasks(projectContainer, "project-list");
     for (let i = 0; i < projects.projectList.length; i += 1) {
-      console.log(projects.projectList[i].name);
       const currentProject = createProject(projects.projectList[i].name);
     }
   }
@@ -171,7 +165,9 @@ const dom = (() => {
   }
 
   function renderCompletedTasks() {
-    completedCount.textContent = projects.countCompleted();
+    const scoreAndTitle = projects.countCompleted();
+    completedCount.textContent = scoreAndTitle[0];
+    characterTitle.textContent = scoreAndTitle[1];
   }
 
   function domOnLoad() {
