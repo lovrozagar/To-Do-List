@@ -27,7 +27,7 @@
             <img
               id="character-img"
               class="character-img"
-              src="assets/pandaBeginner.png"
+              src="assets/novice.png"
               data-character
               alt=""
             />
@@ -57,34 +57,35 @@
             </button>
           </form>
         </div>
-
-        <div class="tasks" data-tasks>
-          <div id="btn-add-container" class="btn-add-container">
-            <button class="btn-add-task active" data-btn-add-task>
-              <span class="red">+</span> Add Task
-            </button>
-          </div>
-          <div id="dialog" class="dialog">
-            <form id="dialog-form" action="" data-dialog-form class="dialog-form">
-              <div class="task-text">
-                <input id="taskName" type="text" placeholder="Task name" required="true" />
-                <input id="taskDescription" type="text" placeholder="Description" />
-              </div>
-              <input type="date" name="date" id="taskDate" aria-required="true" />
-              <select name="priority" id="priority">
-                <option value="Low">Low</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="High">High</option>
-              </select>
-            </form>
-            <div id="btn-remove-container" class="btn-remove-container">
-              <button type="button" class="btn-cancel-task" data-btn-cancel-task>Cancel</button>
-              <button type="button" class="btn-remove-task" data-btn-push-task>Add task</button>
+        <div class="task-container-all">
+          <div class="tasks" data-tasks>
+            <div id="btn-add-container" class="btn-add-container">
+              <button class="btn-add-task active" data-btn-add-task>
+                <span class="red">+</span> Add Task
+              </button>
             </div>
-          </div>
-          <div class="all-complete-container">
-            <img class="lazy-panda" src="./assets/lazyPanda.png" alt="" />
-            <p>The valley is safe. Inner peace... Inner peace...</p>
+            <div id="dialog" class="dialog">
+              <form id="dialog-form" action="" data-dialog-form class="dialog-form">
+                <div class="task-text">
+                  <input id="taskName" type="text" placeholder="Task name" required="true" />
+                  <input id="taskDescription" type="text" placeholder="Description" />
+                </div>
+                <input type="date" name="date" id="taskDate" aria-required="true" placeholder="mm/dd/" />
+                <select name="priority" id="priority">
+                  <option value="Low">Low</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </form>
+              <div id="btn-remove-container" class="dialog-btn-container">
+                <button type="button" class="btn-cancel-task" data-btn-cancel-task>Cancel</button>
+                <button type="button" class="btn-remove-task" data-btn-push-task>Add task</button>
+              </div>
+            </div>
+            <div class="all-complete-container">
+              <img class="lazy-panda" src="./assets/lazyPanda.png" alt="" />
+              <p>The valley is safe. Inner peace... Inner peace...</p>
+            </div>
           </div>
         </div>
       </main>

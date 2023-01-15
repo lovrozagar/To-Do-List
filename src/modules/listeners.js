@@ -14,6 +14,7 @@ const listeners = (() => {
 
     document.addEventListener("click", (event) => {
       const { target } = event;
+      console.log(target);
 
       // SHOW OR CANCEL ADD TASK DIALOG
       if (target.hasAttribute("data-btn-add-task") || target.hasAttribute("data-btn-cancel-task")) {
@@ -44,7 +45,12 @@ const listeners = (() => {
       }
 
       // HAMBURGER MENU TOGGLE
-      if (target.hasAttribute("data-burger-menu-container") || target.hasAttribute("data-tasks")) {
+      if (
+        target.hasAttribute("data-burger-menu-container") ||
+        target.hasAttribute("data-tasks") ||
+        target.classList.contains("task-container")
+      ) {
+        console.log(target.classList.contains("task-container"));
         dom.toggleSidebar(target);
       }
 
