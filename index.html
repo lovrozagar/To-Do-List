@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundlead46b5165d33f54b0b8f.js"></script></head>
+  <script defer src="bundleed42f4948d86f6b50410.js"></script></head>
   <body>
     <div id="content" class="content">
       <header id="header" class="header">
@@ -18,10 +18,20 @@
         </div>
         <h1>Pan Do App</h1>
         <div class="score">
-          <div class="character-container">
-            <img id="character-img" class="character-img" src="assets/pandaBeginner.png" data-character alt="" />
+          <div class="character-info-container">
+            <h3 class="completed-tasks-number" data-completed></h3>
+            <p class="character-title" data-character-title>Novice</p>
           </div>
-          <h3 class="completed-tasks-number" data-completed></h3>
+
+          <div class="character-container">
+            <img
+              id="character-img"
+              class="character-img"
+              src="assets/novice.png"
+              data-character
+              alt=""
+            />
+          </div>
         </div>
       </header>
       <main id="main" class="main">
@@ -47,34 +57,35 @@
             </button>
           </form>
         </div>
-
-        <div class="tasks" data-tasks>
-          <div id="btn-add-container" class="btn-add-container">
-            <button class="btn-add-task active" data-btn-add-task>
-              <span class="red">+</span> Add Task
-            </button>
-          </div>
-          <div id="dialog" class="dialog">
-            <form id="dialog-form" action="" data-dialog-form class="dialog-form">
-              <div class="task-text">
-                <input id="taskName" type="text" placeholder="Task name" required="true" />
-                <input id="taskDescription" type="text" placeholder="Description" />
-              </div>
-              <input type="date" name="date" id="taskDate" aria-required="true" />
-              <select name="priority" id="priority">
-                <option value="Low">Low</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="High">High</option>
-              </select>
-            </form>
-            <div id="btn-remove-container" class="btn-remove-container">
-              <button type="button" class="btn-cancel-task" data-btn-cancel-task>Cancel</button>
-              <button type="button" class="btn-remove-task" data-btn-push-task>Add task</button>
+        <div class="task-container-all">
+          <div class="tasks" data-tasks>
+            <div id="btn-add-container" class="btn-add-container">
+              <button class="btn-add-task active" data-btn-add-task>
+                <span class="red">+</span> Add Task
+              </button>
             </div>
-          </div>
-          <div class="all-complete-container">
-            <img class="lazy-panda" src="./assets/lazyPanda.png" alt="" />
-            <p>The valley is safe. Inner peace... Inner peace...</p>
+            <div id="dialog" class="dialog">
+              <form id="dialog-form" action="" data-dialog-form class="dialog-form">
+                <div class="task-text">
+                  <input id="taskName" type="text" placeholder="Task name" required="true" />
+                  <input id="taskDescription" type="text" placeholder="Description" />
+                </div>
+                <input type="date" name="date" id="taskDate" aria-required="true" placeholder="mm/dd/" />
+                <select name="priority" id="priority">
+                  <option value="Low">Low</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </form>
+              <div id="btn-remove-container" class="dialog-btn-container">
+                <button type="button" class="btn-cancel-task" data-btn-cancel-task>Cancel</button>
+                <button type="button" class="btn-remove-task" data-btn-push-task>Add task</button>
+              </div>
+            </div>
+            <div class="all-complete-container">
+              <img class="lazy-panda" src="./assets/lazyPanda.png" alt="" />
+              <p>The valley is safe. Inner peace... Inner peace...</p>
+            </div>
           </div>
         </div>
       </main>

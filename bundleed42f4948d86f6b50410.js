@@ -25,6 +25,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var dom = function () {
   var completedCount = document.querySelector("[data-completed]");
+  var characterTitle = document.querySelector("[data-character-title]");
   var sidebar = document.getElementById("sidebar");
   var tasksContainer = document.querySelector("[data-tasks]");
   var taskName = document.getElementById("taskName");
@@ -48,7 +49,6 @@ var dom = function () {
   function renderTasks() {
     var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     removeTasks(tasksContainer, "task-container");
-    console.log(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[0]);
     for (var i = 0; i < _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks.length; i += 1) {
       var currentTask = createTask(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[i].title, _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[i].description, _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[i].date, _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[i].priority, _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[index].tasks[i].completed, index);
       tasksContainer.insertBefore(currentTask, btnAddContainer);
@@ -62,9 +62,6 @@ var dom = function () {
   }
   function toggleAddTaskDialog() {
     dialog.classList.toggle("active");
-    if (dialog.classList.contains("active")) {
-      dialog.scrollIntoView();
-    }
     toggleBtnAddTask();
     resetForm(dialogForm);
   }
@@ -112,9 +109,7 @@ var dom = function () {
     if (projectIndex === completedIndex) {
       btnAddTask.classList.remove("active");
       var changeSections = document.querySelectorAll(".edit-container");
-      console.log(changeSections);
       changeSections.forEach(function (section) {
-        console.log(section);
         section.classList.add("hide");
       });
       return;
@@ -144,7 +139,6 @@ var dom = function () {
   function renderProjects() {
     removeTasks(projectContainer, "project-list");
     for (var i = 0; i < _projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList.length; i += 1) {
-      console.log(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[i].name);
       var currentProject = createProject(_projects__WEBPACK_IMPORTED_MODULE_1__["default"].projectList[i].name);
     }
   }
@@ -158,7 +152,9 @@ var dom = function () {
     inbox[child].classList.add("active-project");
   }
   function renderCompletedTasks() {
-    completedCount.textContent = _projects__WEBPACK_IMPORTED_MODULE_1__["default"].countCompleted();
+    var scoreAndTitle = _projects__WEBPACK_IMPORTED_MODULE_1__["default"].countCompleted();
+    completedCount.textContent = scoreAndTitle[0];
+    characterTitle.textContent = scoreAndTitle[1];
   }
   function domOnLoad() {
     renderCompletedTasks();
@@ -299,6 +295,7 @@ var listeners = function () {
     });
     document.addEventListener("click", function (event) {
       var target = event.target;
+      console.log(target);
 
       // SHOW OR CANCEL ADD TASK DIALOG
       if (target.hasAttribute("data-btn-add-task") || target.hasAttribute("data-btn-cancel-task")) {
@@ -316,14 +313,21 @@ var listeners = function () {
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onTaskCheck(target, projectIndex, completedIndex);
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].renderCompletedTasks();
       }
+
+      // DELETE TASK
       if (target.hasAttribute("data-remove-task-img")) {
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].deleteTask(target, projectIndex);
       }
+
+      // SELECT PROJECT
       if (target.tagName === "LI" && !target.classList.contains("active-project")) {
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].closeAddTaskDialog(); // CLOSE ACTIVE DIALOG ON PROJECT SWITCH
         projectIndex = _dom__WEBPACK_IMPORTED_MODULE_1__["default"].onProjectSelect(target, projectIndex, completedIndex);
       }
-      if (target.hasAttribute("data-burger-menu-container") || target.hasAttribute("data-tasks")) {
+
+      // HAMBURGER MENU TOGGLE
+      if (target.hasAttribute("data-burger-menu-container") || target.hasAttribute("data-tasks") || target.classList.contains("task-container")) {
+        console.log(target.classList.contains("task-container"));
         _dom__WEBPACK_IMPORTED_MODULE_1__["default"].toggleSidebar(target);
       }
       _dom__WEBPACK_IMPORTED_MODULE_1__["default"].saveToLocalStorage();
@@ -391,22 +395,27 @@ var projects = function () {
     var newProject = project(name);
     projectList.push(newProject);
   }
+  var levelIndex = 0;
+  var levelTitle = 1;
   var levels = {
     currentLevel: 1,
-    1: 1,
-    2: 2,
-    3: 3,
-    4: 4
+    1: [2, "Novice"],
+    2: [5, "Student"],
+    3: [10, "Apprentice"],
+    4: [20, "Brawler"],
+    5: [50, "Warrior"],
+    6: [100, "Boss"]
   };
   var levelCharacters = {
     animal: "panda",
     charactersAvailable: 5,
-    2: "./assets/master.png",
-    3: "./assets/viking.png"
+    1: "./assets/novice.png",
+    2: "./assets/student.png",
+    3: "./assets/master.png",
+    4: "./assets/bandit.png",
+    5: "./assets/viking.png",
+    6: "./assets/boss.png"
   };
-  function setCurrentProject(index) {
-    currentProject = [index];
-  }
   function addToCompleted(projectIndex, completedIndex, taskIndex) {
     projects.projectList[completedIndex].tasks.push(projects.projectList[projectIndex].tasks[taskIndex]);
   }
@@ -415,20 +424,26 @@ var projects = function () {
   }
   function countCompleted() {
     var points = projectList[completedIndex].tasks.length;
-    console.log(levels.currentLevel);
-    return "".concat(incrementLevel(points), "/").concat(levels[levels.currentLevel]);
+    return ["".concat(incrementLevel(points), "/").concat(levels[levels.currentLevel][levelIndex]), "".concat(levels[levels.currentLevel][levelTitle])];
   }
-  function incrementLevel(currentPoints) {
-    if (currentPoints / levels[levels.currentLevel] >= 1) {
-      currentPoints = currentPoints % levels[levels.currentLevel];
+  function incrementLevel(totalPoints) {
+    var newLvlPoints = 0;
+    levels.currentLevel = 1;
+    while (totalPoints / getNextLevelScore(levels.currentLevel) >= 1) {
       levels.currentLevel += 1;
-      var charImg = document.getElementById("character-img");
-      charImg.src = levelCharacters[levels.currentLevel];
-      console.log[levels.currentLevel];
     }
-    var a = 1;
-    console.log(levelCharacters[a]);
-    return currentPoints;
+    newLvlPoints = totalPoints % getNextLevelScore(levels.currentLevel);
+    var charImg = document.getElementById("character-img");
+    charImg.src = levelCharacters[levels.currentLevel];
+    return newLvlPoints;
+  }
+  function getNextLevelScore(level) {
+    var nextLevelScore = 0;
+    if (level > 0) {
+      nextLevelScore += levels[level][levelIndex];
+      level -= 1;
+    }
+    return nextLevelScore;
   }
   return {
     projectList: projectList,
@@ -490,48 +505,9 @@ var tasks = function () {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.css":
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.css ***!
-  \**********************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
-// Imports
-
-
-
-var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/listDot.svg */ "./src/assets/listDot.svg"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/inbox.svg */ "./src/assets/inbox.svg"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/today.svg */ "./src/assets/today.svg"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_3___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/thisWeek.svg */ "./src/assets/thisWeek.svg"), __webpack_require__.b);
-var ___CSS_LOADER_URL_IMPORT_4___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/completed.svg */ "./src/assets/completed.svg"), __webpack_require__.b);
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
-var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_1___);
-var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_2___);
-var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_3___);
-var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_4___);
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32;\n  --tasks-width: 800px;\n  --main-height: calc(100vh - 5rem);\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n  font-size: 16px;\n}\n\nbody {\n  background-color: var(--black);\n  min-height: 100vh;\n  display: grid;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  height: 5rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: var(--medium-dark-grey);\n  font-size: 1.625rem;\n  font-weight: bold;\n  padding: 0 1rem;\n  position: relative;\n  overflow: hidden;\n}\n\n.burger-menu-container {\n  display: none;\n  position: absolute;\n}\n\n.btn-burger-menu {\n  pointer-events: none;\n  width: 30px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.bar {\n  height: 3px;\n  width: 100;\n  background-color: var(--white);\n  border-radius: 10px;\n}\n\n.score {\n  display: flex;\n  align-items: center;\n  overflow: hidden;\n}\n\n.character-container {\n  overflow: hidden;\n}\n\n.character-img {\n  height: 70px;\n}\n\n.main {\n  display: flex;\n  height: var(--main-height);\n}\n\n.sidebar {\n  font-weight: 500;\n  width: 200px;\n  height: var(--main-height);\n  background-color: var(--dark-grey);\n  transition: all 300ms ease-out;\n  overflow: hidden;\n}\n\n.sidebar.slide-view {\n  position: fixed;\n  z-index: 10;\n  height: var(--main-height);\n  transform: translate(0px);\n}\n\n.project-form {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  border: 1px solid var(--grey-transparent);\n  padding: 0.25rem;\n  border-radius: 5px;\n  margin-top: 0.5rem;\n}\n\n.project-input {\n  flex: 1;\n  margin: 0;\n}\n\n.btn-add-project {\n  background-color: transparent;\n  font-size: 1rem;\n  padding-left: 1rem;\n  color: var(--grey);\n}\n\n.project-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n}\n\n.project-list:hover {\n  background-color: var(--grey-hover);\n}\n\n.active-project {\n  color: var(--white);\n  font-weight: 500;\n  background-color: var(--grey-hover);\n}\n\nli {\n  position: relative;\n  padding-left: 2rem !important;\n}\n\nli::before {\n  position: absolute;\n  top: 7.5px;\n  left: 5px;\n  content: \"\";\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  height: 1.25rem;\n  width: 1.25rem;\n  display: inline-block;\n}\n\nli:first-child::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\nli:nth-child(2)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n\nli:nth-child(3)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n\nli:nth-child(4)::after {\n  display: inline;\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  font-size: 1rem;\n  font-weight: normal;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\n.dialog-form {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=text]:first-child {\n  font-size: 1rem;\n}\n\ninput[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=date]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=date] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=checkbox]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.hide {\n  display: none;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .header > h1 {\n    display: none;\n  }\n  .header .score {\n    flex: 1;\n    justify-content: flex-end;\n  }\n  .burger-menu-container {\n    display: block;\n  }\n  .sidebar {\n    position: absolute;\n    transform: translate(-200px);\n    overflow: hidden;\n    z-index: 10;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n/* \n@media only screen and (min-width: 601px) {\n  .sidebar.slide-view {\n    font-weight: 500;\n    width: 200px;\n    height: 92.5vh;\n    background-color: var(--dark-grey);\n    transition: all 300ms ease-out;\n    overflow: hidden;\n    position: static;\n    display: block;\n    transform: translate(0px);\n    padding: 0rem;\n  }\n} */", "",{"version":3,"sources":["webpack://./src/styles/main.css"],"names":[],"mappings":"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","sourcesContent":[":root {\n  --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808080;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32;\n  --tasks-width: 800px;\n  --main-height: calc(100vh - 5rem);\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell,\n    \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: var(--white);\n  font-size: 16px;\n}\n\nbody {\n  background-color: var(--black);\n  min-height: 100vh;\n  display: grid;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  height: 5rem;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: var(--medium-dark-grey);\n  font-size: 1.625rem;\n  font-weight: bold;\n  padding: 0 1rem;\n  position: relative;\n  overflow: hidden;\n}\n\n.burger-menu-container {\n  display: none;\n  position: absolute;\n}\n\n.btn-burger-menu {\n  pointer-events: none;\n  width: 30px;\n  height: 20px;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}\n\n.bar {\n  height: 3px;\n  width: 100;\n  background-color: var(--white);\n  border-radius: 10px;\n}\n\n.score {\n  display: flex;\n  align-items: center;\n  overflow: hidden;\n}\n\n.character-container {\n  overflow: hidden;\n}\n\n.character-img {\n  height: 70px;\n}\n\n.main {\n  display: flex;\n  height: var(--main-height);\n}\n\n.sidebar {\n  font-weight: 500;\n  width: 200px;\n  height: var(--main-height);\n  background-color: var(--dark-grey);\n  transition: all 300ms ease-out;\n  overflow: hidden;\n}\n\n.sidebar.slide-view {\n  position: fixed;\n  z-index: 10;\n  height: var(--main-height);\n  transform: translate(0px);\n}\n\n.project-form {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  border: 1px solid var(--grey-transparent);\n  padding: 0.25rem;\n  border-radius: 5px;\n  margin-top: 0.5rem;\n}\n\n.project-input {\n  flex: 1;\n  margin: 0;\n}\n\n.btn-add-project {\n  background-color: transparent;\n  font-size: 1rem;\n  padding-left: 1rem;\n  color: var(--grey);\n}\n\n.project-container {\n  display: flex;\n  flex-direction: column;\n}\n\n.project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n}\n\n.project-list:hover {\n  background-color: var(--grey-hover);\n}\n\n.active-project {\n  color: var(--white);\n  font-weight: 500;\n  background-color: var(--grey-hover);\n}\n\nli {\n  position: relative;\n  padding-left: 2rem !important;\n}\n\nli::before {\n  position: absolute;\n  top: 7.5px;\n  left: 5px;\n  content: \"\";\n  background: url(\"../assets/listDot.svg\");\n  height: 1.25rem;\n  width: 1.25rem;\n  display: inline-block;\n}\n\nli:first-child::before {\n  background: url(\"../assets/inbox.svg\");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\nli:nth-child(2)::before {\n  background: url(\"../assets/today.svg\");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n\nli:nth-child(3)::before {\n  background: url(\"../assets/thisWeek.svg\");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4)::before {\n  background: url(\"../assets/completed.svg\");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\nli:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n\nli:nth-child(4)::after {\n  display: inline;\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  font-size: 1rem;\n  font-weight: normal;\n  color: var(--green);\n  pointer-events: none;\n}\n\n.tasks {\n  position: relative;\n  max-width: var(--tasks-width);\n  margin: 0 auto;\n  flex: 1;\n}\n\n.btn-add-container {\n  display: flex;\n}\n\n.btn-add-task {\n  font-size: 1rem;\n  flex: 1;\n  text-align: start;\n  color: var(--grey);\n  background-color: transparent;\n}\n\n.dialog,\n.btn-add-task {\n  display: none;\n}\n\n.dialog.active,\n.btn-add-task.active {\n  display: block;\n}\n\n.dialog-form {\n  border: 1px solid var(--grey-transparent);\n  padding: 0.75rem;\n  border-radius: 10px;\n}\n\n.btn-remove-container {\n  display: flex;\n  justify-content: flex-end;\n}\n\n.btn-cancel-task,\n.btn-remove-task {\n  font-size: 0.825rem;\n  font-weight: 600;\n  padding: 10px 12px;\n  border-radius: 5px;\n  margin: 0.5rem 0 0 0.75rem;\n}\n\n.btn-cancel-task {\n  background-color: var(--medium-dark-grey);\n  color: var(--white);\n}\n\n.btn-remove-task {\n  background-color: var(--green);\n  color: var(--white);\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n  color: var(--white);\n}\n\n.task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n\ninput[type=\"text\"]:first-child {\n  font-size: 1rem;\n}\ninput[type=\"text\"]:nth-child(2) {\n  font-size: 0.75rem;\n}\n\ninput {\n  margin-bottom: 0.5rem;\n}\n\n/* MADE TASKS */\n.task-name {\n  font-size: 1.25rem;\n}\n\n.task-description,\n.task-date,\n.task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n\n/* Removes the clear button from date inputs */\ninput[type=\"date\"]::-webkit-clear-button {\n  display: none;\n}\n\n/* Removes the spin button */\ninput[type=\"date\"]::-webkit-inner-spin-button {\n  display: none;\n}\n\n/* Always display the drop down caret */\ninput[type=\"date\"]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n\n/* A few custom styles for date inputs */\ninput[type=\"date\"] {\n  appearance: none;\n  -webkit-appearance: none;\n  color: var(--grey);\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  margin-right: 0.5rem;\n}\n\nselect {\n  appearance: none;\n  -webkit-appearance: none;\n  border: 1px solid var(--grey-transparent);\n  padding: 5px;\n  border-radius: 5px;\n  background-color: transparent;\n  color: var(--grey);\n}\n\n.task-info-container {\n  padding-left: 0.25rem;\n  flex: 1;\n}\n\n.task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n\n.task-container {\n  padding: 1rem;\n  margin-bottom: 0.25rem;\n  width: 100%;\n  display: flex;\n  border-bottom: 1px solid var(--grey-transparent);\n}\n\n.task-description,\n.task-date {\n  color: var(--grey);\n}\n\n.checkbox-container {\n  position: relative;\n}\n\n.checkbox-container label {\n  background-color: transparent;\n  border: 1px solid var(--grey);\n  border-radius: 50%;\n  cursor: pointer;\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n}\n\n.checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n\n.checkbox-container label:hover::after {\n  border: 1.5px solid var(--grey);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  border: 1.5px solid var(--white);\n  border-top: none;\n  border-right: none;\n  content: \"\";\n  opacity: 0;\n  transform: rotate(-45deg);\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n}\n\n.checkbox-container input[type=\"checkbox\"] {\n  visibility: hidden;\n}\n\n.checkbox-container input[type=\"checkbox\"]:hover + label::after {\n  opacity: 1;\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label {\n  background-color: var(--green);\n  border-color: var(--green);\n}\n\n.checkbox-container input[type=\"checkbox\"]:checked + label::after {\n  opacity: 1;\n}\n\n.edit-container {\n  display: flex;\n}\n\n.hide {\n  display: none;\n}\n\n.edit,\n.remove {\n  margin-left: 1rem;\n  display: inline-block;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n\n.all-complete-container {\n  max-width: 800px;\n  position: absolute;\n  text-align: center;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: -10;\n}\n\nimg.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n\n.all-complete-container > p {\n  font-size: 0.8rem;\n  color: var(--grey);\n}\n\nli {\n  color: var(--grey);\n  cursor: pointer;\n}\n\n.completed {\n  text-decoration: line-through;\n  color: var(--grey);\n}\n\n@media only screen and (max-width: 600px) {\n  .header > h1 {\n    display: none;\n  }\n\n  .header .score {\n    flex: 1;\n    justify-content: flex-end;\n  }\n\n  .burger-menu-container {\n    display: block;\n  }\n\n  .sidebar {\n    position: absolute;\n    transform: translate(-200px);\n    overflow: hidden;\n    z-index: 10;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n/* \n@media only screen and (min-width: 601px) {\n  .sidebar.slide-view {\n    font-weight: 500;\n    width: 200px;\n    height: 92.5vh;\n    background-color: var(--dark-grey);\n    transition: all 300ms ease-out;\n    overflow: hidden;\n    position: static;\n    display: block;\n    transform: translate(0px);\n    padding: 0rem;\n  }\n} */\n"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.css":
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss":
 /*!***********************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss ***!
   \***********************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
@@ -543,12 +519,54 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! -!../../node_modules/css-loader/dist/cjs.js!./reset.css */ "./node_modules/css-loader/dist/cjs.js!./src/styles/reset.css");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3__);
+// Imports
+
+
+
+
+var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/listDot.svg */ "./src/assets/listDot.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_1___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/inbox.svg */ "./src/assets/inbox.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_2___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/today.svg */ "./src/assets/today.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_3___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/thisWeek.svg */ "./src/assets/thisWeek.svg"), __webpack_require__.b);
+var ___CSS_LOADER_URL_IMPORT_4___ = new URL(/* asset import */ __webpack_require__(/*! ../assets/completed.svg */ "./src/assets/completed.svg"), __webpack_require__.b);
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_2__["default"]);
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_0___);
+var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_1___);
+var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_2___);
+var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_3___);
+var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_4___);
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "/* LIGHT MODE */\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: #000000;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: #fcfcfc;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n  background-color: #f7f7f7;\n  font-size: 1.625rem;\n  font-weight: bold;\n}\n.header .burger-menu-container {\n  position: absolute;\n  display: none;\n}\n.header .burger-menu-container .btn-burger-menu {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  width: 30px;\n  height: 20px;\n  pointer-events: none;\n}\n.header .burger-menu-container .btn-burger-menu .bar {\n  height: 4px;\n  width: 100%;\n  border-radius: 10px;\n  background-color: #000000;\n}\n.header .score {\n  display: flex;\n  align-items: center;\n}\n.header .score .character-info-container {\n  display: flex;\n  justify-content: center;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.375rem;\n}\n.header .score .character-info-container .completed-tasks-number {\n  font-size: 1rem;\n}\n.header .score .character-info-container .character-title {\n  font-size: 0.75rem;\n  color: var(--grey);\n}\n.header .score .character-img {\n  height: 70px;\n}\n\n.main {\n  position: relative;\n  display: flex;\n}\n.main .sidebar.slide-view {\n  transform: translate(0px);\n  height: calc(100vh - 4rem);\n}\n.main .sidebar {\n  position: absolute;\n  z-index: 10;\n  height: calc(100vh - 4rem);\n  width: 300px;\n  padding: 1.5rem;\n  transition: transform 300ms ease-out;\n  font-weight: 500;\n  background-color: #f1f1f1;\n}\n.main .sidebar .project-container {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n.main .sidebar .project-container .active-project {\n  font-weight: 500;\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container .project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n}\n.main .sidebar .project-container .project-list:hover {\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container li {\n  position: relative;\n  padding-left: 2rem !important;\n  font-weight: 400;\n  cursor: pointer;\n}\n.main .sidebar .project-container li::before {\n  content: \"\";\n  position: absolute;\n  top: 7.5px;\n  left: 5px;\n  display: inline-block;\n  height: 1.25rem;\n  width: 1.25rem;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.main .sidebar .project-container li:first-child::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n.main .sidebar .project-container li:nth-child(2)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n.main .sidebar .project-container li:nth-child(3)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n.main .sidebar .project-container li:nth-child(4)::after {\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  display: inline;\n  pointer-events: none;\n  font-size: 1rem;\n  font-weight: normal;\n  color: #32cd32;\n}\n.main .sidebar .project-form {\n  display: flex;\n  align-items: center;\n  margin-top: 0.5rem;\n  padding: 0.25rem;\n  border: 1px solid #808080;\n  border-radius: 5px;\n}\n.main .sidebar .project-form .project-input {\n  flex: 1;\n  margin: 0;\n}\n.main .task-container-all {\n  display: flex;\n  width: calc(100vw - 300px);\n  transform: translate(300px);\n}\n.main .task-container-all .tasks {\n  position: relative;\n  flex: 1;\n  height: calc(100vh - 4rem);\n  max-width: 800px;\n  margin: 0 auto;\n  overflow: auto;\n}\n.main .task-container-all .tasks .btn-add-container {\n  display: flex;\n}\n.main .task-container-all .tasks .btn-add-container .btn-add-task {\n  flex: 1;\n  font-size: 1rem;\n  text-align: start;\n  background-color: transparent;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog .dialog-form {\n  padding: 0.75rem;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 10px;\n  /* Removes the clear button from date inputs */\n  /* Removes the spin button */\n  /* Always display the drop down caret */\n  /* A few custom styles for date inputs */\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-name {\n  font-size: 1.25rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-description,\n.main .task-container-all .tasks .dialog .dialog-form .task-date,\n.main .task-container-all .tasks .dialog .dialog-form .task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=text]:first-child {\n  font-size: 1rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input {\n  margin-bottom: 0.5rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-clear-button {\n  display: none;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date] {\n  appearance: none;\n  margin-right: 0.5rem;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog .dialog-form select {\n  appearance: none;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  background-color: transparent;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog-btn-container {\n  display: flex;\n  justify-content: flex-end;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-cancel-task,\n.main .task-container-all .tasks .dialog-btn-container .btn-remove-task {\n  margin: 0.5rem 0 0 0.75rem;\n  padding: 10px 12px;\n  border-radius: 5px;\n  font-size: 0.825rem;\n  font-weight: 600;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-cancel-task {\n  background-color: #e0e0e0;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-remove-task {\n  background-color: #32cd32;\n  color: #fcfcfc;\n}\n.main .task-container-all .tasks .task-container.completed {\n  text-decoration: line-through;\n  color: #808080;\n}\n.main .task-container-all .tasks .task-container {\n  display: flex;\n  width: 100%;\n  margin-bottom: 0.25rem;\n  padding: 1rem;\n  border-bottom: 1px solid rgba(128, 128, 128, 0.4941176471);\n}\n.main .task-container-all .tasks .task-container .checkbox-container {\n  position: relative;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n  background-color: transparent;\n  border: 1px solid #808080;\n  border-radius: 50%;\n  cursor: pointer;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label:hover::after {\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #808080;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  content: \"\";\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #fcfcfc;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label {\n  border-color: #32cd32;\n  background-color: #32cd32;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n.main .task-container-all .tasks .task-container .task-info-container {\n  flex: 1;\n  padding-left: 0.25rem;\n}\n.main .task-container-all .tasks .task-container .task-info-container .task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n.main .task-container-all .tasks .task-container .task-info-container .task-description,\n.main .task-container-all .tasks .task-container .task-info-container .task-date {\n  color: #808080;\n}\n.main .task-container-all .tasks .task-container .edit-container.hide {\n  display: none;\n}\n.main .task-container-all .tasks .task-container .edit-container {\n  display: flex;\n}\n.main .task-container-all .tasks .task-container .edit-container .edit,\n.main .task-container-all .tasks .task-container .edit-container .remove {\n  display: inline-block;\n  margin-left: 1rem;\n  height: 24px;\n  filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%) contrast(85%);\n}\n.main .task-container-all .tasks .all-complete-container {\n  position: absolute;\n  z-index: -10;\n  top: 50%;\n  left: 50%;\n  max-width: 800px;\n  text-align: center;\n  transform: translate(-50%, -50%);\n}\n.main .task-container-all .tasks .all-complete-container img.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n.main .task-container-all .tasks .all-complete-container p {\n  font-size: 0.8rem;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog,\n.main .task-container-all .tasks .btn-add-task {\n  display: none;\n}\n.main .task-container-all .tasks .dialog.active,\n.main .task-container-all .tasks .btn-add-task.active {\n  display: block;\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e0e0e0;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(128, 128, 128, 0.4941176471);\n}\n\n@media only screen and (max-width: 600px) {\n  .header h1 {\n    display: none;\n  }\n  .header .score {\n    flex: 1;\n    justify-content: flex-end;\n  }\n  .header .burger-menu-container {\n    display: block;\n  }\n  .sidebar {\n    transform: translate(-300px);\n  }\n  .task-container-all {\n    flex: 1;\n    width: 100vw;\n    transform: translate(0px) !important;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}", "",{"version":3,"sources":["webpack://./src/styles/main.scss","webpack://./src/styles/variables.scss"],"names":[],"mappings":"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","sourcesContent":["@import \"./reset.css\";\n@import \"variables\";\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell,\n    \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: $black;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: $white;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: $box-shadow-btm;\n  background-color: $white-mid-grey;\n  font-size: 1.625rem;\n  font-weight: bold;\n\n  .burger-menu-container {\n    position: absolute;\n    display: none;\n\n    .btn-burger-menu {\n      display: flex;\n      flex-direction: column;\n      justify-content: space-between;\n      width: 30px;\n      height: 20px;\n      pointer-events: none;\n\n      .bar {\n        height: 4px;\n        width: 100%;\n        border-radius: 10px;\n        background-color: $black;\n      }\n    }\n  }\n\n  .score {\n    display: flex;\n    align-items: center;\n\n    .character-info-container {\n      display: flex;\n      justify-content: center;\n      flex-direction: column;\n      align-items: center;\n      gap: 0.375rem;\n\n      .completed-tasks-number {\n        font-size: 1rem;\n      }\n\n      .character-title {\n        font-size: 0.75rem;\n        color: var(--grey);\n      }\n    }\n\n    .character-img {\n      height: 70px;\n    }\n  }\n}\n\n.main {\n  position: relative;\n  display: flex;\n\n  .sidebar.slide-view {\n    transform: translate(0px);\n    height: calc(100vh - 4rem);\n  }\n\n  .sidebar {\n    position: absolute;\n    z-index: 10;\n    height: calc(100vh - 4rem);\n    width: 300px;\n    padding: 1.5rem;\n    transition: transform 300ms ease-out;\n    font-weight: 500;\n    background-color: $white-low-grey;\n\n    .project-container {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n\n      .active-project {\n        font-weight: 500;\n        background-color: $white;\n      }\n\n      .project-list {\n        font-size: 1rem;\n        font-weight: 400;\n        padding: 0.625rem 0.125rem;\n        border-radius: 5px;\n\n        &:hover {\n          background-color: $white;\n        }\n      }\n\n      li {\n        position: relative;\n        padding-left: 2rem !important;\n        font-weight: 400;\n        cursor: pointer;\n      }\n\n      li::before {\n        content: \"\";\n        position: absolute;\n        top: 7.5px;\n        left: 5px;\n        display: inline-block;\n        height: 1.25rem;\n        width: 1.25rem;\n        background: url(\"../assets/listDot.svg\");\n      }\n\n      li:first-child::before {\n        background: url(\"../assets/inbox.svg\");\n        filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%)\n          contrast(103%);\n      }\n\n      li:nth-child(2)::before {\n        background: url(\"../assets/today.svg\");\n        filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%)\n          contrast(91%);\n      }\n\n      li:nth-child(3)::before {\n        background: url(\"../assets/thisWeek.svg\");\n        filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%)\n          contrast(101%);\n      }\n\n      li:nth-child(4)::before {\n        background: url(\"../assets/completed.svg\");\n        filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%)\n          contrast(101%);\n      }\n\n      li:nth-child(4) {\n        margin-bottom: 2.5rem;\n      }\n\n      li:nth-child(4)::after {\n        content: \"Projects\";\n        position: absolute;\n        top: 3.5rem;\n        left: 0;\n        display: inline;\n        pointer-events: none;\n        font-size: 1rem;\n        font-weight: normal;\n        color: $green;\n      }\n    }\n\n    .project-form {\n      display: flex;\n      align-items: center;\n      margin-top: 0.5rem;\n      padding: 0.25rem;\n      border: 1px solid $grey;\n      border-radius: 5px;\n\n      .project-input {\n        flex: 1;\n        margin: 0;\n      }\n    }\n  }\n\n  .task-container-all {\n    display: flex;\n    width: calc(100vw - 300px);\n    transform: translate(300px);\n\n    .tasks {\n      position: relative;\n      flex: 1;\n      height: calc(100vh - 4rem);\n      max-width: $tasks-max-width;\n      margin: 0 auto;\n      overflow: auto;\n\n      .btn-add-container {\n        display: flex;\n\n        .btn-add-task {\n          flex: 1;\n          font-size: 1rem;\n          text-align: start;\n          background-color: transparent;\n          color: $grey;\n        }\n      }\n\n      .dialog {\n        .dialog-form {\n          padding: 0.75rem;\n          border: 1px solid $grey-transparent;\n          border-radius: 10px;\n\n          .task-text {\n            display: grid;\n            grid-template-columns: 1fr;\n          }\n\n          .task-name {\n            font-size: 1.25rem;\n          }\n\n          .task-description,\n          .task-date,\n          .task-priority {\n            margin-top: 0.25rem;\n            font-size: 1rem;\n          }\n\n          input[type=\"text\"]:first-child {\n            font-size: 1rem;\n          }\n          input[type=\"text\"]:nth-child(2) {\n            font-size: 0.75rem;\n          }\n\n          input {\n            margin-bottom: 0.5rem;\n          }\n\n          /* Removes the clear button from date inputs */\n          input[type=\"date\"]::-webkit-clear-button {\n            display: none;\n          }\n\n          /* Removes the spin button */\n          input[type=\"date\"]::-webkit-inner-spin-button {\n            display: none;\n          }\n\n          /* Always display the drop down caret */\n          input[type=\"date\"]::-webkit-calendar-picker-indicator {\n            filter: invert(0.5);\n          }\n\n          /* A few custom styles for date inputs */\n          input[type=\"date\"] {\n            appearance: none;\n            margin-right: 0.5rem;\n            padding: 5px;\n            border: 1px solid $grey-transparent;\n            border-radius: 5px;\n            color: $grey;\n          }\n\n          select {\n            appearance: none;\n            padding: 5px;\n            border: 1px solid $grey-transparent;\n            border-radius: 5px;\n            background-color: transparent;\n            color: $grey;\n          }\n        }\n      }\n\n      .dialog-btn-container {\n        display: flex;\n        justify-content: flex-end;\n\n        .btn-cancel-task,\n        .btn-remove-task {\n          margin: 0.5rem 0 0 0.75rem;\n          padding: 10px 12px;\n          border-radius: 5px;\n          font-size: 0.825rem;\n          font-weight: 600;\n        }\n\n        .btn-cancel-task {\n          background-color: $white-high-grey;\n        }\n\n        .btn-remove-task {\n          background-color: $green;\n          color: $white;\n        }\n      }\n\n      .task-container.completed {\n        text-decoration: line-through;\n        color: $grey;\n      }\n\n      .task-container {\n        display: flex;\n        width: 100%;\n        margin-bottom: 0.25rem;\n        padding: 1rem;\n        border-bottom: 1px solid $grey-transparent;\n\n        .checkbox-container {\n          position: relative;\n\n          label {\n            position: absolute;\n            left: 0;\n            top: 0;\n            width: 1rem;\n            height: 1rem;\n            background-color: transparent;\n            border: 1px solid $grey;\n            border-radius: 50%;\n            cursor: pointer;\n          }\n\n          label::after {\n            transition: opacity 0.4s ease;\n          }\n\n          label:hover::after {\n            position: absolute;\n            top: 4.25px;\n            left: 3px;\n            height: 3px;\n            width: 6.5px;\n            border: 1.5px solid $grey;\n            border-top: none;\n            border-right: none;\n            opacity: 0;\n            transform: rotate(-45deg);\n          }\n\n          input[type=\"checkbox\"]:checked + label::after {\n            content: \"\";\n            position: absolute;\n            top: 4.25px;\n            left: 3px;\n            height: 3px;\n            width: 6.5px;\n            border: 1.5px solid $white;\n            border-top: none;\n            border-right: none;\n            opacity: 0;\n            transform: rotate(-45deg);\n          }\n\n          input[type=\"checkbox\"] {\n            visibility: hidden;\n          }\n\n          input[type=\"checkbox\"]:hover + label::after {\n            opacity: 1;\n          }\n\n          input[type=\"checkbox\"]:checked + label {\n            border-color: $green;\n            background-color: $green;\n          }\n\n          input[type=\"checkbox\"]:checked + label::after {\n            opacity: 1;\n          }\n        }\n\n        .task-info-container {\n          flex: 1;\n          padding-left: 0.25rem;\n\n          .task-info-container > p:not(:first-child) {\n            margin-top: 0.5rem;\n          }\n\n          .task-description,\n          .task-date {\n            color: $grey;\n          }\n        }\n\n        .edit-container.hide {\n          display: none;\n        }\n        .edit-container {\n          display: flex;\n\n          .edit,\n          .remove {\n            display: inline-block;\n            margin-left: 1rem;\n            height: 24px;\n            filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%)\n              contrast(85%);\n          }\n        }\n      }\n\n      .all-complete-container {\n        position: absolute;\n        z-index: -10;\n        top: 50%;\n        left: 50%;\n        max-width: 800px;\n        text-align: center;\n        transform: translate(-50%, -50%);\n\n        img.lazy-panda {\n          height: 240px;\n          width: 300px;\n        }\n\n        p {\n          font-size: 0.8rem;\n          color: $grey;\n        }\n      }\n\n      // COMBINED ELEMENTS FROM DIFFERENT PARENTS\n      .dialog,\n      .btn-add-task {\n        display: none;\n      }\n\n      .dialog.active,\n      .btn-add-task.active {\n        display: block;\n      }\n    }\n  }\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: $white-high-grey;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: $grey-transparent;\n}\n\n@media only screen and (max-width: 600px) {\n  .header {\n    h1 {\n      display: none;\n    }\n\n    .score {\n      flex: 1;\n      justify-content: flex-end;\n    }\n\n    .burger-menu-container {\n      display: block;\n    }\n  }\n\n  .sidebar {\n    transform: translate(-300px);\n  }\n\n  .task-container-all {\n    flex: 1;\n    width: 100vw;\n    transform: translate(0px) !important;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n","/* LIGHT MODE */\n$white: #fcfcfc;\n$white-high-grey: #e0e0e0;\n$white-mid-grey: #f7f7f7;\n$white-low-grey: #f1f1f1;\n$black: #000000;\n$grey: #808080;\n$grey-transparent: #8080807e;\n$box-shadow-btm: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n$green: #32cd32;\n\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n$tasks-max-width: 800px;\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./src/styles/reset.css":
+/*!********************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./src/styles/reset.css ***!
+  \********************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\ncanvas,\ndetails,\nembed,\nfigure,\nfigcaption,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\noutput,\nruby,\nsection,\nsummary,\ntime,\nmark,\naudio,\nvideo {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block;\n}\n\nbody {\n  line-height: 1;\n}\n\nol,\nul {\n  list-style: none;\n}\n\nblockquote,\nq {\n  quotes: none;\n}\n\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: \"\";\n  content: none;\n}\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}", "",{"version":3,"sources":["webpack://./src/styles/reset.css"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAiFE,SAAA;EACA,UAAA;EACA,SAAA;EACA,eAAA;EACA,aAAA;EACA,wBAAA;AACF;;AACA,gDAAA;AACA;;;;;;;;;;;EAWE,cAAA;AAEF;;AAAA;EACE,cAAA;AAGF;;AADA;;EAEE,gBAAA;AAIF;;AAFA;;EAEE,YAAA;AAKF;;AAHA;;;;EAIE,WAAA;EACA,aAAA;AAMF;;AAJA;EACE,yBAAA;EACA,iBAAA;AAOF","sourcesContent":["html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\ncanvas,\ndetails,\nembed,\nfigure,\nfigcaption,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\noutput,\nruby,\nsection,\nsummary,\ntime,\nmark,\naudio,\nvideo {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block;\n}\nbody {\n  line-height: 1;\n}\nol,\nul {\n  list-style: none;\n}\nblockquote,\nq {\n  quotes: none;\n}\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n  content: none;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\ncanvas,\ndetails,\nembed,\nfigure,\nfigcaption,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\noutput,\nruby,\nsection,\nsummary,\ntime,\nmark,\naudio,\nvideo {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block;\n}\nbody {\n  line-height: 1;\n}\nol,\nul {\n  list-style: none;\n}\nblockquote,\nq {\n  quotes: none;\n}\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n  content: none;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n", "",{"version":3,"sources":["webpack://./src/styles/reset.css"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAiFE,SAAS;EACT,UAAU;EACV,SAAS;EACT,eAAe;EACf,aAAa;EACb,wBAAwB;AAC1B;AACA,gDAAgD;AAChD;;;;;;;;;;;EAWE,cAAc;AAChB;AACA;EACE,cAAc;AAChB;AACA;;EAEE,gBAAgB;AAClB;AACA;;EAEE,YAAY;AACd;AACA;;;;EAIE,WAAW;EACX,aAAa;AACf;AACA;EACE,yBAAyB;EACzB,iBAAiB;AACnB","sourcesContent":["html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\ncanvas,\ndetails,\nembed,\nfigure,\nfigcaption,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\noutput,\nruby,\nsection,\nsummary,\ntime,\nmark,\naudio,\nvideo {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline;\n}\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block;\n}\nbody {\n  line-height: 1;\n}\nol,\nul {\n  list-style: none;\n}\nblockquote,\nq {\n  quotes: none;\n}\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n  content: none;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -709,6 +727,34 @@ module.exports = function (item) {
 
 /***/ }),
 
+/***/ "./src/assets/bandit.png":
+/*!*******************************!*\
+  !*** ./src/assets/bandit.png ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/bandit.png");
+
+/***/ }),
+
+/***/ "./src/assets/boss.png":
+/*!*****************************!*\
+  !*** ./src/assets/boss.png ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/boss.png");
+
+/***/ }),
+
 /***/ "./src/assets/editPen.png":
 /*!********************************!*\
   !*** ./src/assets/editPen.png ***!
@@ -751,17 +797,31 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/assets/pandaBeginner.png":
-/*!**************************************!*\
-  !*** ./src/assets/pandaBeginner.png ***!
-  \**************************************/
+/***/ "./src/assets/novice.png":
+/*!*******************************!*\
+  !*** ./src/assets/novice.png ***!
+  \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/pandaBeginner.png");
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/novice.png");
+
+/***/ }),
+
+/***/ "./src/assets/student.png":
+/*!********************************!*\
+  !*** ./src/assets/student.png ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/student.png");
 
 /***/ }),
 
@@ -793,63 +853,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/styles/main.css":
-/*!*****************************!*\
-  !*** ./src/styles/main.css ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./main.css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-
-      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-    
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./src/styles/reset.css":
+/***/ "./src/styles/main.scss":
 /*!******************************!*\
-  !*** ./src/styles/reset.css ***!
+  !*** ./src/styles/main.scss ***!
   \******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -869,7 +875,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./reset.css */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/reset.css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./main.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/styles/main.scss");
 
       
       
@@ -891,12 +897,12 @@ options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWi
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
 
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_reset_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_main_scss__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -1402,18 +1408,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_tasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/tasks */ "./src/modules/tasks.js");
 /* harmony import */ var _modules_listeners__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/listeners */ "./src/modules/listeners.js");
 /* harmony import */ var _modules_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/dom */ "./src/modules/dom.js");
-/* harmony import */ var _styles_reset_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styles/reset.css */ "./src/styles/reset.css");
-/* harmony import */ var _styles_main_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./styles/main.css */ "./src/styles/main.css");
-/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
-/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
-/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
-/* harmony import */ var _assets_pandaBeginner_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/pandaBeginner.png */ "./src/assets/pandaBeginner.png");
+/* harmony import */ var _styles_main_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styles/main.scss */ "./src/styles/main.scss");
+/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
+/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
+/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
+/* harmony import */ var _assets_novice_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/novice.png */ "./src/assets/novice.png");
+/* harmony import */ var _assets_student_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/student.png */ "./src/assets/student.png");
 /* harmony import */ var _assets_master_png__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/master.png */ "./src/assets/master.png");
-/* harmony import */ var _assets_viking_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./assets/viking.png */ "./src/assets/viking.png");
-/* harmony import */ var _assets_inbox_svg__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./assets/inbox.svg */ "./src/assets/inbox.svg");
-/* harmony import */ var _assets_today_svg__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./assets/today.svg */ "./src/assets/today.svg");
-/* harmony import */ var _assets_thisWeek_svg__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./assets/thisWeek.svg */ "./src/assets/thisWeek.svg");
-/* harmony import */ var _assets_completed_svg__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./assets/completed.svg */ "./src/assets/completed.svg");
+/* harmony import */ var _assets_bandit_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./assets/bandit.png */ "./src/assets/bandit.png");
+/* harmony import */ var _assets_viking_png__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./assets/viking.png */ "./src/assets/viking.png");
+/* harmony import */ var _assets_boss_png__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./assets/boss.png */ "./src/assets/boss.png");
+/* harmony import */ var _assets_inbox_svg__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./assets/inbox.svg */ "./src/assets/inbox.svg");
+/* harmony import */ var _assets_today_svg__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./assets/today.svg */ "./src/assets/today.svg");
+/* harmony import */ var _assets_thisWeek_svg__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./assets/thisWeek.svg */ "./src/assets/thisWeek.svg");
+/* harmony import */ var _assets_completed_svg__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./assets/completed.svg */ "./src/assets/completed.svg");
+
+
 
 
 
@@ -1439,4 +1449,4 @@ _modules_dom__WEBPACK_IMPORTED_MODULE_3__["default"].domOnLoad();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlead46b5165d33f54b0b8f.js.map
+//# sourceMappingURL=bundleed42f4948d86f6b50410.js.map
