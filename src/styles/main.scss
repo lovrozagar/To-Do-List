@@ -412,13 +412,11 @@ select {
         .edit-container {
           display: flex;
 
-          .edit,
-          .remove {
+          img {
+            width: 18px;
+            height: 18px;
             display: inline-block;
             margin-left: 1rem;
-            height: 24px;
-            filter: invert(48%) sepia(1%) saturate(1020%) hue-rotate(346deg) brightness(105%)
-              contrast(85%);
           }
         }
       }
@@ -512,4 +510,16 @@ input {
     max-width: 100px;
     height: 80px;
   }
+}
+
+.low {
+  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);
+}
+
+.medium {
+  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);
+}
+
+.high {
+  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg) brightness(96%) contrast(80%);
 }

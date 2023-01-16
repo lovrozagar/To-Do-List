@@ -47,6 +47,30 @@ const dom = (() => {
         index
       );
       tasksContainer.insertBefore(currentTask, btnAddContainer);
+      colorPriorityFlag(index);
+    }
+  }
+
+  function colorPriorityFlag(index) {
+    const flags = document.querySelectorAll(".priority");
+    for (let i = 0; i < flags.length; i += 1) {
+      switch (projects.projectList[index].tasks[i].priority) {
+        case "Low":
+          {
+            flags[i].classList.add("low");
+          }
+          break;
+        case "Medium":
+          {
+            flags[i].classList.add("medium");
+          }
+          break;
+        case "High":
+          {
+            flags[i].classList.add("high");
+          }
+          break;
+      }
     }
   }
 
@@ -199,15 +223,23 @@ const dom = (() => {
 
     // EDIT SECTION
     const changeContainer = createDiv("edit-container", "");
+    const moreImg = document.createElement("img");
+    moreImg.classList.add("more");
+    moreImg.src = "./assets/more.png";
     const editImg = document.createElement("img");
     editImg.classList.add("edit");
     editImg.src = "./assets/editPen.png";
+    const priorityImg = document.createElement("img");
+    priorityImg.classList.add("priority");
+    priorityImg.src = "./assets/priority.png";
     const removeImg = document.createElement("img");
     removeImg.classList.add("remove");
     removeImg.setAttribute("data-remove-task-img", "");
     removeImg.src = "./assets/trash.png";
 
+    changeContainer.appendChild(moreImg);
     changeContainer.appendChild(editImg);
+    changeContainer.appendChild(priorityImg);
     changeContainer.appendChild(removeImg);
 
     taskInfoContainer.appendChild(taskNamePara);

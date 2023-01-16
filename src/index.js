@@ -4,7 +4,9 @@ import listeners from "./modules/listeners";
 import dom from "./modules/dom";
 
 import "./styles/main.scss";
+import "./assets/more.png";
 import "./assets/editPen.png";
+import "./assets/priority.png";
 import "./assets/trash.png";
 import "./assets/lazyPanda.png";
 import "./assets/novice.png";
@@ -15,6 +17,7 @@ import "./assets/viking.png";
 import "./assets/boss.png";
 import "./assets/inbox.svg";
 import "./assets/today.svg";
+import "./assets/editPen.svg";
 import "./assets/thisWeek.svg";
 import "./assets/completed.svg";
 
