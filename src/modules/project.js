@@ -28,8 +28,8 @@ const Project = (() => {
     this.tasks = tasks
   }
 
-  function getTasks(tasks) {
-    this.tasks = tasks
+  function getTasks() {
+    return this.tasks
   }
 
   function contains(taskName) {
@@ -45,13 +45,10 @@ const Project = (() => {
     this.tasks = this.tasks.filter((task) => task.name !== taskName)
   }
 
-  function doStuff() {
-    const a = project('Po')
-    a.addTask('Lovro')
-    console.log(a.getName())
-  }
+  // function doStuff() {
+  // }
 
-  return { project, doStuff }
+  return { project }
 })()
 
 export default Project

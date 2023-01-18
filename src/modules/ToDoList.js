@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 import Project from './project'
 
-const ToDo = (() => {
+const List = (() => {
   const list = () => {
     const projects = []
     projects.push(Project.project('Inbox'))
@@ -38,6 +38,7 @@ const ToDo = (() => {
   function addProject(newProject) {
     if (this.projects.find((project) => project.name === newProject.name)) {
       alert(`${newProject.name} already exists`)
+      return
     }
     this.projects.push(newProject)
   }
@@ -49,16 +50,10 @@ const ToDo = (() => {
     this.projects.splice(this.projects.indexOf(projectToDelete), 1)
   }
 
-  function doStuff() {
-    const listy = list()
-    console.log(Project.project('Inbox').name)
-    listy.addProject(Project.project('XIAO PO'))
-    console.table(listy.getProjects())
-  }
+  // function doStuff() {
+  // }
 
-  const toDoList = list()
-
-  return { list, doStuff, toDoList }
+  return { list }
 })()
 
-export default ToDo
+export default List

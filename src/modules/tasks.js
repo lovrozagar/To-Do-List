@@ -22,12 +22,10 @@ const Task = (() => {
     return this.dueDate
   }
 
-  function doStuff() {
-    const tasky = task('taskero frende comprende')
-    console.log((tasky.setName = 'lola'))
-  }
+  // function doStuff() {
+  // }
 
-  return { task, doStuff }
+  return { task }
 })()
 
 export default Task

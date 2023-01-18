@@ -1,13 +1,13 @@
-@import "./reset.css";
-@import "variables";
+@import './reset.css';
+@import 'variables';
 
 * {
   box-sizing: border-box;
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-    "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color: $black;
   font-size: 16px;
   height: 100%;
@@ -37,8 +37,9 @@ select {
   font-size: 1.625rem;
   font-weight: bold;
 
-  .burger-menu-container {
+  .container-burger-menu {
     position: absolute;
+    z-index: 20;
     display: none;
 
     .btn-burger-menu {
@@ -95,10 +96,8 @@ select {
   }
 
   .sidebar {
-    position: absolute;
-    z-index: 10;
     height: calc(100vh - 4rem);
-    width: 300px;
+    width: 250px;
     padding: 1.5rem;
     transition: transform 300ms ease-out;
     font-weight: 500;
@@ -133,38 +132,38 @@ select {
       }
 
       li::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 7.5px;
         left: 5px;
         display: inline-block;
         height: 1.25rem;
         width: 1.25rem;
-        background: url("../assets/listDot.svg");
+        background: url('../assets/listDot.svg');
       }
 
       li:first-child::before {
-        background: url("../assets/inbox.svg");
-        filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%)
-          contrast(103%);
+        background: url('../assets/inbox.svg');
+        filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)
+          brightness(100%) contrast(103%);
       }
 
       li:nth-child(2)::before {
-        background: url("../assets/today.svg");
-        filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%)
-          contrast(91%);
+        background: url('../assets/today.svg');
+        filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg)
+          brightness(101%) contrast(91%);
       }
 
       li:nth-child(3)::before {
-        background: url("../assets/thisWeek.svg");
-        filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%)
-          contrast(101%);
+        background: url('../assets/thisWeek.svg');
+        filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg)
+          brightness(101%) contrast(101%);
       }
 
       li:nth-child(4)::before {
-        background: url("../assets/completed.svg");
-        filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%)
-          contrast(101%);
+        background: url('../assets/completed.svg');
+        filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)
+          brightness(101%) contrast(101%);
       }
 
       li:nth-child(4) {
@@ -172,7 +171,7 @@ select {
       }
 
       li:nth-child(4)::after {
-        content: "Projects";
+        content: 'Projects';
         position: absolute;
         top: 3.5rem;
         left: 0;
@@ -199,261 +198,245 @@ select {
     }
   }
 
-  .task-container-all {
-    display: flex;
-    width: calc(100vw - 300px);
-    transform: translate(300px);
+  .tasks {
+    flex: 1;
+    height: calc(100vh - 4rem);
+    max-width: $tasks-max-width;
+    margin: 0 auto;
+    padding: 2rem;
+    overflow: auto;
 
-    .tasks {
-      position: relative;
-      flex: 1;
-      height: calc(100vh - 4rem);
-      max-width: $tasks-max-width;
-      margin: 0 auto;
-      padding: 2rem;
-      overflow: auto;
+    .btn-add-container {
+      display: flex;
 
-      .btn-add-container {
-        display: flex;
+      .btn-add-task {
+        flex: 1;
+        font-size: 1rem;
+        text-align: start;
+        background-color: transparent;
+        color: $grey;
+      }
+    }
 
-        .btn-add-task {
-          flex: 1;
+    .dialog {
+      .dialog-form {
+        padding: 0.75rem;
+        border: 1px solid $grey-transparent;
+        border-radius: 10px;
+
+        .task-text {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .task-name {
+          font-size: 1.25rem;
+        }
+
+        .task-description,
+        .task-date,
+        .task-priority {
+          margin-top: 0.25rem;
           font-size: 1rem;
-          text-align: start;
+        }
+
+        input[type='text']:first-child {
+          font-size: 1rem;
+        }
+        input[type='text']:nth-child(2) {
+          font-size: 0.75rem;
+        }
+
+        input {
+          margin-bottom: 0.5rem;
+        }
+
+        /* Removes the clear button from date inputs */
+        input[type='date']::-webkit-clear-button {
+          display: none;
+        }
+
+        /* Removes the spin button */
+        input[type='date']::-webkit-inner-spin-button {
+          display: none;
+        }
+
+        /* Always display the drop down caret */
+        input[type='date']::-webkit-calendar-picker-indicator {
+          filter: invert(0.5);
+        }
+
+        /* A few custom styles for date inputs */
+        input[type='date'] {
+          appearance: none;
+          margin-right: 0.5rem;
+          padding: 5px;
+          border: 1px solid $grey-transparent;
+          border-radius: 5px;
+          color: $grey;
+        }
+
+        select {
+          appearance: none;
+          padding: 5px;
+          border: 1px solid $grey-transparent;
+          border-radius: 5px;
           background-color: transparent;
           color: $grey;
         }
       }
+    }
 
-      .dialog {
-        .dialog-form {
-          padding: 0.75rem;
-          border: 1px solid $grey-transparent;
-          border-radius: 10px;
+    .dialog-btn-container {
+      display: flex;
+      justify-content: flex-end;
 
-          .task-text {
-            display: grid;
-            grid-template-columns: 1fr;
-          }
-
-          .task-name {
-            font-size: 1.25rem;
-          }
-
-          .task-description,
-          .task-date,
-          .task-priority {
-            margin-top: 0.25rem;
-            font-size: 1rem;
-          }
-
-          input[type="text"]:first-child {
-            font-size: 1rem;
-          }
-          input[type="text"]:nth-child(2) {
-            font-size: 0.75rem;
-          }
-
-          input {
-            margin-bottom: 0.5rem;
-          }
-
-          /* Removes the clear button from date inputs */
-          input[type="date"]::-webkit-clear-button {
-            display: none;
-          }
-
-          /* Removes the spin button */
-          input[type="date"]::-webkit-inner-spin-button {
-            display: none;
-          }
-
-          /* Always display the drop down caret */
-          input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(0.5);
-          }
-
-          /* A few custom styles for date inputs */
-          input[type="date"] {
-            appearance: none;
-            margin-right: 0.5rem;
-            padding: 5px;
-            border: 1px solid $grey-transparent;
-            border-radius: 5px;
-            color: $grey;
-          }
-
-          select {
-            appearance: none;
-            padding: 5px;
-            border: 1px solid $grey-transparent;
-            border-radius: 5px;
-            background-color: transparent;
-            color: $grey;
-          }
-        }
+      .btn-cancel-task,
+      .btn-remove-task {
+        margin: 0.5rem 0 0 0.75rem;
+        padding: 10px 12px;
+        border-radius: 5px;
+        font-size: 0.825rem;
+        font-weight: 600;
       }
 
-      .dialog-btn-container {
-        display: flex;
-        justify-content: flex-end;
+      .btn-cancel-task {
+        background-color: $white-high-grey;
+      }
 
-        .btn-cancel-task,
-        .btn-remove-task {
-          margin: 0.5rem 0 0 0.75rem;
-          padding: 10px 12px;
-          border-radius: 5px;
-          font-size: 0.825rem;
-          font-weight: 600;
+      .btn-remove-task {
+        background-color: $green;
+        color: $white;
+      }
+    }
+
+    .task-container.completed {
+      text-decoration: line-through;
+      color: $grey;
+    }
+
+    .task-container {
+      display: flex;
+      width: 100%;
+      margin-bottom: 0.25rem;
+      padding: 0.5rem;
+      border-bottom: 1px solid $grey-transparent;
+
+      .checkbox-container {
+        position: relative;
+
+        label {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 1rem;
+          height: 1rem;
+          background-color: transparent;
+          border: 1px solid $grey;
+          border-radius: 50%;
+          cursor: pointer;
         }
 
-        .btn-cancel-task {
-          background-color: $white-high-grey;
+        label::after {
+          transition: opacity 0.4s ease;
         }
 
-        .btn-remove-task {
+        label:hover::after {
+          position: absolute;
+          top: 4.25px;
+          left: 3px;
+          height: 3px;
+          width: 6.5px;
+          border: 1.5px solid $grey;
+          border-top: none;
+          border-right: none;
+          opacity: 0;
+          transform: rotate(-45deg);
+        }
+
+        input[type='checkbox']:checked + label::after {
+          content: '';
+          position: absolute;
+          top: 4.25px;
+          left: 3px;
+          height: 3px;
+          width: 6.5px;
+          border: 1.5px solid $white;
+          border-top: none;
+          border-right: none;
+          opacity: 0;
+          transform: rotate(-45deg);
+        }
+
+        input[type='checkbox'] {
+          visibility: hidden;
+        }
+
+        input[type='checkbox']:hover + label::after {
+          opacity: 1;
+        }
+
+        input[type='checkbox']:checked + label {
+          border-color: $green;
           background-color: $green;
-          color: $white;
+        }
+
+        input[type='checkbox']:checked + label::after {
+          opacity: 1;
         }
       }
 
-      .task-container.completed {
-        text-decoration: line-through;
-        color: $grey;
-      }
+      .task-info-container {
+        flex: 1;
+        padding-left: 0.25rem;
 
-      .task-container {
-        display: flex;
-        width: 100%;
-        margin-bottom: 0.25rem;
-        padding: 0.5rem;
-        border-bottom: 1px solid $grey-transparent;
-
-        .checkbox-container {
-          position: relative;
-
-          label {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 1rem;
-            height: 1rem;
-            background-color: transparent;
-            border: 1px solid $grey;
-            border-radius: 50%;
-            cursor: pointer;
-          }
-
-          label::after {
-            transition: opacity 0.4s ease;
-          }
-
-          label:hover::after {
-            position: absolute;
-            top: 4.25px;
-            left: 3px;
-            height: 3px;
-            width: 6.5px;
-            border: 1.5px solid $grey;
-            border-top: none;
-            border-right: none;
-            opacity: 0;
-            transform: rotate(-45deg);
-          }
-
-          input[type="checkbox"]:checked + label::after {
-            content: "";
-            position: absolute;
-            top: 4.25px;
-            left: 3px;
-            height: 3px;
-            width: 6.5px;
-            border: 1.5px solid $white;
-            border-top: none;
-            border-right: none;
-            opacity: 0;
-            transform: rotate(-45deg);
-          }
-
-          input[type="checkbox"] {
-            visibility: hidden;
-          }
-
-          input[type="checkbox"]:hover + label::after {
-            opacity: 1;
-          }
-
-          input[type="checkbox"]:checked + label {
-            border-color: $green;
-            background-color: $green;
-          }
-
-          input[type="checkbox"]:checked + label::after {
-            opacity: 1;
-          }
+        .task-info-container > p:not(:first-child) {
+          margin-top: 0.5rem;
         }
 
-        .task-info-container {
-          flex: 1;
-          padding-left: 0.25rem;
-
-          .task-info-container > p:not(:first-child) {
-            margin-top: 0.5rem;
-          }
-
-          .task-description,
-          .task-date {
-            color: $grey;
-          }
-        }
-
-        .edit-container.hide {
-          display: none;
-        }
-        .edit-container {
-          display: flex;
-          align-items: center;
-
-          img {
-            width: 18px;
-            height: 18px;
-            display: inline-block;
-            margin-left: 1rem;
-          }
-        }
-      }
-
-      .all-complete-container {
-        position: absolute;
-        z-index: -10;
-        top: 50%;
-        left: 50%;
-        max-width: 800px;
-        text-align: center;
-        transform: translate(-50%, -50%);
-
-        img.lazy-panda {
-          height: 240px;
-          width: 300px;
-        }
-
-        p {
-          font-size: 0.8rem;
+        .task-description,
+        .task-date {
           color: $grey;
         }
       }
 
-      // COMBINED ELEMENTS FROM DIFFERENT PARENTS
-      .dialog,
-      .btn-add-task {
+      .edit-container.hide {
         display: none;
       }
+      .edit-container {
+        display: flex;
+        align-items: center;
 
-      .dialog.active,
-      .btn-add-task.active {
-        display: block;
+        img {
+          width: 18px;
+          height: 18px;
+          display: inline-block;
+          margin-left: 1rem;
+        }
       }
     }
+
+    .all-complete-container {
+      position: absolute;
+      z-index: -10;
+      top: 50%;
+      left: 50%;
+      max-width: 800px;
+      text-align: center;
+      transform: translate(-50%, -50%);
+
+      img.lazy-panda {
+        height: 240px;
+        width: 300px;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: $grey;
+      }
+    }
+
+    // COMBINED ELEMENTS FROM DIFFERENT PARENTS
   }
 }
 
@@ -549,45 +532,41 @@ input {
 
 @media only screen and (max-width: 600px) {
   .header {
+    .container-burger-menu {
+      display: inline-block;
+    }
     h1 {
       display: none;
     }
-
     .score {
-      flex: 1;
-      justify-content: flex-end;
+      margin-left: auto;
     }
-
-    .burger-menu-container {
-      display: block;
-    }
-  }
-
-  .sidebar {
-    transform: translate(-300px);
-    width: 200px !important;
-  }
-
-  .task-container-all {
-    flex: 1;
-    width: 100vw;
-    transform: translate(0px) !important;
-  }
-
-  img.lazy-panda {
-    max-width: 100px;
-    height: 80px;
   }
 }
 
 .low {
-  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);
+  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)
+    brightness(100%) contrast(103%);
 }
 
 .medium {
-  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);
+  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)
+    brightness(101%) contrast(101%);
 }
 
 .high {
-  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg) brightness(96%) contrast(80%);
+  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg)
+    brightness(96%) contrast(80%);
+}
+
+.dialog-add-project {
+  display: none;
+}
+
+.dialog-add-project.active {
+  display: block;
+}
+
+.button-add-project.active {
+  display: none;
 }

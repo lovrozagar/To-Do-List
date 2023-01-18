@@ -1,7 +1,4 @@
-import Project from './modules/project'
-import Task from './modules/tasks'
-import ToDo from './modules/ToDoList'
-import dom from './modules/DOM'
+import DOM from './modules/DOM'
 
 import './styles/main.scss'
 import './assets/more.png'
@@ -21,7 +18,4 @@ import './assets/editPen.svg'
 import './assets/thisWeek.svg'
 import './assets/completed.svg'
 
-Project.doStuff()
-Task.doStuff()
-ToDo.doStuff()
-dom.loadHome()
+DOM.loadContent()
