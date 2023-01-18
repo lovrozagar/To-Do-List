@@ -13,11 +13,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _ToDoList__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ToDoList */ "./src/modules/ToDoList.js");
+/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./storage */ "./src/modules/storage.js");
 /* eslint-disable no-use-before-define */
+
 
 var dom = function () {
   function loadHome() {
     loadProjects();
+    _storage__WEBPACK_IMPORTED_MODULE_1__["default"].saveList();
+    var listy = _storage__WEBPACK_IMPORTED_MODULE_1__["default"].getList();
+    console.log(listy);
   }
   function loadProjects() {
     _ToDoList__WEBPACK_IMPORTED_MODULE_0__["default"].toDoList.projects.forEach(function (element) {
@@ -51,7 +56,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./project */ "./src/modules/project.js");
 /* eslint-disable no-use-before-define */
 
-var ToDo = function () {
+var List = function () {
   var list = function list() {
     var projects = [];
     projects.push(_project__WEBPACK_IMPORTED_MODULE_0__["default"].project('Inbox'));
@@ -111,7 +116,7 @@ var ToDo = function () {
     toDoList: toDoList
   };
 }();
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ToDo);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (List);
 
 /***/ }),
 
@@ -181,6 +186,53 @@ var Project = function () {
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Project);
+
+/***/ }),
+
+/***/ "./src/modules/storage.js":
+/*!********************************!*\
+  !*** ./src/modules/storage.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ToDoList__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ToDoList */ "./src/modules/ToDoList.js");
+/* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project */ "./src/modules/project.js");
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
+
+
+
+var Storage = function () {
+  // SAVE LIST TO LOCAL STORAGE
+
+  function saveList(data) {
+    localStorage.setItem('toDoList', JSON.stringify(data));
+  }
+  function getList() {
+    var list = Object.assign(_ToDoList__WEBPACK_IMPORTED_MODULE_0__["default"].list(), JSON.parse(localStorage.getItem('toDoList')));
+    list.setProjects(list.getProjects().map(function (project) {
+      return Object.assign(_project__WEBPACK_IMPORTED_MODULE_1__["default"].project(), project);
+    }));
+    list.getProjects().forEach(function (project) {
+      return project.setTasks(project.getTasks().map(function (task) {
+        return Object.assign(_tasks__WEBPACK_IMPORTED_MODULE_2__["default"].task(), task);
+      }));
+    });
+    return list;
+  }
+  function doStuff() {
+    console.log('');
+  }
+  return {
+    saveList: saveList,
+    getList: getList,
+    doStuff: doStuff
+  };
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Storage);
 
 /***/ }),
 
@@ -1281,4 +1333,4 @@ _modules_DOM__WEBPACK_IMPORTED_MODULE_3__["default"].loadHome();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundlee9e14fb5c232cc4dafd0.js.map
+//# sourceMappingURL=bundle57699c3227e967871b35.js.map
