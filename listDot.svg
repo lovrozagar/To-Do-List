@@ -1,4 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg class="project_icon" color="rgb(128, 128, 128)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 7a5 5 0 110 10 5 5 0 010-10z" fill="currentColor"/>
-</svg>
+export default "/listDot.svg";
