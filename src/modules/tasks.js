@@ -1,32 +1,33 @@
-import { compareAsc, format } from "date-fns";
-import { is } from "date-fns/locale";
-import dom from "./dom";
-import projects from "./projects";
-
-const tasks = (() => {
-  // TASK FACTORY
-  const task = (title, description, date, priority, projectIndex) => {
-    let completed = false;
-    return { title, description, date, priority, projectIndex, completed };
-  };
-
-  function addTask(title, description, date, priority, projectIndex) {
-    const newTask = task(title, description, date, priority, projectIndex);
-
-    projects.projectList[projectIndex].tasks.push(newTask);
+/* eslint-disable arrow-body-style */
+/* eslint-disable no-use-before-define */
+const Task = (() => {
+  // PROJECT FACTORY
+  const task = (name, dueDate = 'No date') => {
+    return { name, dueDate, setName, getName, setDate, getDate }
   }
 
-  function validateForm(name) {
-    if (name !== "" && name.length < 50) {
-      return true;
-    }
-    return false;
+  function setName(name) {
+    this.name = name
   }
 
-  return {
-    task,
-    addTask,
-  };
-})();
+  function getName() {
+    return this.name
+  }
 
-export default tasks;
+  function setDate(dueDate) {
+    this.dueDate = dueDate
+  }
+
+  function getDate() {
+    return this.dueDate
+  }
+
+  function doStuff() {
+    const tasky = task('taskero frende comprende')
+    console.log((tasky.setName = 'lola'))
+  }
+
+  return { task, doStuff }
+})()
+
+export default Task
