@@ -13,30 +13,262 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _ToDoList__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ToDoList */ "./src/modules/ToDoList.js");
-/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./storage */ "./src/modules/storage.js");
+/* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project */ "./src/modules/project.js");
+/* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
+/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./storage */ "./src/modules/storage.js");
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
 
 
+
+
+
 var dom = function () {
-  function loadHome() {
-    loadProjects();
-    _storage__WEBPACK_IMPORTED_MODULE_1__["default"].saveList();
-    var listy = _storage__WEBPACK_IMPORTED_MODULE_1__["default"].getList();
-    console.log(listy);
+  function loadContent() {
+    renderProjects();
+    initProjectButtons();
+    openProject('Inbox', document.getElementById('inbox'));
   }
-  function loadProjects() {
-    _ToDoList__WEBPACK_IMPORTED_MODULE_0__["default"].toDoList.projects.forEach(function (element) {
-      renderProject(element.name);
+
+  // RENDER PROJECTS LIST
+
+  function renderProjects() {
+    _storage__WEBPACK_IMPORTED_MODULE_3__["default"].getList().getProjects().forEach(function (project) {
+      return loadProject(project.name);
     });
+    initAddProjectButtons();
   }
-  function renderProject(name) {
+  function loadProject(projectName) {
     var projectContainer = document.getElementById('project-list');
     var project = document.createElement('li');
-    project.textContent = name;
+    project.id = "".concat(projectName.replaceAll(' ', '-').toLowerCase());
+    if (project.id !== 'inbox' && project.id !== 'today' && project.id !== 'this-week' && project.id !== 'completed') {
+      project.dataset.projectButton = ''; // ADD DATA ATTRIBUTE TO ALL NON DEFAULT PROJECTS
+    }
+
+    project.textContent = projectName;
     projectContainer.appendChild(project);
   }
+  function openProject(projectName, projectButton) {
+    var allProjectButtons = document.querySelectorAll('#project-list li');
+    allProjectButtons.forEach(function (button) {
+      return button.classList.remove('active');
+    });
+    projectButton.classList.add('active');
+    renderProjectContent(projectName);
+  }
+
+  // RENDER PROJECT CONTENT
+
+  function renderProjectContent(projectName) {
+    createProjectHeading(projectName);
+    renderTasks(projectName);
+  }
+  function createProjectHeading(projectName) {
+    // REMOVE HEADER IF IT ALREADY EXISTS
+    if (document.getElementById('project-heading')) {
+      document.getElementById('project-heading').remove();
+    }
+    var projectHeading = document.createElement('h2');
+    projectHeading.id = 'project-heading';
+    projectHeading.textContent = "".concat(projectName);
+    var taskContainer = document.getElementById('tasks');
+    taskContainer.insertBefore(projectHeading, taskContainer.firstChild);
+  }
+  function renderTasks(projectName) {
+    clearTasks();
+    _storage__WEBPACK_IMPORTED_MODULE_3__["default"].getList().getProject(projectName).getTasks().forEach(function (task) {
+      styleIfCompleted(task.completed, loadTask(task.name, task.dueDate, task.completed));
+    });
+    if (projectName !== 'Today' && projectName !== 'This week' && projectName !== 'Completed') {
+      initAddTaskButtons();
+    }
+  }
+  function loadTask(name, dueDate, isCompleted) {
+    var taskCheckboxSection = document.createElement('div');
+    taskCheckboxSection.classList.add('section-task-checkbox');
+    var checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = isCompleted;
+    taskCheckboxSection.appendChild(checkbox);
+    var taskInfoSection = document.createElement('div');
+    taskInfoSection.classList.add('section-task-info');
+    var namePara = document.createElement('p');
+    namePara.textContent = name;
+    var datePara = document.createElement('p');
+    datePara.textContent = dueDate;
+    taskInfoSection.appendChild(namePara);
+    taskInfoSection.appendChild(datePara);
+    var task = document.createElement('div');
+    task.classList.add('task-item');
+    task.dataset.taskItem = '';
+    task.appendChild(taskCheckboxSection);
+    task.appendChild(taskInfoSection);
+    var tasksContainer = document.getElementById('tasks-container');
+    tasksContainer.appendChild(task);
+    initTaskButtons();
+    return task;
+  }
+  function clearTasks() {
+    var tasksContainer = document.getElementById('tasks-container');
+    tasksContainer.replaceChildren('');
+  }
+
+  // ADD PROJECT EVENT LISTENERS
+  function initAddProjectButtons() {
+    var addProjectButton = document.getElementById('button-add-project');
+    var addProjectDialogButton = document.getElementById('button-add-project-dialog');
+    var cancelProjectDialogButton = document.getElementById('button-cancel-project-dialog');
+    addProjectButton.addEventListener('click', openAddProjectDialog);
+    addProjectDialogButton.addEventListener('click', function (event) {
+      addProject(event);
+    });
+    cancelProjectDialogButton.addEventListener('click', cancelAddProjectDialog);
+  }
+  function openAddProjectDialog() {
+    var addProjectButton = document.getElementById('button-add-project');
+    var addProjectDialog = document.getElementById('dialog-add-project');
+    addProjectButton.classList.add('active');
+    addProjectDialog.classList.add('active');
+  }
+  function closeAddProjectDialog() {
+    var addProjectButton = document.getElementById('button-add-project');
+    var addProjectDialog = document.getElementById('dialog-add-project');
+    addProjectButton.classList.remove('active');
+    addProjectDialog.classList.remove('active');
+  }
+  function clearForms() {
+    var projectForm = document.getElementById('dialog-add-project');
+    var taskForm = document.getElementById('form-add-task');
+    projectForm.reset();
+    taskForm.reset();
+  }
+  function addProject(event) {
+    var addProjectDialogInput = document.getElementById('input-add-project-dialog');
+    var projectName = addProjectDialogInput.value;
+    // FORM VALIDATION IF FORM NOT VALID
+    if (projectName === '' || projectName.length < 3 || projectName.length > 15) {
+      return;
+    }
+    event.preventDefault();
+    if (_storage__WEBPACK_IMPORTED_MODULE_3__["default"].getList().contains(projectName)) {
+      addProjectDialogInput.value = '';
+      alert('Project names must be different');
+      return;
+    }
+    _storage__WEBPACK_IMPORTED_MODULE_3__["default"].addProject(_project__WEBPACK_IMPORTED_MODULE_1__["default"].project(projectName));
+    loadProject(projectName);
+    initProjectButtons();
+    closeAddProjectDialog();
+    clearForms();
+  }
+  function cancelAddProjectDialog() {
+    closeAddProjectDialog();
+    clearForms();
+  }
+
+  // PROJECT EVENT LISTENERS
+  function initProjectButtons() {
+    var inboxProjectButton = document.getElementById('inbox');
+    var todayProjectButton = document.getElementById('today');
+    var weekProjectButton = document.getElementById('this-week');
+    var completed = document.getElementById('completed');
+    var projectButtons = document.querySelectorAll('[data-project-button]');
+    inboxProjectButton.addEventListener('click', openInboxTasks);
+    todayProjectButton.addEventListener('click', openTodayTasks);
+    weekProjectButton.addEventListener('click', openWeekTasks);
+    completed.addEventListener('click', openCompletedTasks);
+    projectButtons.forEach(function (projectButton) {
+      projectButton.addEventListener('click', openCustomProject);
+    });
+  }
+  function openInboxTasks() {
+    openProject('Inbox', this);
+  }
+  function openTodayTasks() {
+    openProject('Today', this);
+  }
+  function openWeekTasks() {
+    openProject('This week', this);
+  }
+  function openCompletedTasks() {
+    openProject('Completed', this);
+  }
+  function openCustomProject(e) {
+    var projectName = this.textContent;
+    openProject(projectName, this);
+  }
+
+  // ADD TASK EVENT LISTENERS
+  function initAddTaskButtons() {
+    var addTaskButton = document.getElementById('button-add-task');
+    var addTaskDialogButton = document.getElementById('button-dialog-add-task');
+    var cancelTaskDialogButton = document.getElementById('button-dialog-cancel-task');
+    addTaskButton.addEventListener('click', openAddTaskDialog);
+    addTaskDialogButton.addEventListener('click', function (event) {
+      addTask(event);
+    });
+    cancelTaskDialogButton.addEventListener('click', closeAddTaskDialog);
+  }
+  function openAddTaskDialog() {
+    var dialog = document.getElementById('dialog-add-task');
+    var showDialogButton = document.getElementById('button-add-task');
+    dialog.classList.add('active');
+    showDialogButton.classList.add('active');
+  }
+  function closeAddTaskDialog() {
+    var dialog = document.getElementById('dialog-add-task');
+    var showDialogButton = document.getElementById('button-add-task');
+    dialog.classList.remove('active');
+    showDialogButton.classList.remove('active');
+  }
+  function addTask(e) {
+    var projectName = document.getElementById('project-heading').textContent;
+    var taskName = document.getElementById('task-name').value;
+    var taskDueDate = document.getElementById('task-due-date').value;
+    if (taskName === '' || taskName === null || taskDueDate === '' || taskDueDate === null) {
+      return;
+    }
+    if (_storage__WEBPACK_IMPORTED_MODULE_3__["default"].getList().getProject(projectName).contains(taskName)) {
+      alert('Task already exists in project');
+      clearForms();
+    }
+    e.preventDefault();
+    _storage__WEBPACK_IMPORTED_MODULE_3__["default"].addTask(projectName, _tasks__WEBPACK_IMPORTED_MODULE_2__["default"].task(taskName, taskDueDate));
+    loadTask(taskName, taskDueDate);
+    clearForms();
+    closeAddTaskDialog();
+  }
+
+  // TASK EVENT LISTENERS
+  function initTaskButtons() {
+    var tasks = document.querySelectorAll('input[type="checkbox"]');
+    tasks.forEach(function (task) {
+      return task.addEventListener('click', function (event) {
+        changeTaskCompleteState(event);
+      });
+    });
+  }
+  function changeTaskCompleteState(e) {
+    var target = e.target;
+    var projectName = document.getElementById('project-heading').textContent;
+    var taskItem = target.closest('[data-task-item]');
+    var taskName = taskItem.children[1].children[0].textContent;
+    console.log(projectName, taskName);
+    _storage__WEBPACK_IMPORTED_MODULE_3__["default"].changeTaskCompleteState(projectName, taskName);
+    var isCompleted = _storage__WEBPACK_IMPORTED_MODULE_3__["default"].getList().getProject(projectName).getTask(taskName).getCompleted();
+    console.log(isCompleted, taskItem);
+    styleIfCompleted(isCompleted, taskItem);
+  }
+  function styleIfCompleted(isCompleted, element) {
+    if (isCompleted) {
+      element.classList.add('line-through');
+    } else {
+      element.classList.remove('line-through');
+    }
+  }
   return {
-    loadHome: loadHome
+    loadContent: loadContent
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (dom);
@@ -94,6 +326,7 @@ var List = function () {
       return project.name === newProject.name;
     })) {
       alert("".concat(newProject.name, " already exists"));
+      return;
     }
     this.projects.push(newProject);
   }
@@ -103,17 +336,12 @@ var List = function () {
     });
     this.projects.splice(this.projects.indexOf(projectToDelete), 1);
   }
-  function doStuff() {
-    var listy = list();
-    console.log(_project__WEBPACK_IMPORTED_MODULE_0__["default"].project('Inbox').name);
-    listy.addProject(_project__WEBPACK_IMPORTED_MODULE_0__["default"].project('XIAO PO'));
-    console.table(listy.getProjects());
-  }
-  var toDoList = list();
+
+  // function doStuff() {
+  // }
+
   return {
-    list: list,
-    doStuff: doStuff,
-    toDoList: toDoList
+    list: list
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (List);
@@ -143,6 +371,7 @@ var Project = function () {
       getName: getName,
       setTasks: setTasks,
       getTasks: getTasks,
+      getTask: getTask,
       contains: contains,
       deleteTask: deleteTask
     };
@@ -156,8 +385,13 @@ var Project = function () {
   function setTasks(tasks) {
     this.tasks = tasks;
   }
-  function getTasks(tasks) {
-    this.tasks = tasks;
+  function getTasks() {
+    return this.tasks;
+  }
+  function getTask(taskName) {
+    return this.tasks.find(function (task) {
+      return task.getName() === taskName;
+    });
   }
   function contains(taskName) {
     return this.tasks.some(function (task) {
@@ -175,14 +409,12 @@ var Project = function () {
       return task.name !== taskName;
     });
   }
-  function doStuff() {
-    var a = project('Po');
-    a.addTask('Lovro');
-    console.log(a.getName());
-  }
+
+  // function doStuff() {
+  // }
+
   return {
-    project: project,
-    doStuff: doStuff
+    project: project
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Project);
@@ -223,13 +455,54 @@ var Storage = function () {
     });
     return list;
   }
-  function doStuff() {
-    console.log('');
+  function addProject(project) {
+    var list = getList();
+    list.addProject(project);
+    saveList(list);
+  }
+  function deleteProject(projectName) {
+    var list = getList();
+    list.deleteProject(projectName);
+    saveList(list);
+  }
+  function addTask(projectName, task) {
+    var list = getList();
+    list.getProject(projectName).addTask(task);
+    saveList(list);
+  }
+  function changeTaskCompleteState(projectName, taskName) {
+    var list = getList();
+    var isCompleted = list.getProject(projectName).getTask(taskName).getCompleted();
+    if (isCompleted) {
+      list.getProject(projectName).getTask(taskName).setCompleted(false);
+    } else {
+      list.getProject(projectName).getTask(taskName).setCompleted(true);
+    }
+    saveList(list);
+  }
+  function deleteTask(projectName, taskName) {
+    var list = getList();
+    list.getProject(projectName).deleteTask(taskName);
+    saveList(list);
+  }
+  function renameTask(projectName, taskName, newTaskName) {
+    var list = getList();
+    list.getProjects(projectName).getTask(taskName).setName(newTaskName);
+  }
+  function setTaskDate(projectName, taskName, newDueDate) {
+    var list = getList();
+    list.getProjects(projectName).getTask(taskName).setDate(newDueDate);
   }
   return {
     saveList: saveList,
     getList: getList,
-    doStuff: doStuff
+    addProject: addProject,
+    deleteProject: deleteProject,
+    addTask: addTask,
+    deleteTask: deleteTask,
+    renameTask: renameTask,
+    setTaskDate: setTaskDate,
+    changeTaskCompleteState: changeTaskCompleteState
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Storage);
@@ -252,13 +525,17 @@ var Task = function () {
   // PROJECT FACTORY
   var task = function task(name) {
     var dueDate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'No date';
+    var completed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     return {
       name: name,
       dueDate: dueDate,
+      completed: completed,
       setName: setName,
       getName: getName,
       setDate: setDate,
-      getDate: getDate
+      getDate: getDate,
+      setCompleted: setCompleted,
+      getCompleted: getCompleted
     };
   };
   function setName(name) {
@@ -273,13 +550,18 @@ var Task = function () {
   function getDate() {
     return this.dueDate;
   }
-  function doStuff() {
-    var tasky = task('taskero frende comprende');
-    console.log(tasky.setName = 'lola');
+  function setCompleted(isCompleted) {
+    this.completed = isCompleted;
   }
+  function getCompleted() {
+    return this.completed;
+  }
+
+  // function doStuff() {
+  // }
+
   return {
-    task: task,
-    doStuff: doStuff
+    task: task
   };
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Task);
@@ -321,7 +603,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_3___);
 var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_3___default()(___CSS_LOADER_URL_IMPORT_4___);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* LIGHT MODE */\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: #000000;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: #fcfcfc;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n  background-color: #f7f7f7;\n  font-size: 1.625rem;\n  font-weight: bold;\n}\n.header .burger-menu-container {\n  position: absolute;\n  display: none;\n}\n.header .burger-menu-container .btn-burger-menu {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  width: 30px;\n  height: 20px;\n  pointer-events: none;\n}\n.header .burger-menu-container .btn-burger-menu .bar {\n  height: 4px;\n  width: 100%;\n  border-radius: 10px;\n  background-color: #000000;\n}\n.header .score {\n  display: flex;\n  align-items: center;\n}\n.header .score .character-info-container {\n  display: flex;\n  justify-content: center;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.375rem;\n}\n.header .score .character-info-container .completed-tasks-number {\n  font-size: 1rem;\n}\n.header .score .character-info-container .character-title {\n  font-size: 0.75rem;\n  color: var(--grey);\n}\n.header .score .character-img {\n  height: 70px;\n}\n\n.main {\n  position: relative;\n  display: flex;\n}\n.main .sidebar.slide-view {\n  transform: translate(0px);\n  height: calc(100vh - 4rem);\n}\n.main .sidebar {\n  position: absolute;\n  z-index: 10;\n  height: calc(100vh - 4rem);\n  width: 300px;\n  padding: 1.5rem;\n  transition: transform 300ms ease-out;\n  font-weight: 500;\n  background-color: #f1f1f1;\n}\n.main .sidebar .project-container {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n.main .sidebar .project-container .active-project {\n  font-weight: 500;\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container .project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n}\n.main .sidebar .project-container .project-list:hover {\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container li {\n  position: relative;\n  padding-left: 2rem !important;\n  font-weight: 400;\n  cursor: pointer;\n}\n.main .sidebar .project-container li::before {\n  content: \"\";\n  position: absolute;\n  top: 7.5px;\n  left: 5px;\n  display: inline-block;\n  height: 1.25rem;\n  width: 1.25rem;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.main .sidebar .project-container li:first-child::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n.main .sidebar .project-container li:nth-child(2)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n.main .sidebar .project-container li:nth-child(3)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n.main .sidebar .project-container li:nth-child(4)::after {\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  display: inline;\n  pointer-events: none;\n  font-size: 1rem;\n  font-weight: normal;\n  color: #32cd32;\n}\n.main .sidebar .project-form {\n  display: flex;\n  align-items: center;\n  margin-top: 0.5rem;\n  padding: 0.25rem;\n  border: 1px solid #808080;\n  border-radius: 5px;\n}\n.main .sidebar .project-form .project-input {\n  flex: 1;\n  margin: 0;\n}\n.main .task-container-all {\n  display: flex;\n  width: calc(100vw - 300px);\n  transform: translate(300px);\n}\n.main .task-container-all .tasks {\n  position: relative;\n  flex: 1;\n  height: calc(100vh - 4rem);\n  max-width: 800px;\n  margin: 0 auto;\n  padding: 2rem;\n  overflow: auto;\n}\n.main .task-container-all .tasks .btn-add-container {\n  display: flex;\n}\n.main .task-container-all .tasks .btn-add-container .btn-add-task {\n  flex: 1;\n  font-size: 1rem;\n  text-align: start;\n  background-color: transparent;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog .dialog-form {\n  padding: 0.75rem;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 10px;\n  /* Removes the clear button from date inputs */\n  /* Removes the spin button */\n  /* Always display the drop down caret */\n  /* A few custom styles for date inputs */\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-name {\n  font-size: 1.25rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form .task-description,\n.main .task-container-all .tasks .dialog .dialog-form .task-date,\n.main .task-container-all .tasks .dialog .dialog-form .task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=text]:first-child {\n  font-size: 1rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input {\n  margin-bottom: 0.5rem;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-clear-button {\n  display: none;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n.main .task-container-all .tasks .dialog .dialog-form input[type=date] {\n  appearance: none;\n  margin-right: 0.5rem;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog .dialog-form select {\n  appearance: none;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  background-color: transparent;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog-btn-container {\n  display: flex;\n  justify-content: flex-end;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-cancel-task,\n.main .task-container-all .tasks .dialog-btn-container .btn-remove-task {\n  margin: 0.5rem 0 0 0.75rem;\n  padding: 10px 12px;\n  border-radius: 5px;\n  font-size: 0.825rem;\n  font-weight: 600;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-cancel-task {\n  background-color: #e0e0e0;\n}\n.main .task-container-all .tasks .dialog-btn-container .btn-remove-task {\n  background-color: #32cd32;\n  color: #fcfcfc;\n}\n.main .task-container-all .tasks .task-container.completed {\n  text-decoration: line-through;\n  color: #808080;\n}\n.main .task-container-all .tasks .task-container {\n  display: flex;\n  width: 100%;\n  margin-bottom: 0.25rem;\n  padding: 0.5rem;\n  border-bottom: 1px solid rgba(128, 128, 128, 0.4941176471);\n}\n.main .task-container-all .tasks .task-container .checkbox-container {\n  position: relative;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n  background-color: transparent;\n  border: 1px solid #808080;\n  border-radius: 50%;\n  cursor: pointer;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n.main .task-container-all .tasks .task-container .checkbox-container label:hover::after {\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #808080;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  content: \"\";\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #fcfcfc;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label {\n  border-color: #32cd32;\n  background-color: #32cd32;\n}\n.main .task-container-all .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n.main .task-container-all .tasks .task-container .task-info-container {\n  flex: 1;\n  padding-left: 0.25rem;\n}\n.main .task-container-all .tasks .task-container .task-info-container .task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n.main .task-container-all .tasks .task-container .task-info-container .task-description,\n.main .task-container-all .tasks .task-container .task-info-container .task-date {\n  color: #808080;\n}\n.main .task-container-all .tasks .task-container .edit-container.hide {\n  display: none;\n}\n.main .task-container-all .tasks .task-container .edit-container {\n  display: flex;\n  align-items: center;\n}\n.main .task-container-all .tasks .task-container .edit-container img {\n  width: 18px;\n  height: 18px;\n  display: inline-block;\n  margin-left: 1rem;\n}\n.main .task-container-all .tasks .all-complete-container {\n  position: absolute;\n  z-index: -10;\n  top: 50%;\n  left: 50%;\n  max-width: 800px;\n  text-align: center;\n  transform: translate(-50%, -50%);\n}\n.main .task-container-all .tasks .all-complete-container img.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n.main .task-container-all .tasks .all-complete-container p {\n  font-size: 0.8rem;\n  color: #808080;\n}\n.main .task-container-all .tasks .dialog,\n.main .task-container-all .tasks .btn-add-task {\n  display: none;\n}\n.main .task-container-all .tasks .dialog.active,\n.main .task-container-all .tasks .btn-add-task.active {\n  display: block;\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e0e0e0;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(128, 128, 128, 0.4941176471);\n}\n\n@media only screen and (max-width: 600px) {\n  .header h1 {\n    display: none;\n  }\n  .header .score {\n    flex: 1;\n    justify-content: flex-end;\n  }\n  .header .burger-menu-container {\n    display: block;\n  }\n  .sidebar {\n    transform: translate(-300px);\n    width: 200px !important;\n  }\n  .task-container-all {\n    flex: 1;\n    width: 100vw;\n    transform: translate(0px) !important;\n  }\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n.low {\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\n.medium {\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\n.high {\n  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg) brightness(96%) contrast(80%);\n}", "",{"version":3,"sources":["webpack://./src/styles/main.scss","webpack://./src/styles/variables.scss"],"names":[],"mappings":"AAAQ,eAAA;ACWR,cAAA;AACA;;;;;;;qBAAA;ADTA;EACE,sBAAA;AAQF;;AALA;EACE,wIAAA;EAEA,cCLM;EDMN,eAAA;EACA,YAAA;AAOF;;AAJA;EACE,yBCfM;EDgBN,aAAA;AAOF;;AAJA;;EAEE,YAAA;EACA,aAAA;AAOF;;AAJA;EACE,kBAAA;EACA,WAAA;EACA,aAAA;EACA,8BAAA;EACA,mBAAA;EACA,YAAA;EACA,mBAAA;EACA,+CC1Be;ED2Bf,yBChCe;EDiCf,mBAAA;EACA,iBAAA;AAOF;AALE;EACE,kBAAA;EACA,aAAA;AAOJ;AALI;EACE,aAAA;EACA,sBAAA;EACA,8BAAA;EACA,WAAA;EACA,YAAA;EACA,oBAAA;AAON;AALM;EACE,WAAA;EACA,WAAA;EACA,mBAAA;EACA,yBClDA;ADyDR;AAFE;EACE,aAAA;EACA,mBAAA;AAIJ;AAFI;EACE,aAAA;EACA,uBAAA;EACA,sBAAA;EACA,mBAAA;EACA,aAAA;AAIN;AAFM;EACE,eAAA;AAIR;AADM;EACE,kBAAA;EACA,kBAAA;AAGR;AACI;EACE,YAAA;AACN;;AAIA;EACE,kBAAA;EACA,aAAA;AADF;AAGE;EACE,yBAAA;EACA,0BAAA;AADJ;AAIE;EACE,kBAAA;EACA,WAAA;EACA,0BAAA;EACA,YAAA;EACA,eAAA;EACA,oCAAA;EACA,gBAAA;EACA,yBCpGa;ADkGjB;AAII;EACE,aAAA;EACA,sBAAA;EACA,WAAA;AAFN;AAIM;EACE,gBAAA;EACA,yBChHA;AD8GR;AAKM;EACE,eAAA;EACA,gBAAA;EACA,0BAAA;EACA,kBAAA;AAHR;AAKQ;EACE,yBC1HF;ADuHR;AAOM;EACE,kBAAA;EACA,6BAAA;EACA,gBAAA;EACA,eAAA;AALR;AAQM;EACE,WAAA;EACA,kBAAA;EACA,UAAA;EACA,SAAA;EACA,qBAAA;EACA,eAAA;EACA,cAAA;EACA,mDAAA;AANR;AASM;EACE,mDAAA;EACA,iGAAA;AAPR;AAWM;EACE,mDAAA;EACA,8FAAA;AATR;AAaM;EACE,mDAAA;EACA,gGAAA;AAXR;AAeM;EACE,mDAAA;EACA,iGAAA;AAbR;AAiBM;EACE,qBAAA;AAfR;AAkBM;EACE,mBAAA;EACA,kBAAA;EACA,WAAA;EACA,OAAA;EACA,eAAA;EACA,oBAAA;EACA,eAAA;EACA,mBAAA;EACA,cC7KA;AD6JR;AAoBI;EACE,aAAA;EACA,mBAAA;EACA,kBAAA;EACA,gBAAA;EACA,yBAAA;EACA,kBAAA;AAlBN;AAoBM;EACE,OAAA;EACA,SAAA;AAlBR;AAuBE;EACE,aAAA;EACA,0BAAA;EACA,2BAAA;AArBJ;AAuBI;EACE,kBAAA;EACA,OAAA;EACA,0BAAA;EACA,gBC9LY;ED+LZ,cAAA;EACA,aAAA;EACA,cAAA;AArBN;AAuBM;EACE,aAAA;AArBR;AAuBQ;EACE,OAAA;EACA,eAAA;EACA,iBAAA;EACA,6BAAA;EACA,cCzNH;ADoMP;AA0BQ;EACE,gBAAA;EACA,mDAAA;EACA,mBAAA;EA6BA,8CAAA;EAKA,4BAAA;EAKA,uCAAA;EAKA,wCAAA;AAhEV;AAsBU;EACE,aAAA;EACA,0BAAA;AApBZ;AAuBU;EACE,kBAAA;AArBZ;AAwBU;;;EAGE,mBAAA;EACA,eAAA;AAtBZ;AAyBU;EACE,eAAA;AAvBZ;AAyBU;EACE,kBAAA;AAvBZ;AA0BU;EACE,qBAAA;AAxBZ;AA4BU;EACE,aAAA;AA1BZ;AA8BU;EACE,aAAA;AA5BZ;AAgCU;EACE,mBAAA;AA9BZ;AAkCU;EACE,gBAAA;EACA,oBAAA;EACA,YAAA;EACA,mDAAA;EACA,kBAAA;EACA,cCpRL;ADoPP;AAmCU;EACE,gBAAA;EACA,YAAA;EACA,mDAAA;EACA,kBAAA;EACA,6BAAA;EACA,cC7RL;AD4PP;AAsCM;EACE,aAAA;EACA,yBAAA;AApCR;AAsCQ;;EAEE,0BAAA;EACA,kBAAA;EACA,kBAAA;EACA,mBAAA;EACA,gBAAA;AApCV;AAuCQ;EACE,yBCpTQ;AD+QlB;AAwCQ;EACE,yBCjTF;EDkTE,cC1TF;ADoRR;AA0CM;EACE,6BAAA;EACA,cC3TD;ADmRP;AA2CM;EACE,aAAA;EACA,WAAA;EACA,sBAAA;EACA,eAAA;EACA,0DAAA;AAzCR;AA2CQ;EACE,kBAAA;AAzCV;AA2CU;EACE,kBAAA;EACA,OAAA;EACA,MAAA;EACA,WAAA;EACA,YAAA;EACA,6BAAA;EACA,yBAAA;EACA,kBAAA;EACA,eAAA;AAzCZ;AA4CU;EACE,6BAAA;AA1CZ;AA6CU;EACE,kBAAA;EACA,WAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;EACA,gBAAA;EACA,kBAAA;EACA,UAAA;EACA,yBAAA;AA3CZ;AA8CU;EACE,WAAA;EACA,kBAAA;EACA,WAAA;EACA,SAAA;EACA,WAAA;EACA,YAAA;EACA,2BAAA;EACA,gBAAA;EACA,kBAAA;EACA,UAAA;EACA,yBAAA;AA5CZ;AA+CU;EACE,kBAAA;AA7CZ;AAgDU;EACE,UAAA;AA9CZ;AAiDU;EACE,qBCzXJ;ED0XI,yBC1XJ;AD2UR;AAkDU;EACE,UAAA;AAhDZ;AAoDQ;EACE,OAAA;EACA,qBAAA;AAlDV;AAoDU;EACE,kBAAA;AAlDZ;AAqDU;;EAEE,cC/YL;AD4VP;AAuDQ;EACE,aAAA;AArDV;AAuDQ;EACE,aAAA;EACA,mBAAA;AArDV;AAuDU;EACE,WAAA;EACA,YAAA;EACA,qBAAA;EACA,iBAAA;AArDZ;AA0DM;EACE,kBAAA;EACA,YAAA;EACA,QAAA;EACA,SAAA;EACA,gBAAA;EACA,kBAAA;EACA,gCAAA;AAxDR;AA0DQ;EACE,aAAA;EACA,YAAA;AAxDV;AA2DQ;EACE,iBAAA;EACA,cCnbH;AD0XP;AA8DM;;EAEE,aAAA;AA5DR;AA+DM;;EAEE,cAAA;AA7DR;;AAoIA;EACE,6BAAA;EACA,YAAA;EACA,aAAA;AAjIF;;AAoIA;EACE,aAAA;AAjIF;;AAoIA;EACE,6BAAA;AAjIF;;AAoIA;EACE,yBCzhBgB;ED0hBhB,mBAAA;EACA,6BAAA;EACA,4BAAA;AAjIF;;AAoIA;EACE,mDC3hBiB;AD0ZnB;;AAoIA;EAEI;IACE,aAAA;EAlIJ;EAqIE;IACE,OAAA;IACA,yBAAA;EAnIJ;EAsIE;IACE,cAAA;EApIJ;EAwIA;IACE,4BAAA;IACA,uBAAA;EAtIF;EAyIA;IACE,OAAA;IACA,YAAA;IACA,oCAAA;EAvIF;EA0IA;IACE,gBAAA;IACA,YAAA;EAxIF;AACF;AA2IA;EACE,iGAAA;AAzIF;;AA4IA;EACE,iGAAA;AAzIF;;AA4IA;EACE,+FAAA;AAzIF","sourcesContent":["@import \"./reset.css\";\n@import \"variables\";\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell,\n    \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: $black;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: $white;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: $box-shadow-btm;\n  background-color: $white-mid-grey;\n  font-size: 1.625rem;\n  font-weight: bold;\n\n  .burger-menu-container {\n    position: absolute;\n    display: none;\n\n    .btn-burger-menu {\n      display: flex;\n      flex-direction: column;\n      justify-content: space-between;\n      width: 30px;\n      height: 20px;\n      pointer-events: none;\n\n      .bar {\n        height: 4px;\n        width: 100%;\n        border-radius: 10px;\n        background-color: $black;\n      }\n    }\n  }\n\n  .score {\n    display: flex;\n    align-items: center;\n\n    .character-info-container {\n      display: flex;\n      justify-content: center;\n      flex-direction: column;\n      align-items: center;\n      gap: 0.375rem;\n\n      .completed-tasks-number {\n        font-size: 1rem;\n      }\n\n      .character-title {\n        font-size: 0.75rem;\n        color: var(--grey);\n      }\n    }\n\n    .character-img {\n      height: 70px;\n    }\n  }\n}\n\n.main {\n  position: relative;\n  display: flex;\n\n  .sidebar.slide-view {\n    transform: translate(0px);\n    height: calc(100vh - 4rem);\n  }\n\n  .sidebar {\n    position: absolute;\n    z-index: 10;\n    height: calc(100vh - 4rem);\n    width: 300px;\n    padding: 1.5rem;\n    transition: transform 300ms ease-out;\n    font-weight: 500;\n    background-color: $white-low-grey;\n\n    .project-container {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n\n      .active-project {\n        font-weight: 500;\n        background-color: $white;\n      }\n\n      .project-list {\n        font-size: 1rem;\n        font-weight: 400;\n        padding: 0.625rem 0.125rem;\n        border-radius: 5px;\n\n        &:hover {\n          background-color: $white;\n        }\n      }\n\n      li {\n        position: relative;\n        padding-left: 2rem !important;\n        font-weight: 400;\n        cursor: pointer;\n      }\n\n      li::before {\n        content: \"\";\n        position: absolute;\n        top: 7.5px;\n        left: 5px;\n        display: inline-block;\n        height: 1.25rem;\n        width: 1.25rem;\n        background: url(\"../assets/listDot.svg\");\n      }\n\n      li:first-child::before {\n        background: url(\"../assets/inbox.svg\");\n        filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%)\n          contrast(103%);\n      }\n\n      li:nth-child(2)::before {\n        background: url(\"../assets/today.svg\");\n        filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%)\n          contrast(91%);\n      }\n\n      li:nth-child(3)::before {\n        background: url(\"../assets/thisWeek.svg\");\n        filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%)\n          contrast(101%);\n      }\n\n      li:nth-child(4)::before {\n        background: url(\"../assets/completed.svg\");\n        filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%)\n          contrast(101%);\n      }\n\n      li:nth-child(4) {\n        margin-bottom: 2.5rem;\n      }\n\n      li:nth-child(4)::after {\n        content: \"Projects\";\n        position: absolute;\n        top: 3.5rem;\n        left: 0;\n        display: inline;\n        pointer-events: none;\n        font-size: 1rem;\n        font-weight: normal;\n        color: $green;\n      }\n    }\n\n    .project-form {\n      display: flex;\n      align-items: center;\n      margin-top: 0.5rem;\n      padding: 0.25rem;\n      border: 1px solid $grey;\n      border-radius: 5px;\n\n      .project-input {\n        flex: 1;\n        margin: 0;\n      }\n    }\n  }\n\n  .task-container-all {\n    display: flex;\n    width: calc(100vw - 300px);\n    transform: translate(300px);\n\n    .tasks {\n      position: relative;\n      flex: 1;\n      height: calc(100vh - 4rem);\n      max-width: $tasks-max-width;\n      margin: 0 auto;\n      padding: 2rem;\n      overflow: auto;\n\n      .btn-add-container {\n        display: flex;\n\n        .btn-add-task {\n          flex: 1;\n          font-size: 1rem;\n          text-align: start;\n          background-color: transparent;\n          color: $grey;\n        }\n      }\n\n      .dialog {\n        .dialog-form {\n          padding: 0.75rem;\n          border: 1px solid $grey-transparent;\n          border-radius: 10px;\n\n          .task-text {\n            display: grid;\n            grid-template-columns: 1fr;\n          }\n\n          .task-name {\n            font-size: 1.25rem;\n          }\n\n          .task-description,\n          .task-date,\n          .task-priority {\n            margin-top: 0.25rem;\n            font-size: 1rem;\n          }\n\n          input[type=\"text\"]:first-child {\n            font-size: 1rem;\n          }\n          input[type=\"text\"]:nth-child(2) {\n            font-size: 0.75rem;\n          }\n\n          input {\n            margin-bottom: 0.5rem;\n          }\n\n          /* Removes the clear button from date inputs */\n          input[type=\"date\"]::-webkit-clear-button {\n            display: none;\n          }\n\n          /* Removes the spin button */\n          input[type=\"date\"]::-webkit-inner-spin-button {\n            display: none;\n          }\n\n          /* Always display the drop down caret */\n          input[type=\"date\"]::-webkit-calendar-picker-indicator {\n            filter: invert(0.5);\n          }\n\n          /* A few custom styles for date inputs */\n          input[type=\"date\"] {\n            appearance: none;\n            margin-right: 0.5rem;\n            padding: 5px;\n            border: 1px solid $grey-transparent;\n            border-radius: 5px;\n            color: $grey;\n          }\n\n          select {\n            appearance: none;\n            padding: 5px;\n            border: 1px solid $grey-transparent;\n            border-radius: 5px;\n            background-color: transparent;\n            color: $grey;\n          }\n        }\n      }\n\n      .dialog-btn-container {\n        display: flex;\n        justify-content: flex-end;\n\n        .btn-cancel-task,\n        .btn-remove-task {\n          margin: 0.5rem 0 0 0.75rem;\n          padding: 10px 12px;\n          border-radius: 5px;\n          font-size: 0.825rem;\n          font-weight: 600;\n        }\n\n        .btn-cancel-task {\n          background-color: $white-high-grey;\n        }\n\n        .btn-remove-task {\n          background-color: $green;\n          color: $white;\n        }\n      }\n\n      .task-container.completed {\n        text-decoration: line-through;\n        color: $grey;\n      }\n\n      .task-container {\n        display: flex;\n        width: 100%;\n        margin-bottom: 0.25rem;\n        padding: 0.5rem;\n        border-bottom: 1px solid $grey-transparent;\n\n        .checkbox-container {\n          position: relative;\n\n          label {\n            position: absolute;\n            left: 0;\n            top: 0;\n            width: 1rem;\n            height: 1rem;\n            background-color: transparent;\n            border: 1px solid $grey;\n            border-radius: 50%;\n            cursor: pointer;\n          }\n\n          label::after {\n            transition: opacity 0.4s ease;\n          }\n\n          label:hover::after {\n            position: absolute;\n            top: 4.25px;\n            left: 3px;\n            height: 3px;\n            width: 6.5px;\n            border: 1.5px solid $grey;\n            border-top: none;\n            border-right: none;\n            opacity: 0;\n            transform: rotate(-45deg);\n          }\n\n          input[type=\"checkbox\"]:checked + label::after {\n            content: \"\";\n            position: absolute;\n            top: 4.25px;\n            left: 3px;\n            height: 3px;\n            width: 6.5px;\n            border: 1.5px solid $white;\n            border-top: none;\n            border-right: none;\n            opacity: 0;\n            transform: rotate(-45deg);\n          }\n\n          input[type=\"checkbox\"] {\n            visibility: hidden;\n          }\n\n          input[type=\"checkbox\"]:hover + label::after {\n            opacity: 1;\n          }\n\n          input[type=\"checkbox\"]:checked + label {\n            border-color: $green;\n            background-color: $green;\n          }\n\n          input[type=\"checkbox\"]:checked + label::after {\n            opacity: 1;\n          }\n        }\n\n        .task-info-container {\n          flex: 1;\n          padding-left: 0.25rem;\n\n          .task-info-container > p:not(:first-child) {\n            margin-top: 0.5rem;\n          }\n\n          .task-description,\n          .task-date {\n            color: $grey;\n          }\n        }\n\n        .edit-container.hide {\n          display: none;\n        }\n        .edit-container {\n          display: flex;\n          align-items: center;\n\n          img {\n            width: 18px;\n            height: 18px;\n            display: inline-block;\n            margin-left: 1rem;\n          }\n        }\n      }\n\n      .all-complete-container {\n        position: absolute;\n        z-index: -10;\n        top: 50%;\n        left: 50%;\n        max-width: 800px;\n        text-align: center;\n        transform: translate(-50%, -50%);\n\n        img.lazy-panda {\n          height: 240px;\n          width: 300px;\n        }\n\n        p {\n          font-size: 0.8rem;\n          color: $grey;\n        }\n      }\n\n      // COMBINED ELEMENTS FROM DIFFERENT PARENTS\n      .dialog,\n      .btn-add-task {\n        display: none;\n      }\n\n      .dialog.active,\n      .btn-add-task.active {\n        display: block;\n      }\n    }\n  }\n}\n\n// .modal {\n//   position: fixed;\n//   z-index: 10;\n//   top: 50%;\n//   left: 50%;\n//   display: flex;\n//   flex-direction: column;\n//   justify-content: center;\n//   max-width: 350px;\n//   height: 400px;\n//   border-radius: 10px;\n//   transform: translate(-50%, -50%) scale(1);\n//   transition: 200ms ease-in-out;\n//   background-color: $white-high-grey;\n\n//   .modal-form {\n//     display: flex;\n//     flex-direction: column;\n//   }\n// }\n\n// .modal.active {\n//   transform: translate(-50%, -50%) scale(1);\n// }\n\n// .modal {\n//   max-width: 300px;\n//   margin: 0 auto;\n//   padding: 2rem;\n//   border-radius: 10px;\n//   background-color: $white-low-grey;\n\n//   .modal-form {\n//     display: flex;\n//     flex-direction: column;\n//     gap: 0.75rem;\n\n//     input,\n//     button,\n//     select {\n//       border-radius: 7.5px;\n//       font-size: 0.85rem;\n//     }\n\n//     input,\n//     select {\n//       padding: 0.5rem;\n//       background-color: $white;\n//     }\n\n//     button {\n//       border-radius: 7.5px;\n//       padding: 0.75rem 0;\n\n//       &:nth-child(5) {\n//         background-color: $white-high-grey;\n//       }\n\n//       &:last-child {\n//         background-color: $green;\n//       }\n//     }\n//   }\n// }\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: $white-high-grey;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: $grey-transparent;\n}\n\n@media only screen and (max-width: 600px) {\n  .header {\n    h1 {\n      display: none;\n    }\n\n    .score {\n      flex: 1;\n      justify-content: flex-end;\n    }\n\n    .burger-menu-container {\n      display: block;\n    }\n  }\n\n  .sidebar {\n    transform: translate(-300px);\n    width: 200px !important;\n  }\n\n  .task-container-all {\n    flex: 1;\n    width: 100vw;\n    transform: translate(0px) !important;\n  }\n\n  img.lazy-panda {\n    max-width: 100px;\n    height: 80px;\n  }\n}\n\n.low {\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\n.medium {\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\n.high {\n  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg) brightness(96%) contrast(80%);\n}\n","/* LIGHT MODE */\n$white: #fcfcfc;\n$white-high-grey: #e0e0e0;\n$white-mid-grey: #f7f7f7;\n$white-low-grey: #f1f1f1;\n$black: #000000;\n$grey: #808080;\n$grey-transparent: #8080807e;\n$box-shadow-btm: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n$green: #32cd32;\n\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n$tasks-max-width: 800px;\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* LIGHT MODE */\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Open Sans\", \"Helvetica Neue\", sans-serif;\n  color: #000000;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: #fcfcfc;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n  background-color: #f7f7f7;\n  font-size: 1.625rem;\n  font-weight: bold;\n}\n.header .container-burger-menu {\n  position: absolute;\n  z-index: 20;\n  display: none;\n}\n.header .container-burger-menu .btn-burger-menu {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  width: 30px;\n  height: 20px;\n  pointer-events: none;\n}\n.header .container-burger-menu .btn-burger-menu .bar {\n  height: 4px;\n  width: 100%;\n  border-radius: 10px;\n  background-color: #000000;\n}\n.header .score {\n  display: flex;\n  align-items: center;\n}\n.header .score .character-info-container {\n  display: flex;\n  justify-content: center;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.375rem;\n}\n.header .score .character-info-container .completed-tasks-number {\n  font-size: 1rem;\n}\n.header .score .character-info-container .character-title {\n  font-size: 0.75rem;\n  color: var(--grey);\n}\n.header .score .character-img {\n  height: 70px;\n}\n\n.main {\n  position: relative;\n  display: flex;\n}\n.main .sidebar.slide-view {\n  transform: translate(0px);\n  height: calc(100vh - 4rem);\n}\n.main .sidebar {\n  height: calc(100vh - 4rem);\n  width: 250px;\n  padding: 1.5rem;\n  transition: transform 300ms ease-out;\n  font-weight: 500;\n  background-color: #f1f1f1;\n}\n.main .sidebar .project-container {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n.main .sidebar .project-container .active-project {\n  font-weight: 500;\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container .project-list {\n  font-size: 1rem;\n  font-weight: 400;\n  padding: 0.625rem 0.125rem;\n  border-radius: 5px;\n}\n.main .sidebar .project-container .project-list:hover {\n  background-color: #fcfcfc;\n}\n.main .sidebar .project-container li {\n  position: relative;\n  padding-left: 2rem !important;\n  font-weight: 400;\n  cursor: pointer;\n}\n.main .sidebar .project-container li::before {\n  content: \"\";\n  position: absolute;\n  top: 7.5px;\n  left: 5px;\n  display: inline-block;\n  height: 1.25rem;\n  width: 1.25rem;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.main .sidebar .project-container li:first-child::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n.main .sidebar .project-container li:nth-child(2)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg) brightness(101%) contrast(91%);\n}\n.main .sidebar .project-container li:nth-child(3)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n  filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4)::before {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n.main .sidebar .project-container li:nth-child(4) {\n  margin-bottom: 2.5rem;\n}\n.main .sidebar .project-container li:nth-child(4)::after {\n  content: \"Projects\";\n  position: absolute;\n  top: 3.5rem;\n  left: 0;\n  display: inline;\n  pointer-events: none;\n  font-size: 1rem;\n  font-weight: normal;\n  color: #32cd32;\n}\n.main .sidebar .project-form {\n  display: flex;\n  align-items: center;\n  margin-top: 0.5rem;\n  padding: 0.25rem;\n  border: 1px solid #808080;\n  border-radius: 5px;\n}\n.main .sidebar .project-form .project-input {\n  flex: 1;\n  margin: 0;\n}\n.main .tasks {\n  flex: 1;\n  height: calc(100vh - 4rem);\n  max-width: 800px;\n  margin: 0 auto;\n  padding: 2rem;\n  overflow: auto;\n}\n.main .tasks .btn-add-container {\n  display: flex;\n}\n.main .tasks .btn-add-container .btn-add-task {\n  flex: 1;\n  font-size: 1rem;\n  text-align: start;\n  background-color: transparent;\n  color: #808080;\n}\n.main .tasks .dialog .dialog-form {\n  padding: 0.75rem;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 10px;\n  /* Removes the clear button from date inputs */\n  /* Removes the spin button */\n  /* Always display the drop down caret */\n  /* A few custom styles for date inputs */\n}\n.main .tasks .dialog .dialog-form .task-text {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n.main .tasks .dialog .dialog-form .task-name {\n  font-size: 1.25rem;\n}\n.main .tasks .dialog .dialog-form .task-description,\n.main .tasks .dialog .dialog-form .task-date,\n.main .tasks .dialog .dialog-form .task-priority {\n  margin-top: 0.25rem;\n  font-size: 1rem;\n}\n.main .tasks .dialog .dialog-form input[type=text]:first-child {\n  font-size: 1rem;\n}\n.main .tasks .dialog .dialog-form input[type=text]:nth-child(2) {\n  font-size: 0.75rem;\n}\n.main .tasks .dialog .dialog-form input {\n  margin-bottom: 0.5rem;\n}\n.main .tasks .dialog .dialog-form input[type=date]::-webkit-clear-button {\n  display: none;\n}\n.main .tasks .dialog .dialog-form input[type=date]::-webkit-inner-spin-button {\n  display: none;\n}\n.main .tasks .dialog .dialog-form input[type=date]::-webkit-calendar-picker-indicator {\n  filter: invert(0.5);\n}\n.main .tasks .dialog .dialog-form input[type=date] {\n  appearance: none;\n  margin-right: 0.5rem;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  color: #808080;\n}\n.main .tasks .dialog .dialog-form select {\n  appearance: none;\n  padding: 5px;\n  border: 1px solid rgba(128, 128, 128, 0.4941176471);\n  border-radius: 5px;\n  background-color: transparent;\n  color: #808080;\n}\n.main .tasks .dialog-btn-container {\n  display: flex;\n  justify-content: flex-end;\n}\n.main .tasks .dialog-btn-container .btn-cancel-task,\n.main .tasks .dialog-btn-container .btn-remove-task {\n  margin: 0.5rem 0 0 0.75rem;\n  padding: 10px 12px;\n  border-radius: 5px;\n  font-size: 0.825rem;\n  font-weight: 600;\n}\n.main .tasks .dialog-btn-container .btn-cancel-task {\n  background-color: #e0e0e0;\n}\n.main .tasks .dialog-btn-container .btn-remove-task {\n  background-color: #32cd32;\n  color: #fcfcfc;\n}\n.main .tasks .task-container.completed {\n  text-decoration: line-through;\n  color: #808080;\n}\n.main .tasks .task-container {\n  display: flex;\n  width: 100%;\n  margin-bottom: 0.25rem;\n  padding: 0.5rem;\n  border-bottom: 1px solid rgba(128, 128, 128, 0.4941176471);\n}\n.main .tasks .task-container .checkbox-container {\n  position: relative;\n}\n.main .tasks .task-container .checkbox-container label {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 1rem;\n  height: 1rem;\n  background-color: transparent;\n  border: 1px solid #808080;\n  border-radius: 50%;\n  cursor: pointer;\n}\n.main .tasks .task-container .checkbox-container label::after {\n  transition: opacity 0.4s ease;\n}\n.main .tasks .task-container .checkbox-container label:hover::after {\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #808080;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  content: \"\";\n  position: absolute;\n  top: 4.25px;\n  left: 3px;\n  height: 3px;\n  width: 6.5px;\n  border: 1.5px solid #fcfcfc;\n  border-top: none;\n  border-right: none;\n  opacity: 0;\n  transform: rotate(-45deg);\n}\n.main .tasks .task-container .checkbox-container input[type=checkbox] {\n  visibility: hidden;\n}\n.main .tasks .task-container .checkbox-container input[type=checkbox]:hover + label::after {\n  opacity: 1;\n}\n.main .tasks .task-container .checkbox-container input[type=checkbox]:checked + label {\n  border-color: #32cd32;\n  background-color: #32cd32;\n}\n.main .tasks .task-container .checkbox-container input[type=checkbox]:checked + label::after {\n  opacity: 1;\n}\n.main .tasks .task-container .task-info-container {\n  flex: 1;\n  padding-left: 0.25rem;\n}\n.main .tasks .task-container .task-info-container .task-info-container > p:not(:first-child) {\n  margin-top: 0.5rem;\n}\n.main .tasks .task-container .task-info-container .task-description,\n.main .tasks .task-container .task-info-container .task-date {\n  color: #808080;\n}\n.main .tasks .task-container .edit-container.hide {\n  display: none;\n}\n.main .tasks .task-container .edit-container {\n  display: flex;\n  align-items: center;\n}\n.main .tasks .task-container .edit-container img {\n  width: 18px;\n  height: 18px;\n  display: inline-block;\n  margin-left: 1rem;\n}\n.main .tasks .all-complete-container {\n  position: absolute;\n  z-index: -10;\n  top: 50%;\n  left: 50%;\n  max-width: 800px;\n  text-align: center;\n  transform: translate(-50%, -50%);\n}\n.main .tasks .all-complete-container img.lazy-panda {\n  height: 240px;\n  width: 300px;\n}\n.main .tasks .all-complete-container p {\n  font-size: 0.8rem;\n  color: #808080;\n}\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: #e0e0e0;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(128, 128, 128, 0.4941176471);\n}\n\n@media only screen and (max-width: 600px) {\n  .header .container-burger-menu {\n    display: inline-block;\n  }\n  .header h1 {\n    display: none;\n  }\n  .header .score {\n    margin-left: auto;\n  }\n}\n.low {\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg) brightness(100%) contrast(103%);\n}\n\n.medium {\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg) brightness(101%) contrast(101%);\n}\n\n.high {\n  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg) brightness(96%) contrast(80%);\n}\n\n.dialog-add-project {\n  display: none;\n}\n\n.dialog-add-project.active {\n  display: block;\n}\n\n.button-add-project.active {\n  display: none;\n}\n\n.project-list li {\n  color: #808080;\n}\n.project-list li.active {\n  font-weight: bold;\n  color: #000000;\n}\n\n.dialog-add-task {\n  display: none;\n}\n\n.dialog-add-task.active {\n  display: block;\n}\n\n.button-add-task.active {\n  display: none;\n}\n\n.line-through {\n  text-decoration: line-through;\n}", "",{"version":3,"sources":["webpack://./src/styles/main.scss","webpack://./src/styles/variables.scss"],"names":[],"mappings":"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","sourcesContent":["@import './reset.css';\n@import 'variables';\n\n* {\n  box-sizing: border-box;\n}\n\nhtml {\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n  color: $black;\n  font-size: 16px;\n  height: 100%;\n}\n\nbody {\n  background-color: $white;\n  height: 100vh;\n}\n\nbutton,\nselect {\n  border: none;\n  outline: none;\n}\n\n.header {\n  position: relative;\n  z-index: 20;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 4rem;\n  padding: 0 0 0 1rem;\n  box-shadow: $box-shadow-btm;\n  background-color: $white-mid-grey;\n  font-size: 1.625rem;\n  font-weight: bold;\n\n  .container-burger-menu {\n    position: absolute;\n    z-index: 20;\n    display: none;\n\n    .btn-burger-menu {\n      display: flex;\n      flex-direction: column;\n      justify-content: space-between;\n      width: 30px;\n      height: 20px;\n      pointer-events: none;\n\n      .bar {\n        height: 4px;\n        width: 100%;\n        border-radius: 10px;\n        background-color: $black;\n      }\n    }\n  }\n\n  .score {\n    display: flex;\n    align-items: center;\n\n    .character-info-container {\n      display: flex;\n      justify-content: center;\n      flex-direction: column;\n      align-items: center;\n      gap: 0.375rem;\n\n      .completed-tasks-number {\n        font-size: 1rem;\n      }\n\n      .character-title {\n        font-size: 0.75rem;\n        color: var(--grey);\n      }\n    }\n\n    .character-img {\n      height: 70px;\n    }\n  }\n}\n\n.main {\n  position: relative;\n  display: flex;\n\n  .sidebar.slide-view {\n    transform: translate(0px);\n    height: calc(100vh - 4rem);\n  }\n\n  .sidebar {\n    height: calc(100vh - 4rem);\n    width: 250px;\n    padding: 1.5rem;\n    transition: transform 300ms ease-out;\n    font-weight: 500;\n    background-color: $white-low-grey;\n\n    .project-container {\n      display: flex;\n      flex-direction: column;\n      gap: 0.5rem;\n\n      .active-project {\n        font-weight: 500;\n        background-color: $white;\n      }\n\n      .project-list {\n        font-size: 1rem;\n        font-weight: 400;\n        padding: 0.625rem 0.125rem;\n        border-radius: 5px;\n\n        &:hover {\n          background-color: $white;\n        }\n      }\n\n      li {\n        position: relative;\n        padding-left: 2rem !important;\n        font-weight: 400;\n        cursor: pointer;\n      }\n\n      li::before {\n        content: '';\n        position: absolute;\n        top: 7.5px;\n        left: 5px;\n        display: inline-block;\n        height: 1.25rem;\n        width: 1.25rem;\n        background: url('../assets/listDot.svg');\n      }\n\n      li:first-child::before {\n        background: url('../assets/inbox.svg');\n        filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)\n          brightness(100%) contrast(103%);\n      }\n\n      li:nth-child(2)::before {\n        background: url('../assets/today.svg');\n        filter: invert(47%) sepia(92%) saturate(401%) hue-rotate(83deg)\n          brightness(101%) contrast(91%);\n      }\n\n      li:nth-child(3)::before {\n        background: url('../assets/thisWeek.svg');\n        filter: invert(45%) sepia(75%) saturate(542%) hue-rotate(219deg)\n          brightness(101%) contrast(101%);\n      }\n\n      li:nth-child(4)::before {\n        background: url('../assets/completed.svg');\n        filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)\n          brightness(101%) contrast(101%);\n      }\n\n      li:nth-child(4) {\n        margin-bottom: 2.5rem;\n      }\n\n      li:nth-child(4)::after {\n        content: 'Projects';\n        position: absolute;\n        top: 3.5rem;\n        left: 0;\n        display: inline;\n        pointer-events: none;\n        font-size: 1rem;\n        font-weight: normal;\n        color: $green;\n      }\n    }\n\n    .project-form {\n      display: flex;\n      align-items: center;\n      margin-top: 0.5rem;\n      padding: 0.25rem;\n      border: 1px solid $grey;\n      border-radius: 5px;\n\n      .project-input {\n        flex: 1;\n        margin: 0;\n      }\n    }\n  }\n\n  .tasks {\n    flex: 1;\n    height: calc(100vh - 4rem);\n    max-width: $tasks-max-width;\n    margin: 0 auto;\n    padding: 2rem;\n    overflow: auto;\n\n    .btn-add-container {\n      display: flex;\n\n      .btn-add-task {\n        flex: 1;\n        font-size: 1rem;\n        text-align: start;\n        background-color: transparent;\n        color: $grey;\n      }\n    }\n\n    .dialog {\n      .dialog-form {\n        padding: 0.75rem;\n        border: 1px solid $grey-transparent;\n        border-radius: 10px;\n\n        .task-text {\n          display: grid;\n          grid-template-columns: 1fr;\n        }\n\n        .task-name {\n          font-size: 1.25rem;\n        }\n\n        .task-description,\n        .task-date,\n        .task-priority {\n          margin-top: 0.25rem;\n          font-size: 1rem;\n        }\n\n        input[type='text']:first-child {\n          font-size: 1rem;\n        }\n        input[type='text']:nth-child(2) {\n          font-size: 0.75rem;\n        }\n\n        input {\n          margin-bottom: 0.5rem;\n        }\n\n        /* Removes the clear button from date inputs */\n        input[type='date']::-webkit-clear-button {\n          display: none;\n        }\n\n        /* Removes the spin button */\n        input[type='date']::-webkit-inner-spin-button {\n          display: none;\n        }\n\n        /* Always display the drop down caret */\n        input[type='date']::-webkit-calendar-picker-indicator {\n          filter: invert(0.5);\n        }\n\n        /* A few custom styles for date inputs */\n        input[type='date'] {\n          appearance: none;\n          margin-right: 0.5rem;\n          padding: 5px;\n          border: 1px solid $grey-transparent;\n          border-radius: 5px;\n          color: $grey;\n        }\n\n        select {\n          appearance: none;\n          padding: 5px;\n          border: 1px solid $grey-transparent;\n          border-radius: 5px;\n          background-color: transparent;\n          color: $grey;\n        }\n      }\n    }\n\n    .dialog-btn-container {\n      display: flex;\n      justify-content: flex-end;\n\n      .btn-cancel-task,\n      .btn-remove-task {\n        margin: 0.5rem 0 0 0.75rem;\n        padding: 10px 12px;\n        border-radius: 5px;\n        font-size: 0.825rem;\n        font-weight: 600;\n      }\n\n      .btn-cancel-task {\n        background-color: $white-high-grey;\n      }\n\n      .btn-remove-task {\n        background-color: $green;\n        color: $white;\n      }\n    }\n\n    .task-container.completed {\n      text-decoration: line-through;\n      color: $grey;\n    }\n\n    .task-container {\n      display: flex;\n      width: 100%;\n      margin-bottom: 0.25rem;\n      padding: 0.5rem;\n      border-bottom: 1px solid $grey-transparent;\n\n      .checkbox-container {\n        position: relative;\n\n        label {\n          position: absolute;\n          left: 0;\n          top: 0;\n          width: 1rem;\n          height: 1rem;\n          background-color: transparent;\n          border: 1px solid $grey;\n          border-radius: 50%;\n          cursor: pointer;\n        }\n\n        label::after {\n          transition: opacity 0.4s ease;\n        }\n\n        label:hover::after {\n          position: absolute;\n          top: 4.25px;\n          left: 3px;\n          height: 3px;\n          width: 6.5px;\n          border: 1.5px solid $grey;\n          border-top: none;\n          border-right: none;\n          opacity: 0;\n          transform: rotate(-45deg);\n        }\n\n        input[type='checkbox']:checked + label::after {\n          content: '';\n          position: absolute;\n          top: 4.25px;\n          left: 3px;\n          height: 3px;\n          width: 6.5px;\n          border: 1.5px solid $white;\n          border-top: none;\n          border-right: none;\n          opacity: 0;\n          transform: rotate(-45deg);\n        }\n\n        input[type='checkbox'] {\n          visibility: hidden;\n        }\n\n        input[type='checkbox']:hover + label::after {\n          opacity: 1;\n        }\n\n        input[type='checkbox']:checked + label {\n          border-color: $green;\n          background-color: $green;\n        }\n\n        input[type='checkbox']:checked + label::after {\n          opacity: 1;\n        }\n      }\n\n      .task-info-container {\n        flex: 1;\n        padding-left: 0.25rem;\n\n        .task-info-container > p:not(:first-child) {\n          margin-top: 0.5rem;\n        }\n\n        .task-description,\n        .task-date {\n          color: $grey;\n        }\n      }\n\n      .edit-container.hide {\n        display: none;\n      }\n      .edit-container {\n        display: flex;\n        align-items: center;\n\n        img {\n          width: 18px;\n          height: 18px;\n          display: inline-block;\n          margin-left: 1rem;\n        }\n      }\n    }\n\n    .all-complete-container {\n      position: absolute;\n      z-index: -10;\n      top: 50%;\n      left: 50%;\n      max-width: 800px;\n      text-align: center;\n      transform: translate(-50%, -50%);\n\n      img.lazy-panda {\n        height: 240px;\n        width: 300px;\n      }\n\n      p {\n        font-size: 0.8rem;\n        color: $grey;\n      }\n    }\n\n    // COMBINED ELEMENTS FROM DIFFERENT PARENTS\n  }\n}\n\n// .modal {\n//   position: fixed;\n//   z-index: 10;\n//   top: 50%;\n//   left: 50%;\n//   display: flex;\n//   flex-direction: column;\n//   justify-content: center;\n//   max-width: 350px;\n//   height: 400px;\n//   border-radius: 10px;\n//   transform: translate(-50%, -50%) scale(1);\n//   transition: 200ms ease-in-out;\n//   background-color: $white-high-grey;\n\n//   .modal-form {\n//     display: flex;\n//     flex-direction: column;\n//   }\n// }\n\n// .modal.active {\n//   transform: translate(-50%, -50%) scale(1);\n// }\n\n// .modal {\n//   max-width: 300px;\n//   margin: 0 auto;\n//   padding: 2rem;\n//   border-radius: 10px;\n//   background-color: $white-low-grey;\n\n//   .modal-form {\n//     display: flex;\n//     flex-direction: column;\n//     gap: 0.75rem;\n\n//     input,\n//     button,\n//     select {\n//       border-radius: 7.5px;\n//       font-size: 0.85rem;\n//     }\n\n//     input,\n//     select {\n//       padding: 0.5rem;\n//       background-color: $white;\n//     }\n\n//     button {\n//       border-radius: 7.5px;\n//       padding: 0.75rem 0;\n\n//       &:nth-child(5) {\n//         background-color: $white-high-grey;\n//       }\n\n//       &:last-child {\n//         background-color: $green;\n//       }\n//     }\n//   }\n// }\n\ninput {\n  background-color: transparent;\n  border: none;\n  outline: none;\n}\n\n::-webkit-scrollbar {\n  width: 17.5px;\n}\n\n::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n\n::-webkit-scrollbar-thumb {\n  background-color: $white-high-grey;\n  border-radius: 20px;\n  border: 6px solid transparent;\n  background-clip: content-box;\n}\n\n::-webkit-scrollbar-thumb:hover {\n  background-color: $grey-transparent;\n}\n\n@media only screen and (max-width: 600px) {\n  .header {\n    .container-burger-menu {\n      display: inline-block;\n    }\n    h1 {\n      display: none;\n    }\n    .score {\n      margin-left: auto;\n    }\n  }\n}\n\n.low {\n  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)\n    brightness(100%) contrast(103%);\n}\n\n.medium {\n  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)\n    brightness(101%) contrast(101%);\n}\n\n.high {\n  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg)\n    brightness(96%) contrast(80%);\n}\n\n.dialog-add-project {\n  display: none;\n}\n\n.dialog-add-project.active {\n  display: block;\n}\n\n.button-add-project.active {\n  display: none;\n}\n\n.project-list {\n  li {\n    color: $grey;\n  }\n  li.active {\n    font-weight: bold;\n    color: $black;\n  }\n}\n\n.dialog-add-task {\n  display: none;\n}\n\n.dialog-add-task.active {\n  display: block;\n}\n\n.button-add-task.active {\n  display: none;\n}\n\n.line-through {\n  text-decoration: line-through;\n}\n","/* LIGHT MODE */\n$white: #fcfcfc;\n$white-high-grey: #e0e0e0;\n$white-mid-grey: #f7f7f7;\n$white-low-grey: #f1f1f1;\n$black: #000000;\n$grey: #808080;\n$grey-transparent: #8080807e;\n$box-shadow-btm: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);\n$green: #32cd32;\n\n/* DARK MODE */\n/* --black: #202020;\n  --white: hsla(0, 0%, 100%, 0.87);\n  --grey: #808080;\n  --grey-transparent: #80808021;\n  --dark-grey: #242424;\n  --medium-dark-grey: #282828;\n  --grey-hover: #363636;\n  --green: #32cd32; */\n$tasks-max-width: 800px;\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1283,27 +1565,24 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _modules_project__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/project */ "./src/modules/project.js");
-/* harmony import */ var _modules_tasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/tasks */ "./src/modules/tasks.js");
-/* harmony import */ var _modules_ToDoList__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/ToDoList */ "./src/modules/ToDoList.js");
-/* harmony import */ var _modules_DOM__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/DOM */ "./src/modules/DOM.js");
-/* harmony import */ var _styles_main_scss__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./styles/main.scss */ "./src/styles/main.scss");
-/* harmony import */ var _assets_more_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/more.png */ "./src/assets/more.png");
-/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
-/* harmony import */ var _assets_priority_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/priority.png */ "./src/assets/priority.png");
-/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
-/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
-/* harmony import */ var _assets_novice_png__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/novice.png */ "./src/assets/novice.png");
-/* harmony import */ var _assets_student_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./assets/student.png */ "./src/assets/student.png");
-/* harmony import */ var _assets_master_png__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./assets/master.png */ "./src/assets/master.png");
-/* harmony import */ var _assets_bandit_png__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./assets/bandit.png */ "./src/assets/bandit.png");
-/* harmony import */ var _assets_viking_png__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./assets/viking.png */ "./src/assets/viking.png");
-/* harmony import */ var _assets_boss_png__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./assets/boss.png */ "./src/assets/boss.png");
-/* harmony import */ var _assets_inbox_svg__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./assets/inbox.svg */ "./src/assets/inbox.svg?3279");
-/* harmony import */ var _assets_today_svg__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./assets/today.svg */ "./src/assets/today.svg?de3c");
-/* harmony import */ var _assets_editPen_svg__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./assets/editPen.svg */ "./src/assets/editPen.svg");
-/* harmony import */ var _assets_thisWeek_svg__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./assets/thisWeek.svg */ "./src/assets/thisWeek.svg?9190");
-/* harmony import */ var _assets_completed_svg__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./assets/completed.svg */ "./src/assets/completed.svg?57cc");
+/* harmony import */ var _modules_DOM__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/DOM */ "./src/modules/DOM.js");
+/* harmony import */ var _styles_main_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles/main.scss */ "./src/styles/main.scss");
+/* harmony import */ var _assets_more_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./assets/more.png */ "./src/assets/more.png");
+/* harmony import */ var _assets_editPen_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./assets/editPen.png */ "./src/assets/editPen.png");
+/* harmony import */ var _assets_priority_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./assets/priority.png */ "./src/assets/priority.png");
+/* harmony import */ var _assets_trash_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./assets/trash.png */ "./src/assets/trash.png");
+/* harmony import */ var _assets_lazyPanda_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./assets/lazyPanda.png */ "./src/assets/lazyPanda.png");
+/* harmony import */ var _assets_novice_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./assets/novice.png */ "./src/assets/novice.png");
+/* harmony import */ var _assets_student_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./assets/student.png */ "./src/assets/student.png");
+/* harmony import */ var _assets_master_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./assets/master.png */ "./src/assets/master.png");
+/* harmony import */ var _assets_bandit_png__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./assets/bandit.png */ "./src/assets/bandit.png");
+/* harmony import */ var _assets_viking_png__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./assets/viking.png */ "./src/assets/viking.png");
+/* harmony import */ var _assets_boss_png__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./assets/boss.png */ "./src/assets/boss.png");
+/* harmony import */ var _assets_inbox_svg__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./assets/inbox.svg */ "./src/assets/inbox.svg?3279");
+/* harmony import */ var _assets_today_svg__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./assets/today.svg */ "./src/assets/today.svg?de3c");
+/* harmony import */ var _assets_editPen_svg__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./assets/editPen.svg */ "./src/assets/editPen.svg");
+/* harmony import */ var _assets_thisWeek_svg__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./assets/thisWeek.svg */ "./src/assets/thisWeek.svg?9190");
+/* harmony import */ var _assets_completed_svg__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./assets/completed.svg */ "./src/assets/completed.svg?57cc");
 
 
 
@@ -1322,15 +1601,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-_modules_project__WEBPACK_IMPORTED_MODULE_0__["default"].doStuff();
-_modules_tasks__WEBPACK_IMPORTED_MODULE_1__["default"].doStuff();
-_modules_ToDoList__WEBPACK_IMPORTED_MODULE_2__["default"].doStuff();
-_modules_DOM__WEBPACK_IMPORTED_MODULE_3__["default"].loadHome();
+_modules_DOM__WEBPACK_IMPORTED_MODULE_0__["default"].loadContent();
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle57699c3227e967871b35.js.map
+//# sourceMappingURL=bundlebf8e3e7a6a583b81d3ff.js.map
