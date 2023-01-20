@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundle57699c3227e967871b35.js"></script></head>
+  <script defer src="bundlebf8e3e7a6a583b81d3ff.js"></script></head>
   <body>
-    <div id="content" class="content">
+    <div id="content">
       <header id="header" class="header">
-        <div class="burger-menu-container" data-burger-menu-container>
-          <a href="#" class="btn-burger-menu" data-btn-burger-menu>
+        <div id="container-burger-menu" class="container-burger-menu">
+          <a href="#" class="button-burger-menu">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
@@ -23,101 +23,102 @@
             <p class="character-title" data-character-title>Novice</p>
           </div>
 
-          <div class="character-container">
+          <div class="container-character">
             <img
               id="character-img"
               class="character-img"
               src="assets/novice.png"
               data-character
-              alt=""
+              alt="character avatar"
             />
           </div>
         </div>
       </header>
       <main id="main" class="main">
         <div id="sidebar" class="sidebar">
-          <ul id="project-list" class="project-container"></ul>
-          <form class="project-form" action="" data-new-project-form>
+          <ul id="project-list" class="project-list"></ul>
+          <button id="button-add-project" class="button-add-project">
+            + Add project
+          </button>
+          <form action="#" id="dialog-add-project" class="dialog-add-project">
             <input
               type="text"
-              class="project-input"
-              data-new-project-input
+              id="input-add-project-dialog"
+              class="input-add-project-dialog"
               minlength="3"
-              size="10"
+              maxlength="15"
+              size="15"
               placeholder="New project"
               aria-label="New project"
+              required
             />
-            <button
-              type="submit"
-              class="btn-add-project"
-              data-new-project-button
-              aria-label="Create new project"
-            >
-              +
-            </button>
-          </form>
-        </div>
-        <div class="task-container-all">
-          <div class="tasks" data-tasks>
-            <div id="btn-add-container" class="btn-add-container">
-              <button class="btn-add-task active" data-btn-add-task>
-                <span class="red">+</span> Add Task
+            <div id="buttons-dialog" class="buttons-dialog">
+              <button
+                type="button"
+                id="button-cancel-project-dialog"
+                class="button-cancel-project-dialog"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="dialog-add-project"
+                id="button-add-project-dialog"
+                class="button-add-project-dialog"
+              >
+                Add project
               </button>
             </div>
-            <div id="dialog" class="dialog">
-              <form
-                id="dialog-form"
-                action=""
-                data-dialog-form
-                class="dialog-form"
-              >
-                <div class="task-text">
-                  <input
-                    id="taskName"
-                    type="text"
-                    placeholder="Task name"
-                    required="true"
-                  />
-                  <input
-                    id="taskDescription"
-                    type="text"
-                    placeholder="Description"
-                  />
-                </div>
+          </form>
+        </div>
+        <div id="tasks" class="tasks">
+          <div id="tasks-container" class="tasks-container"></div>
+          <button id="button-add-task" class="button-add-task">
+            + Add task
+          </button>
+          <div id="dialog-add-task" class="dialog-add-task">
+            <form action="#" id="form-add-task" class="form-add-task">
+              <div class="task-text">
                 <input
-                  type="date"
-                  name="date"
-                  id="taskDate"
-                  aria-required="true"
-                  placeholder="mm/dd/"
+                  type="text"
+                  id="task-name"
+                  class="task-name"
+                  name="name"
+                  placeholder="Task name"
+                  required="true"
                 />
-                <select name="priority" id="priority">
-                  <option value="Low">Low</option>
-                  <option value="Medium" selected>Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </form>
-              <div id="btn-remove-container" class="dialog-btn-container">
-                <button
-                  type="button"
-                  class="btn-cancel-task"
-                  data-btn-cancel-task
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  class="btn-remove-task"
-                  data-btn-push-task
-                >
-                  Add task
-                </button>
               </div>
+              <input
+                type="date"
+                id="task-due-date"
+                class="task-due-date"
+                name="date"
+                placeholder="mm/dd/yyyy"
+                required="true"
+              />
+              <select name="priority" id="priority" value>
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </form>
+            <div id="container-dialog-buttons" class="container-dialog-buttons">
+              <button
+                type="button"
+                id="button-dialog-cancel-task"
+                class="button-dialog-cancel-task"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="form-add-task"
+                id="button-dialog-add-task"
+                class="button-dialog-add-task"
+              >
+                Add task
+              </button>
             </div>
-            <!-- <div class="all-complete-container">
-              <img class="lazy-panda" src="./assets/lazyPanda.png" alt="" />
-              <p>The valley is safe. Inner peace... Inner peace...</p>
-            </div> -->
           </div>
         </div>
       </main>
