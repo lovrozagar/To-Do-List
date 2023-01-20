@@ -50,6 +50,21 @@ const Storage = (() => {
     saveList(list)
   }
 
+  function changeTaskCompleteState(projectName, taskName) {
+    const list = getList()
+    const isCompleted = list
+      .getProject(projectName)
+      .getTask(taskName)
+      .getCompleted()
+
+    if (isCompleted) {
+      list.getProject(projectName).getTask(taskName).setCompleted(false)
+    } else {
+      list.getProject(projectName).getTask(taskName).setCompleted(true)
+    }
+    saveList(list)
+  }
+
   function deleteTask(projectName, taskName) {
     const list = getList()
     list.getProject(projectName).deleteTask(taskName)
@@ -75,6 +90,7 @@ const Storage = (() => {
     deleteTask,
     renameTask,
     setTaskDate,
+    changeTaskCompleteState,
   }
 })()
 

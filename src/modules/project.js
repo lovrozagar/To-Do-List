@@ -11,6 +11,7 @@ const Project = (() => {
       getName,
       setTasks,
       getTasks,
+      getTask,
       contains,
       deleteTask,
     }
@@ -30,6 +31,10 @@ const Project = (() => {
 
   function getTasks() {
     return this.tasks
+  }
+
+  function getTask(taskName) {
+    return this.tasks.find((task) => task.getName() === taskName)
   }
 
   function contains(taskName) {

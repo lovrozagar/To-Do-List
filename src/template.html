@@ -29,7 +29,7 @@
               class="character-img"
               src="assets/novice.png"
               data-character
-              alt=""
+              alt="character avatar"
             />
           </div>
         </div>
@@ -54,7 +54,7 @@
             />
             <div id="buttons-dialog" class="buttons-dialog">
               <button
-              type="button"
+                type="button"
                 id="button-cancel-project-dialog"
                 class="button-cancel-project-dialog"
               >
@@ -72,25 +72,29 @@
           </form>
         </div>
         <div id="tasks" class="tasks">
-          <div id="button-add-container">
-            <button id="button-add-task-dialog">+ Add task</button>
-          </div>
-          <div id="dialog" class="dialog">
-            <form action="#" id="dialog-add-task" class="dialog-add-task">
+          <div id="tasks-container" class="tasks-container"></div>
+          <button id="button-add-task" class="button-add-task">
+            + Add task
+          </button>
+          <div id="dialog-add-task" class="dialog-add-task">
+            <form action="#" id="form-add-task" class="form-add-task">
               <div class="task-text">
                 <input
-                  id="taskName"
                   type="text"
+                  id="task-name"
+                  class="task-name"
+                  name="name"
                   placeholder="Task name"
                   required="true"
                 />
               </div>
               <input
                 type="date"
+                id="task-due-date"
+                class="task-due-date"
                 name="date"
-                id="taskDate"
-                aria-required="true"
-                placeholder="mm/dd/"
+                placeholder="mm/dd/yyyy"
+                required="true"
               />
               <select name="priority" id="priority" value>
                 <option value="Low">Low</option>
@@ -98,18 +102,19 @@
                 <option value="High">High</option>
               </select>
             </form>
-            <div id="conatiner-dialog-buttons">
+            <div id="container-dialog-buttons" class="container-dialog-buttons">
               <button
                 type="button"
-                class="button-cancel-task"
-                data-button-cancel-task
+                id="button-dialog-cancel-task"
+                class="button-dialog-cancel-task"
               >
                 Cancel
               </button>
               <button
-                type="button"
-                class="button-remove-task"
-                data-button-push-task
+                type="submit"
+                form="form-add-task"
+                id="button-dialog-add-task"
+                class="button-dialog-add-task"
               >
                 Add task
               </button>

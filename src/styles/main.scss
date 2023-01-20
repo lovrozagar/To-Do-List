@@ -570,3 +570,29 @@ input {
 .button-add-project.active {
   display: none;
 }
+
+.project-list {
+  li {
+    color: $grey;
+  }
+  li.active {
+    font-weight: bold;
+    color: $black;
+  }
+}
+
+.dialog-add-task {
+  display: none;
+}
+
+.dialog-add-task.active {
+  display: block;
+}
+
+.button-add-task.active {
+  display: none;
+}
+
+.line-through {
+  text-decoration: line-through;
+}

@@ -2,8 +2,18 @@
 /* eslint-disable no-use-before-define */
 const Task = (() => {
   // PROJECT FACTORY
-  const task = (name, dueDate = 'No date') => {
-    return { name, dueDate, setName, getName, setDate, getDate }
+  const task = (name, dueDate = 'No date', completed = null) => {
+    return {
+      name,
+      dueDate,
+      completed,
+      setName,
+      getName,
+      setDate,
+      getDate,
+      setCompleted,
+      getCompleted,
+    }
   }
 
   function setName(name) {
@@ -20,6 +30,14 @@ const Task = (() => {
 
   function getDate() {
     return this.dueDate
+  }
+
+  function setCompleted(isCompleted) {
+    this.completed = isCompleted
+  }
+
+  function getCompleted() {
+    return this.completed
   }
 
   // function doStuff() {
