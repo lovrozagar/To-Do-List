@@ -1,3 +1,5 @@
+import { toDate, isToday } from 'date-fns'
+
 /* eslint-disable no-use-before-define */
 const Project = (() => {
   // PROJECT FACTORY
@@ -14,6 +16,7 @@ const Project = (() => {
       getTask,
       contains,
       deleteTask,
+      getTasksToday,
     }
   }
 
@@ -48,6 +51,13 @@ const Project = (() => {
 
   function deleteTask(taskName) {
     this.tasks = this.tasks.filter((task) => task.name !== taskName)
+  }
+
+  function getTasksToday() {
+    return this.tasks.filter((task) => {
+      const taskDate = new Date(task.getDateFormatted())
+      return isToday(toDate(taskDate))
+    })
   }
 
   // function doStuff() {

@@ -50,6 +50,10 @@ const Storage = (() => {
     saveList(list)
   }
 
+  // function formatTaskDate() {
+
+  // }
+
   function changeTaskCompleteState(projectName, taskName) {
     const list = getList()
     const isCompleted = list
@@ -79,6 +83,13 @@ const Storage = (() => {
   function setTaskDate(projectName, taskName, newDueDate) {
     const list = getList()
     list.getProjects(projectName).getTask(taskName).setDate(newDueDate)
+    saveList(list)
+  }
+
+  function updateTodayProject() {
+    const list = getList()
+    list.updateTodayProject()
+    saveList(list)
   }
 
   return {
@@ -91,6 +102,7 @@ const Storage = (() => {
     renameTask,
     setTaskDate,
     changeTaskCompleteState,
+    updateTodayProject,
   }
 })()
 

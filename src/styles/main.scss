@@ -559,6 +559,19 @@ input {
     brightness(96%) contrast(80%);
 }
 
+.tasks-container {
+  .task-item {
+    display: flex;
+    justify-content: center;
+
+    .section-task-info {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}
+
 .dialog-add-project {
   display: none;
 }

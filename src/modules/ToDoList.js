@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import Task from './tasks'
 import Project from './project'
 
 const List = (() => {
@@ -16,6 +17,7 @@ const List = (() => {
       contains,
       addProject,
       deleteProject,
+      updateTodayProject,
     }
   }
 
@@ -48,6 +50,21 @@ const List = (() => {
       (project) => project.getName() === projectName
     )
     this.projects.splice(this.projects.indexOf(projectToDelete), 1)
+  }
+
+  function updateTodayProject() {
+    getProject('Today').tasks = []
+
+    this.projects.forEach((project) => {
+      if (project.getName() === 'Today' || project.getName() === 'This week')
+        return
+
+      const todayTasks = project.getTasksToday()
+      todayTasks.forEach((task) => {
+        const taskName = `${task.getName()} (${project.getName()})`
+        this.getProject('Today').addTask(Task.task(taskName, task.getDate()))
+      })
+    })
   }
 
   // function doStuff() {

@@ -2,7 +2,8 @@
 /* eslint-disable no-use-before-define */
 const Task = (() => {
   // PROJECT FACTORY
-  const task = (name, dueDate = 'No date', completed = null) => {
+  const task = (name, date = 'No date', completed = false) => {
+    const dueDate = getDateFormatted(date)
     return {
       name,
       dueDate,
@@ -11,6 +12,7 @@ const Task = (() => {
       getName,
       setDate,
       getDate,
+      getDateFormatted,
       setCompleted,
       getCompleted,
     }
@@ -30,6 +32,13 @@ const Task = (() => {
 
   function getDate() {
     return this.dueDate
+  }
+
+  function getDateFormatted(date) {
+    const day = date.split('-')[0]
+    const month = date.split('-')[1]
+    const year = date.split('-')[2]
+    return `${month}/${day}/${year}`
   }
 
   function setCompleted(isCompleted) {

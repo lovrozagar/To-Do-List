@@ -91,6 +91,8 @@ const dom = (() => {
     ) {
       initAddTaskButtons()
     }
+
+    initTaskButtons()
   }
 
   function loadTask(name, dueDate, isCompleted) {
@@ -119,7 +121,6 @@ const dom = (() => {
     const tasksContainer = document.getElementById('tasks-container')
     tasksContainer.appendChild(task)
 
-    initTaskButtons()
     return task
   }
 
@@ -224,6 +225,7 @@ const dom = (() => {
   }
 
   function openTodayTasks() {
+    Storage.updateTodayProject()
     openProject('Today', this)
   }
 
@@ -290,13 +292,14 @@ const dom = (() => {
     if (Storage.getList().getProject(projectName).contains(taskName)) {
       alert('Task already exists in project')
       clearForms()
+      return
     }
 
     e.preventDefault()
     Storage.addTask(projectName, Task.task(taskName, taskDueDate))
-    loadTask(taskName, taskDueDate)
     clearForms()
     closeAddTaskDialog()
+    renderTasks(projectName)
   }
 
   // TASK EVENT LISTENERS
@@ -316,16 +319,8 @@ const dom = (() => {
     const taskItem = target.closest('[data-task-item]')
     const taskName = taskItem.children[1].children[0].textContent
 
-    console.log(projectName, taskName)
-
     Storage.changeTaskCompleteState(projectName, taskName)
-    const isCompleted = Storage.getList()
-      .getProject(projectName)
-      .getTask(taskName)
-      .getCompleted()
-
-    console.log(isCompleted, taskItem)
-    styleIfCompleted(isCompleted, taskItem)
+    renderTasks(projectName)
   }
 
   function styleIfCompleted(isCompleted, element) {
