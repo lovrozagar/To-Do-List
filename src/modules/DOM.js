@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
-import { add } from 'date-fns'
+import { format, parseISO, add, isValid } from 'date-fns'
 import List from './ToDoList'
 import Project from './project'
 import Task from './tasks'
@@ -80,7 +80,7 @@ const dom = (() => {
       .forEach((task) => {
         styleIfCompleted(
           task.completed,
-          loadTask(task.name, task.dueDate, task.completed)
+          loadTask(task.name, task.dueDate, task.completed, task.id)
         )
       })
 
@@ -95,7 +95,7 @@ const dom = (() => {
     initTaskButtons()
   }
 
-  function loadTask(name, dueDate, isCompleted) {
+  function loadTask(name, dueDate, isCompleted, taskId) {
     const taskCheckboxSection = document.createElement('div')
     taskCheckboxSection.classList.add('section-task-checkbox')
     const checkbox = document.createElement('input')
@@ -108,13 +108,16 @@ const dom = (() => {
     const namePara = document.createElement('p')
     namePara.textContent = name
     const datePara = document.createElement('p')
-    datePara.textContent = dueDate
+
+    datePara.textContent = formatDate(dueDate)
+
     taskInfoSection.appendChild(namePara)
     taskInfoSection.appendChild(datePara)
 
     const task = document.createElement('div')
     task.classList.add('task-item')
     task.dataset.taskItem = ''
+    task.id = taskId
     task.appendChild(taskCheckboxSection)
     task.appendChild(taskInfoSection)
 
@@ -147,6 +150,8 @@ const dom = (() => {
   }
 
   function openAddProjectDialog() {
+    closeAddTaskDialog()
+
     const addProjectButton = document.getElementById('button-add-project')
     const addProjectDialog = document.getElementById('dialog-add-project')
 
@@ -230,10 +235,12 @@ const dom = (() => {
   }
 
   function openWeekTasks() {
+    Storage.updateThisWeekProject()
     openProject('This week', this)
   }
 
   function openCompletedTasks() {
+    Storage.updateCompletedProject()
     openProject('Completed', this)
   }
 
@@ -261,6 +268,8 @@ const dom = (() => {
   }
 
   function openAddTaskDialog() {
+    closeAddProjectDialog()
+
     const dialog = document.getElementById('dialog-add-task')
     const showDialogButton = document.getElementById('button-add-task')
 
@@ -318,8 +327,9 @@ const dom = (() => {
     const projectName = document.getElementById('project-heading').textContent
     const taskItem = target.closest('[data-task-item]')
     const taskName = taskItem.children[1].children[0].textContent
+    const taskId = taskItem.id
 
-    Storage.changeTaskCompleteState(projectName, taskName)
+    Storage.changeTaskCompleteState(projectName, taskName, taskId)
     renderTasks(projectName)
   }
 
@@ -329,6 +339,14 @@ const dom = (() => {
     } else {
       element.classList.remove('line-through')
     }
+  }
+
+  function formatDate(date) {
+    let dateF = 'No date'
+    if (isValid(parseISO(date))) {
+      dateF = format(parseISO(date), 'MM/dd/yy')
+    }
+    return dateF
   }
 
   return { loadContent }

@@ -54,18 +54,38 @@ const Storage = (() => {
 
   // }
 
-  function changeTaskCompleteState(projectName, taskName) {
+  function changeTaskCompleteState(projectName, taskName, taskId) {
     const list = getList()
     const isCompleted = list
       .getProject(projectName)
       .getTask(taskName)
       .getCompleted()
 
+    let completed
     if (isCompleted) {
       list.getProject(projectName).getTask(taskName).setCompleted(false)
+      completed = false
     } else {
+      completed = true
       list.getProject(projectName).getTask(taskName).setCompleted(true)
     }
+
+    list.getProjects().forEach((project) => {
+      if (
+        project.getName() === 'ProjectName' ||
+        project.getName() === 'Today' ||
+        project.getName() === 'This week' ||
+        project.getName() === 'Completed'
+      )
+        return
+
+      project.getTasks().forEach((task) => {
+        if (task.getId() === taskId) {
+          task.setCompleted(completed)
+        }
+      })
+    })
+
     saveList(list)
   }
 
@@ -92,6 +112,18 @@ const Storage = (() => {
     saveList(list)
   }
 
+  function updateThisWeekProject() {
+    const list = getList()
+    list.updateThisWeekProject()
+    saveList(list)
+  }
+
+  function updateCompletedProject() {
+    const list = getList()
+    list.updateCompletedProject()
+    saveList(list)
+  }
+
   return {
     saveList,
     getList,
@@ -103,6 +135,8 @@ const Storage = (() => {
     setTaskDate,
     changeTaskCompleteState,
     updateTodayProject,
+    updateThisWeekProject,
+    updateCompletedProject,
   }
 })()
 

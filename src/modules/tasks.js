@@ -1,17 +1,24 @@
+// import { format } from 'date-fns'
 /* eslint-disable arrow-body-style */
+
+import { format, parseISO, isValid } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
+
 /* eslint-disable no-use-before-define */
 const Task = (() => {
   // PROJECT FACTORY
-  const task = (name, date = 'No date', completed = false) => {
-    const dueDate = getDateFormatted(date)
+  const task = (name, dueDate, completed = false) => {
+    const id = uuidv4()
     return {
       name,
       dueDate,
       completed,
+      id,
       setName,
       getName,
       setDate,
       getDate,
+      getId,
       getDateFormatted,
       setCompleted,
       getCompleted,
@@ -34,11 +41,16 @@ const Task = (() => {
     return this.dueDate
   }
 
-  function getDateFormatted(date) {
-    const day = date.split('-')[0]
-    const month = date.split('-')[1]
-    const year = date.split('-')[2]
-    return `${month}/${day}/${year}`
+  function getId() {
+    return this.id
+  }
+
+  function getDateFormatted() {
+    let dateF = 'No date'
+    if (isValid(parseISO(this.dueDate))) {
+      dateF = format(parseISO(this.dueDate), 'MM/dd/yy')
+    }
+    return dateF
   }
 
   function setCompleted(isCompleted) {

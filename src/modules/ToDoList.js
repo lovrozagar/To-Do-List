@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import Task from './tasks'
+// import Task from './tasks'
 import Project from './project'
 
 const List = (() => {
@@ -18,6 +18,8 @@ const List = (() => {
       addProject,
       deleteProject,
       updateTodayProject,
+      updateThisWeekProject,
+      updateCompletedProject,
     }
   }
 
@@ -53,22 +55,60 @@ const List = (() => {
   }
 
   function updateTodayProject() {
-    getProject('Today').tasks = []
+    this.getProject('Today').tasks = []
 
     this.projects.forEach((project) => {
-      if (project.getName() === 'Today' || project.getName() === 'This week')
+      if (
+        project.getName() === 'Today' ||
+        project.getName() === 'This week' ||
+        project.getName() === 'Completed'
+      )
         return
 
       const todayTasks = project.getTasksToday()
       todayTasks.forEach((task) => {
-        const taskName = `${task.getName()} (${project.getName()})`
-        this.getProject('Today').addTask(Task.task(taskName, task.getDate()))
+        const taskReference = task
+        this.getProject('Today').tasks.push(taskReference)
       })
     })
   }
 
-  // function doStuff() {
-  // }
+  function updateThisWeekProject() {
+    this.getProject('This week').tasks = []
+
+    this.projects.forEach((project) => {
+      if (
+        project.getName() === 'Today' ||
+        project.getName() === 'This week' ||
+        project.getName() === 'Completed'
+      )
+        return
+
+      const weekTasks = project.getTasksThisWeek()
+      weekTasks.forEach((task) => {
+        this.getProject('This week').tasks.push(task)
+      })
+    })
+  }
+
+  function updateCompletedProject() {
+    this.getProject('Completed').tasks = []
+
+    this.projects.forEach((project) => {
+      if (
+        project.getName() === 'Today' ||
+        project.getName() === 'This week' ||
+        project.getName() === 'Completed'
+      )
+        return
+
+      const completedTasks = project.getTasksCompleted()
+      completedTasks.forEach((task) => {
+        const taskClone = { ...task }
+        this.getProject('Completed').tasks.push(taskClone)
+      })
+    })
+  }
 
   return { list }
 })()

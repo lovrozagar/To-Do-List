@@ -1,4 +1,4 @@
-import { toDate, isToday } from 'date-fns'
+import { toDate, isToday, isThisWeek, subDays } from 'date-fns'
 
 /* eslint-disable no-use-before-define */
 const Project = (() => {
@@ -17,6 +17,8 @@ const Project = (() => {
       contains,
       deleteTask,
       getTasksToday,
+      getTasksThisWeek,
+      getTasksCompleted,
     }
   }
 
@@ -58,6 +60,18 @@ const Project = (() => {
       const taskDate = new Date(task.getDateFormatted())
       return isToday(toDate(taskDate))
     })
+  }
+
+  function getTasksThisWeek() {
+    return this.tasks.filter((task) => {
+      const taskDate = new Date(task.getDateFormatted())
+      console.log(isThisWeek(subDays(toDate(taskDate), 0)))
+      return isThisWeek(subDays(toDate(taskDate), 0))
+    })
+  }
+
+  function getTasksCompleted() {
+    return this.tasks.filter((task) => task.completed === true)
   }
 
   // function doStuff() {
