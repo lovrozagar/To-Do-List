@@ -38,12 +38,12 @@ const Project = (() => {
     return this.tasks
   }
 
-  function getTask(taskName) {
-    return this.tasks.find((task) => task.getName() === taskName)
+  function getTask(taskId) {
+    return this.tasks.find((task) => task.getId() === taskId)
   }
 
-  function contains(taskName) {
-    return this.tasks.some((task) => task.getName() === taskName)
+  function contains(taskId) {
+    return this.tasks.some((task) => task.getId() === taskId)
   }
 
   function addTask(newTask) {

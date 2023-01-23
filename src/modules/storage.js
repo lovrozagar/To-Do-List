@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import List from './ToDoList'
 import Project from './project'
 import Task from './tasks'
@@ -48,20 +49,33 @@ const Storage = (() => {
     saveList(list)
   }
 
+  // function importTaskToCompleted(projectName, task) {
+
+  // }
+
   function changeTaskCompleteState(projectName, taskName, taskId) {
     const list = getList()
     const isCompleted = list
       .getProject(projectName)
-      .getTask(taskName)
+      .getTask(taskId)
       .getCompleted()
+
+    // if (
+    //   !isCompleted &&
+    //   projectName === 'Completed' &&
+    //   !taskExistsOutsideCompleted(taskId)
+    // ) {
+    //   deleteCompletedTask(taskId)
+    //   return
+    // }
 
     let completed
     if (isCompleted) {
-      list.getProject(projectName).getTask(taskName).setCompleted(false)
+      list.getProject(projectName).getTask(taskId).setCompleted(false)
       completed = false
     } else {
       completed = true
-      list.getProject(projectName).getTask(taskName).setCompleted(true)
+      list.getProject(projectName).getTask(taskId).setCompleted(true)
     }
 
     list.getProjects().forEach((project) => {
@@ -78,10 +92,28 @@ const Storage = (() => {
   function deleteTask(taskId) {
     const list = getList()
     list.getProjects().forEach((project) => {
+      if (project.getName() === 'Completed') return
       project.deleteTask(taskId)
     })
 
     saveList(list)
+  }
+
+  function deleteCompletedTask(taskId) {
+    const list = getList()
+    list.getProject('Completed').deleteTask(taskId)
+    saveList(list)
+  }
+
+  function taskExistsOutsideCompleted(taskId) {
+    let existsOutside = false
+    const list = getList()
+    list.getProjects().forEach((project) => {
+      if (project.contains(taskId)) {
+        existsOutside = true
+      }
+    })
+    return existsOutside
   }
 
   function renameTask(projectName, taskName, newTaskName) {
@@ -126,6 +158,8 @@ const Storage = (() => {
     updateTodayProject,
     updateThisWeekProject,
     updateCompletedProject,
+    deleteCompletedTask,
+    taskExistsOutsideCompleted,
   }
 })()
 

@@ -1,5 +1,7 @@
 /* eslint-disable no-use-before-define */
 // import Task from './tasks'
+// import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash'
 import Project from './project'
 
 const List = (() => {
@@ -92,7 +94,8 @@ const List = (() => {
   }
 
   function updateCompletedProject() {
-    this.getProject('Completed').tasks = []
+    this.getProject('Completed').tasks =
+      this.getProject('Completed').getTasksCompleted()
 
     this.projects.forEach((project) => {
       if (
@@ -104,7 +107,8 @@ const List = (() => {
 
       const completedTasks = project.getTasksCompleted()
       completedTasks.forEach((task) => {
-        const taskClone = { ...task }
+        const taskClone = cloneDeep(task)
+        if (this.getProject('Completed').contains(task.id)) return
         this.getProject('Completed').tasks.push(taskClone)
       })
     })

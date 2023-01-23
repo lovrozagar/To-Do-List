@@ -101,9 +101,11 @@ const dom = (() => {
       projectName !== 'This week' &&
       projectName !== 'Completed'
     ) {
+      showAddTaskButton()
       initAddTaskButtons()
+    } else {
+      hideAddTaskButton()
     }
-
     initTaskButtons()
   }
 
@@ -268,7 +270,6 @@ const dom = (() => {
   }
 
   function openCompletedTasks() {
-    Storage.updateCompletedProject()
     openProject('Completed', this)
   }
 
@@ -281,6 +282,8 @@ const dom = (() => {
   // ADD TASK EVENT LISTENERS
   function initAddTaskButtons() {
     const addTaskButton = document.getElementById('button-add-task')
+    addTaskButton.style.display = 'block'
+
     const addTaskDialogButton = document.getElementById(
       'button-dialog-add-task'
     )
@@ -293,6 +296,16 @@ const dom = (() => {
       addTask(event)
     })
     cancelTaskDialogButton.addEventListener('click', closeAddTaskDialog)
+  }
+
+  function showAddTaskButton() {
+    const addTaskButton = document.getElementById('button-add-task')
+    addTaskButton.style.display = 'block'
+  }
+
+  function hideAddTaskButton() {
+    const addTaskButton = document.getElementById('button-add-task')
+    addTaskButton.style.display = 'none'
   }
 
   function openAddTaskDialog() {
@@ -341,7 +354,9 @@ const dom = (() => {
 
   // TASK EVENT LISTENERS
   function initTaskButtons() {
+    const projectName = document.getElementById('project-heading').textContent
     const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+    const removeButtons = document.querySelectorAll('[data-remove]')
 
     checkboxes.forEach((checkbox) =>
       checkbox.addEventListener('click', (event) => {
@@ -349,7 +364,6 @@ const dom = (() => {
       })
     )
 
-    const removeButtons = document.querySelectorAll('[data-remove]')
     removeButtons.forEach((button) => {
       button.addEventListener('click', deleteTask)
     })
@@ -363,6 +377,7 @@ const dom = (() => {
     const taskId = taskItem.id
 
     Storage.changeTaskCompleteState(projectName, taskName, taskId)
+    Storage.updateCompletedProject()
     renderTasks(projectName)
   }
 
@@ -380,6 +395,19 @@ const dom = (() => {
     const taskItem = target.closest('[data-task-item]')
     const taskId = taskItem.id
 
+    if (projectName !== 'Completed') {
+      if (
+        Storage.getList().getProject(projectName).getTask(taskId).completed ===
+        true
+      ) {
+        const completedTaskSave = {
+          ...Storage.getList().getProject(projectName).getTask(taskId),
+        }
+        console.log(completedTaskSave)
+
+        Storage.addTask('Completed', completedTaskSave)
+      }
+    }
     Storage.deleteTask(taskId)
     renderTasks(projectName)
   }
