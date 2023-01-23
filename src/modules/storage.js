@@ -3,8 +3,6 @@ import Project from './project'
 import Task from './tasks'
 
 const Storage = (() => {
-  // SAVE LIST TO LOCAL STORAGE
-
   function saveList(data) {
     localStorage.setItem('toDoList', JSON.stringify(data))
   }
@@ -50,10 +48,6 @@ const Storage = (() => {
     saveList(list)
   }
 
-  // function formatTaskDate() {
-
-  // }
-
   function changeTaskCompleteState(projectName, taskName, taskId) {
     const list = getList()
     const isCompleted = list
@@ -71,14 +65,6 @@ const Storage = (() => {
     }
 
     list.getProjects().forEach((project) => {
-      if (
-        project.getName() === 'ProjectName' ||
-        project.getName() === 'Today' ||
-        project.getName() === 'This week' ||
-        project.getName() === 'Completed'
-      )
-        return
-
       project.getTasks().forEach((task) => {
         if (task.getId() === taskId) {
           task.setCompleted(completed)
@@ -89,9 +75,12 @@ const Storage = (() => {
     saveList(list)
   }
 
-  function deleteTask(projectName, taskName) {
+  function deleteTask(taskId) {
     const list = getList()
-    list.getProject(projectName).deleteTask(taskName)
+    list.getProjects().forEach((project) => {
+      project.deleteTask(taskId)
+    })
+
     saveList(list)
   }
 

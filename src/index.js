@@ -17,5 +17,7 @@ import './assets/today.svg'
 import './assets/editPen.svg'
 import './assets/thisWeek.svg'
 import './assets/completed.svg'
+import './assets/trash.svg'
+import './assets/edit.svg'
 
 DOM.loadContent()

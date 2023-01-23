@@ -24,7 +24,8 @@ const dom = (() => {
   }
 
   function loadProject(projectName) {
-    const projectContainer = document.getElementById('project-list')
+    const projectContainer = document.createElement('div')
+    projectContainer.classList.add('project-container')
 
     const project = document.createElement('li')
     project.id = `${projectName.replaceAll(' ', '-').toLowerCase()}`
@@ -35,10 +36,21 @@ const dom = (() => {
       project.id !== 'completed'
     ) {
       project.dataset.projectButton = '' // ADD DATA ATTRIBUTE TO ALL NON DEFAULT PROJECTS
+      project.textContent = projectName
+
+      const projectRemoveButton = document.createElement('a')
+      projectRemoveButton.textContent = '❌'
+      project.appendChild(projectRemoveButton)
+
+      projectContainer.appendChild(project)
+      projectContainer.appendChild(projectRemoveButton)
+    } else {
+      project.textContent = projectName
+      projectContainer.appendChild(project)
     }
 
-    project.textContent = projectName
-    projectContainer.appendChild(project)
+    const projectList = document.getElementById('project-list')
+    projectList.appendChild(projectContainer)
   }
 
   function openProject(projectName, projectButton) {
@@ -96,23 +108,38 @@ const dom = (() => {
   }
 
   function loadTask(name, dueDate, isCompleted, taskId) {
-    const taskCheckboxSection = document.createElement('div')
-    taskCheckboxSection.classList.add('section-task-checkbox')
+    // CHECKBOX SECTION
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
     checkbox.checked = isCompleted
+
+    const taskCheckboxSection = document.createElement('div')
+    taskCheckboxSection.classList.add('section-task-checkbox')
     taskCheckboxSection.appendChild(checkbox)
 
+    // INFO SECTION
     const taskInfoSection = document.createElement('div')
     taskInfoSection.classList.add('section-task-info')
     const namePara = document.createElement('p')
     namePara.textContent = name
     const datePara = document.createElement('p')
-
     datePara.textContent = formatDate(dueDate)
 
     taskInfoSection.appendChild(namePara)
     taskInfoSection.appendChild(datePara)
+
+    // CHANGE SECTION
+
+    const trashIcon = document.createElement('img')
+    trashIcon.src = '../assets/trash.svg'
+    trashIcon.dataset.remove = ''
+    const editIcon = document.createElement('img')
+    editIcon.src = '../assets/edit.svg'
+
+    const taskChangeSection = document.createElement('div')
+    taskChangeSection.classList.add('section-task-change')
+    taskChangeSection.appendChild(trashIcon)
+    taskChangeSection.appendChild(editIcon)
 
     const task = document.createElement('div')
     task.classList.add('task-item')
@@ -120,6 +147,7 @@ const dom = (() => {
     task.id = taskId
     task.appendChild(taskCheckboxSection)
     task.appendChild(taskInfoSection)
+    task.appendChild(taskChangeSection)
 
     const tasksContainer = document.getElementById('tasks-container')
     tasksContainer.appendChild(task)
@@ -313,13 +341,18 @@ const dom = (() => {
 
   // TASK EVENT LISTENERS
   function initTaskButtons() {
-    const tasks = document.querySelectorAll('input[type="checkbox"]')
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]')
 
-    tasks.forEach((task) =>
-      task.addEventListener('click', (event) => {
+    checkboxes.forEach((checkbox) =>
+      checkbox.addEventListener('click', (event) => {
         changeTaskCompleteState(event)
       })
     )
+
+    const removeButtons = document.querySelectorAll('[data-remove]')
+    removeButtons.forEach((button) => {
+      button.addEventListener('click', deleteTask)
+    })
   }
 
   function changeTaskCompleteState(e) {
@@ -339,6 +372,16 @@ const dom = (() => {
     } else {
       element.classList.remove('line-through')
     }
+  }
+
+  function deleteTask(e) {
+    const { target } = e
+    const projectName = document.getElementById('project-heading').textContent
+    const taskItem = target.closest('[data-task-item]')
+    const taskId = taskItem.id
+
+    Storage.deleteTask(taskId)
+    renderTasks(projectName)
   }
 
   function formatDate(date) {

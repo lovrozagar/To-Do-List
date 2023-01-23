@@ -51,8 +51,8 @@ const Project = (() => {
     this.tasks.push(newTask)
   }
 
-  function deleteTask(taskName) {
-    this.tasks = this.tasks.filter((task) => task.name !== taskName)
+  function deleteTask(taskId) {
+    this.tasks = this.tasks.filter((task) => task.id !== taskId)
   }
 
   function getTasksToday() {
