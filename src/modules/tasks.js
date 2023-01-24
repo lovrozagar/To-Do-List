@@ -7,11 +7,12 @@ import { v4 as uuidv4 } from 'uuid'
 /* eslint-disable no-use-before-define */
 const Task = (() => {
   // PROJECT FACTORY
-  const task = (name, dueDate, completed = false) => {
+  const task = (name, dueDate, priority, completed = false) => {
     const id = uuidv4()
     return {
       name,
       dueDate,
+      priority,
       completed,
       id,
       setName,

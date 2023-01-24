@@ -49,9 +49,12 @@ const Storage = (() => {
     saveList(list)
   }
 
-  // function importTaskToCompleted(projectName, task) {
-
-  // }
+  function editTask(projectName, taskId, newName, newDueDate) {
+    const list = getList()
+    list.getProject(projectName).getTask(taskId).setName(newName)
+    list.getProject(projectName).getTask(taskId).setDate(newDueDate)
+    saveList(list)
+  }
 
   function changeTaskCompleteState(projectName, taskName, taskId) {
     const list = getList()
@@ -59,15 +62,6 @@ const Storage = (() => {
       .getProject(projectName)
       .getTask(taskId)
       .getCompleted()
-
-    // if (
-    //   !isCompleted &&
-    //   projectName === 'Completed' &&
-    //   !taskExistsOutsideCompleted(taskId)
-    // ) {
-    //   deleteCompletedTask(taskId)
-    //   return
-    // }
 
     let completed
     if (isCompleted) {
@@ -151,6 +145,7 @@ const Storage = (() => {
     addProject,
     deleteProject,
     addTask,
+    editTask,
     deleteTask,
     renameTask,
     setTaskDate,

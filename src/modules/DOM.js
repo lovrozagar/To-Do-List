@@ -137,6 +137,7 @@ const dom = (() => {
     trashIcon.dataset.remove = ''
     const editIcon = document.createElement('img')
     editIcon.src = '../assets/edit.svg'
+    editIcon.dataset.edit = ''
 
     const taskChangeSection = document.createElement('div')
     taskChangeSection.classList.add('section-task-change')
@@ -158,7 +159,10 @@ const dom = (() => {
   }
 
   function clearTasks() {
+    preserveEditTaskDialog()
+    closeEditTaskDialog()
     const tasksContainer = document.getElementById('tasks-container')
+    const tasks = document.querySelectorAll('[data-task-item]')
     tasksContainer.replaceChildren('')
   }
 
@@ -200,8 +204,10 @@ const dom = (() => {
   function clearForms() {
     const projectForm = document.getElementById('dialog-add-project')
     const taskForm = document.getElementById('form-add-task')
+    const editTaskForm = document.getElementById('form-edit-task')
     projectForm.reset()
     taskForm.reset()
+    editTaskForm.reset()
   }
 
   function addProject(event) {
@@ -282,7 +288,6 @@ const dom = (() => {
   // ADD TASK EVENT LISTENERS
   function initAddTaskButtons() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.style.display = 'block'
 
     const addTaskDialogButton = document.getElementById(
       'button-dialog-add-task'
@@ -300,12 +305,12 @@ const dom = (() => {
 
   function showAddTaskButton() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.style.display = 'block'
+    addTaskButton.classList.remove('active')
   }
 
   function hideAddTaskButton() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.style.display = 'none'
+    addTaskButton.classList.add('active')
   }
 
   function openAddTaskDialog() {
@@ -324,6 +329,7 @@ const dom = (() => {
 
     dialog.classList.remove('active')
     showDialogButton.classList.remove('active')
+    clearForms()
   }
 
   function addTask(e) {
@@ -357,15 +363,20 @@ const dom = (() => {
     const projectName = document.getElementById('project-heading').textContent
     const checkboxes = document.querySelectorAll('input[type="checkbox"]')
     const removeButtons = document.querySelectorAll('[data-remove]')
+    const editButtons = document.querySelectorAll('[data-edit]')
 
     checkboxes.forEach((checkbox) =>
-      checkbox.addEventListener('click', (event) => {
+      checkbox.addEventListener('click', (event) =>
         changeTaskCompleteState(event)
-      })
+      )
     )
 
     removeButtons.forEach((button) => {
-      button.addEventListener('click', deleteTask)
+      button.addEventListener('click', (event) => deleteTask(event))
+    })
+
+    editButtons.forEach((button) => {
+      button.addEventListener('click', (event) => editTask(event))
     })
   }
 
@@ -393,6 +404,7 @@ const dom = (() => {
     const { target } = e
     const projectName = document.getElementById('project-heading').textContent
     const taskItem = target.closest('[data-task-item]')
+    const taskName = taskItem.children[1].children[0].textContent
     const taskId = taskItem.id
 
     if (projectName !== 'Completed') {
@@ -407,9 +419,97 @@ const dom = (() => {
 
         Storage.addTask('Completed', completedTaskSave)
       }
+    } else {
+      Storage.changeTaskCompleteState(projectName, taskName, taskId)
+      Storage.deleteCompletedTask(taskId)
+      renderTasks(projectName)
+      return
     }
     Storage.deleteTask(taskId)
     renderTasks(projectName)
+  }
+
+  function editTask(e) {
+    const { target } = e
+    const projectName = document.getElementById('project-heading').textContent
+    const taskItem = target.closest('[data-task-item]')
+    const taskName = taskItem.children[1].children[0].textContent
+    const taskDate = taskItem.children[1].children[1].textContent
+
+    openEditTaskDialog(taskItem, taskName, taskDate)
+  }
+
+  function openEditTaskDialog(taskItem, taskName, taskDate) {
+    hideAddTaskButton()
+    const editTaskDialog = document.getElementById('dialog-edit-task')
+    editTaskDialog.classList.add('active')
+    insertAfter(editTaskDialog, taskItem)
+
+    const nameInput = document.getElementById('edit-task-name')
+    nameInput.value = taskName
+
+    const dateInput = document.getElementById('edit-task-date')
+    const date = new Date(taskDate)
+    date.setDate(date.getDate() + 1) // JS TIMEZONE FIX FOR CROATIA
+    dateInput.valueAsDate = date
+
+    initEditTaskButtons()
+  }
+
+  function closeEditTaskDialog() {
+    const editTaskDialog = document.getElementById('dialog-edit-task')
+    editTaskDialog.classList.remove('active')
+    showAddTaskButton()
+  }
+
+  function initEditTaskButtons() {
+    const submitEditTaskButton = document.getElementById(
+      'button-dialog-edit-task'
+    )
+    const cancelTaskEditDialogButton = document.getElementById(
+      'button-dialog-cancel-edit-task'
+    )
+
+    submitEditTaskButton.addEventListener('click', (event) => {
+      updateTask(event)
+    })
+    cancelTaskEditDialogButton.addEventListener('click', closeEditTaskDialog)
+  }
+
+  function updateTask(e) {
+    const projectName = document.getElementById('project-heading').textContent
+    const tasksContainer = document.getElementById('tasks-container')
+    const editTaskDialog = document.getElementById('dialog-edit-task')
+    const index = [...editTaskDialog.parentElement.children].indexOf(
+      editTaskDialog
+    )
+    const taskItem = tasksContainer.children[index - 1]
+    console.log(taskItem)
+    const taskId = taskItem.id
+    console.log(taskId)
+    const taskName = document.getElementById('edit-task-name').value
+    const taskDueDate = document.getElementById('edit-task-date').value
+
+    if (
+      taskName === '' ||
+      taskName === null ||
+      taskDueDate === '' ||
+      taskDueDate === null
+    ) {
+      return
+    }
+
+    e.preventDefault()
+    Storage.editTask(projectName, taskId, taskName, taskDueDate)
+    clearForms()
+    closeEditTaskDialog()
+    renderTasks(projectName)
+  }
+
+  function preserveEditTaskDialog() {
+    const addTaskDialog = document.getElementById('dialog-add-task')
+    const editTaskDialog = document.getElementById('dialog-edit-task')
+    insertAfter(editTaskDialog, addTaskDialog)
   }
 
   function formatDate(date) {
@@ -418,6 +518,10 @@ const dom = (() => {
       dateF = format(parseISO(date), 'MM/dd/yy')
     }
     return dateF
+  }
+
+  function insertAfter(newNode, existingNode) {
+    existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling)
   }
 
   return { loadContent }

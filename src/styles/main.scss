@@ -502,8 +502,7 @@ select {
 //       &:last-child {
 //         background-color: $green;
 //       }
-//     }
-//   }
+//     } 
 // }
 
 input {
@@ -601,6 +600,7 @@ input {
       padding-left: 1rem;
     }
     img {
+      cursor: pointer;
       height: 18px;
       padding: 0 0.5rem;
     }
@@ -643,4 +643,16 @@ input {
 
 .line-through {
   text-decoration: line-through;
+}
+
+.button-add-task.active{
+  display: none;
+}
+
+.dialog-edit-task{
+  display: none;
+}
+
+.dialog-edit-task.active{
+  display: block;
 }
