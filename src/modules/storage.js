@@ -51,8 +51,15 @@ const Storage = (() => {
 
   function editTask(projectName, taskId, newName, newDueDate) {
     const list = getList()
-    list.getProject(projectName).getTask(taskId).setName(newName)
-    list.getProject(projectName).getTask(taskId).setDate(newDueDate)
+
+    list.getProjects().forEach((project) => {
+      project.getTasks().forEach((task) => {
+        if (task.getId() === taskId) {
+          task.setName(newName)
+          task.setDate(newDueDate)
+        }
+      })
+    })
     saveList(list)
   }
 

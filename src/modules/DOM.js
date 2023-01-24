@@ -7,15 +7,20 @@ import Task from './tasks'
 import Storage from './storage'
 
 const dom = (() => {
+  let currentProject = 'Inbox'
+
   function loadContent() {
     renderProjects()
     initProjectButtons()
-    openProject('Inbox', document.getElementById('inbox'))
+    initEditTaskButtons()
+    openProject(currentProject)
   }
 
   // RENDER PROJECTS LIST
 
   function renderProjects() {
+    clearProjects()
+
     Storage.getList()
       .getProjects()
       .forEach((project) => loadProject(project.name))
@@ -25,6 +30,7 @@ const dom = (() => {
 
   function loadProject(projectName) {
     const projectContainer = document.createElement('div')
+    projectContainer.dataset.projectItem = ''
     projectContainer.classList.add('project-container')
 
     const project = document.createElement('li')
@@ -39,6 +45,7 @@ const dom = (() => {
       project.textContent = projectName
 
       const projectRemoveButton = document.createElement('a')
+      projectRemoveButton.dataset.removeProject = ''
       projectRemoveButton.textContent = '❌'
       project.appendChild(projectRemoveButton)
 
@@ -53,13 +60,22 @@ const dom = (() => {
     projectList.appendChild(projectContainer)
   }
 
-  function openProject(projectName, projectButton) {
+  function openProject(projectName) {
     const allProjectButtons = document.querySelectorAll('#project-list li')
 
-    allProjectButtons.forEach((button) => button.classList.remove('active'))
-    projectButton.classList.add('active')
+    allProjectButtons.forEach((button) => {
+      if (button.textContent === projectName) button.classList.add('active')
+      else button.classList.remove('active')
+      // button.classList.remove('active')
+    })
+    // projectButton.classList.add('active')
 
     renderProjectContent(projectName)
+  }
+
+  function clearProjects() {
+    const projectList = document.getElementById('project-list')
+    projectList.replaceChildren('')
   }
 
   // RENDER PROJECT CONTENT
@@ -106,6 +122,12 @@ const dom = (() => {
     } else {
       hideAddTaskButton()
     }
+
+    if (projectName === 'Completed') {
+      const taskEditButtons = document.querySelectorAll('[data-edit]')
+      taskEditButtons.forEach((button) => button.classList.add('hidden'))
+    }
+
     initTaskButtons()
   }
 
@@ -133,10 +155,10 @@ const dom = (() => {
     // CHANGE SECTION
 
     const trashIcon = document.createElement('img')
-    trashIcon.src = '../assets/trash.svg'
+    trashIcon.src = './assets/trash.svg'
     trashIcon.dataset.remove = ''
     const editIcon = document.createElement('img')
-    editIcon.src = '../assets/edit.svg'
+    editIcon.src = './assets/edit.svg'
     editIcon.dataset.edit = ''
 
     const taskChangeSection = document.createElement('div')
@@ -250,6 +272,9 @@ const dom = (() => {
     const weekProjectButton = document.getElementById('this-week')
     const completed = document.getElementById('completed')
     const projectButtons = document.querySelectorAll('[data-project-button]')
+    const projectRemoveButtons = document.querySelectorAll(
+      '[data-remove-project]'
+    )
 
     inboxProjectButton.addEventListener('click', openInboxTasks)
     todayProjectButton.addEventListener('click', openTodayTasks)
@@ -259,30 +284,56 @@ const dom = (() => {
     projectButtons.forEach((projectButton) => {
       projectButton.addEventListener('click', openCustomProject)
     })
+
+    projectRemoveButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        deleteProject(event)
+        stayOnCurrentProject()
+      })
+    })
+  }
+
+  function deleteProject(e) {
+    const { target } = e
+    const taskItem = target.closest('[data-project-item]')
+    const projectName = taskItem.children[0].textContent
+
+    Storage.deleteProject(projectName)
+    renderProjects()
+    initProjectButtons()
   }
 
   function openInboxTasks() {
-    openProject('Inbox', this)
+    openProject('Inbox')
+    currentProject = 'Inbox'
   }
 
   function openTodayTasks() {
     Storage.updateTodayProject()
-    openProject('Today', this)
+    openProject('Today')
+    currentProject = 'Today'
   }
 
   function openWeekTasks() {
     Storage.updateThisWeekProject()
-    openProject('This week', this)
+    openProject('This week')
+    currentProject = 'This week'
   }
 
   function openCompletedTasks() {
-    openProject('Completed', this)
+    openProject('Completed')
+    currentProject = 'Completed'
   }
 
   function openCustomProject(e) {
     const projectName = this.textContent
 
-    openProject(projectName, this)
+    openProject(projectName)
+    currentProject = projectName
+  }
+
+  function stayOnCurrentProject() {
+    openProject(currentProject)
   }
 
   // ADD TASK EVENT LISTENERS
@@ -452,8 +503,6 @@ const dom = (() => {
     const date = new Date(taskDate)
     date.setDate(date.getDate() + 1) // JS TIMEZONE FIX FOR CROATIA
     dateInput.valueAsDate = date
-
-    initEditTaskButtons()
   }
 
   function closeEditTaskDialog() {

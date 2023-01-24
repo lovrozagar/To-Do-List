@@ -502,7 +502,7 @@ select {
 //       &:last-child {
 //         background-color: $green;
 //       }
-//     } 
+//     }
 // }
 
 input {
@@ -645,14 +645,22 @@ input {
   text-decoration: line-through;
 }
 
-.button-add-task.active{
+.button-add-task.active {
   display: none;
 }
 
-.dialog-edit-task{
+.dialog-edit-task {
   display: none;
 }
 
-.dialog-edit-task.active{
+.dialog-edit-task.active {
   display: block;
+}
+
+[data-edit].hidden {
+  display: none;
+}
+
+a {
+  cursor: pointer;
 }
