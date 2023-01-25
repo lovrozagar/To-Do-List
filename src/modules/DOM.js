@@ -15,6 +15,7 @@ const dom = (() => {
     initEditTaskButtons()
     updateAvatar()
     openProject(currentProject)
+    initHamburgerButton()
   }
 
   // RENDER PROJECTS LIST
@@ -491,6 +492,7 @@ const dom = (() => {
       Storage.changeTaskCompleteState(projectName, taskName, taskId)
       Storage.deleteCompletedTask(taskId)
       renderTasks(projectName)
+      updateAvatar()
       return
     }
     Storage.deleteTask(taskId)
@@ -599,6 +601,16 @@ const dom = (() => {
     closeAddProjectDialog()
     closeEditTaskDialog()
     closeAddTaskDialog()
+  }
+
+  function initHamburgerButton() {
+    const hamburgerButton = document.getElementById('container-burger-menu')
+    hamburgerButton.addEventListener('click', toggleSidebar)
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar')
+    sidebar.classList.toggle('active')
   }
 
   function formatDate(date) {
