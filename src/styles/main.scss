@@ -82,7 +82,9 @@ select {
     }
 
     .character-img {
-      height: 70px;
+      position: relative;
+      top: 0.15rem;
+      height: 4rem;
     }
   }
 }
@@ -112,7 +114,6 @@ select {
         margin-bottom: 0.25rem;
         padding: 0 0.75rem 0 0.5rem;
         border-radius: 1rem;
-        transition: 150ms;
 
         li {
           flex: 1;
@@ -120,7 +121,6 @@ select {
 
         a {
           opacity: 0;
-          transition: 150ms;
         }
 
         &:hover a {
@@ -252,9 +252,15 @@ select {
       .button-cancel-project-dialog {
         background-color: $red;
       }
+      .button-cancel-project-dialog:hover {
+        background-color: $red-hover;
+      }
 
       .button-add-project-dialog {
         background-color: $green;
+      }
+      .button-add-project-dialog:hover {
+        background-color: $green-hover;
       }
     }
 
@@ -286,11 +292,12 @@ select {
       font-weight: 500;
     }
 
-    .button-add-task.hidden {
-      display: none;
+    .button-add-task.active {
+      display: block;
     }
 
     .button-add-task {
+      display: none;
       margin-top: 0.5rem;
       padding: 0.5rem 4rem;
       border-radius: 1rem;
@@ -391,9 +398,19 @@ select {
         background-color: $red;
       }
 
+      .button-dialog-cancel-task:hover,
+      .button-dialog-cancel-edit-task:hover {
+        background-color: $red-hover;
+      }
+
       .button-dialog-add-task,
       .button-dialog-edit-task {
         background-color: $green;
+      }
+
+      .button-dialog-add-task:hover,
+      .button-dialog-edit-task:hover {
+        background-color: $green-hover;
       }
     }
 
@@ -447,22 +464,35 @@ select {
         border: 1px solid $grey;
         border-radius: 50%;
         cursor: pointer;
+        transition: opacity 200ms ease-in-out;
       }
 
       label::after {
-        transition: opacity 0.4s ease;
-      }
-
-      label:hover::after {
+        content: '';
         position: absolute;
         top: 4.25px;
         left: 3px;
-        height: 3px;
-        width: 6.5px;
-        border: 1.5px solid $grey;
+        height: 4px;
+        width: 7.5px;
+        border: 2px solid $grey;
         border-top: none;
         border-right: none;
         opacity: 0;
+        transform: rotate(-45deg);
+        transition: opacity 200ms ease-in-out;
+      }
+
+      label:hover::after {
+        content: '';
+        position: absolute;
+        top: 4.25px;
+        left: 2.5px;
+        height: 2.75px;
+        width: 6.75px;
+        border: 2.75px solid $grey;
+        border-top: none;
+        border-right: none;
+        opacity: 1;
         transform: rotate(-45deg);
       }
 
@@ -470,10 +500,10 @@ select {
         content: '';
         position: absolute;
         top: 4.25px;
-        left: 3px;
-        height: 4px;
-        width: 7.5px;
-        border: 2px solid $white;
+        left: 2.5px;
+        height: 2.75px;
+        width: 6.75px;
+        border: 2.75px solid $white;
         border-top: none;
         border-right: none;
         opacity: 0;

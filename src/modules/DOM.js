@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
-import { format, parseISO, add, isValid } from 'date-fns'
+import { format, parseISO, isValid } from 'date-fns'
 import { v4 as uuidv4 } from 'uuid'
-import List from './ToDoList'
 import Project from './project'
 import Task from './tasks'
 import Storage from './storage'
+import Avatar from './avatar'
 
 const dom = (() => {
   let currentProject = 'Inbox'
@@ -14,6 +13,7 @@ const dom = (() => {
     renderProjects()
     initProjectButtons()
     initEditTaskButtons()
+    updateAvatar()
     openProject(currentProject)
   }
 
@@ -61,22 +61,20 @@ const dom = (() => {
     projectList.appendChild(projectContainer)
   }
 
+  function clearProjects() {
+    const projectList = document.getElementById('project-list')
+    projectList.replaceChildren('')
+  }
+
   function openProject(projectName) {
     const allProjectButtons = document.querySelectorAll('#project-list li')
 
     allProjectButtons.forEach((button) => {
       if (button.textContent === projectName) button.classList.add('active')
       else button.classList.remove('active')
-      // button.classList.remove('active')
     })
-    // projectButton.classList.add('active')
 
     renderProjectContent(projectName)
-  }
-
-  function clearProjects() {
-    const projectList = document.getElementById('project-list')
-    projectList.replaceChildren('')
   }
 
   // RENDER PROJECT CONTENT
@@ -115,24 +113,22 @@ const dom = (() => {
       })
 
     if (
-      projectName !== 'Today' &&
-      projectName !== 'This week' &&
-      projectName !== 'Completed'
+      projectName === 'Today' ||
+      projectName === 'This week' ||
+      projectName === 'Completed'
     ) {
+      hideAddTaskButton()
+    } else {
       showAddTaskButton()
       initAddTaskButtons()
-    } else {
-      console.log('afaefa')
-      console.log(projectName)
-      hideAddTaskButton()
     }
 
     if (projectName === 'Completed') {
       const taskEditButtons = document.querySelectorAll('[data-edit]')
       taskEditButtons.forEach((button) => button.classList.add('hidden'))
-    } else {
-      initTaskButtons()
     }
+    initTaskButtons()
+    closeAllDialogs()
   }
 
   function loadTask(name, dueDate, isCompleted, taskId) {
@@ -190,10 +186,9 @@ const dom = (() => {
   }
 
   function clearTasks() {
-    preserveEditTaskDialog()
     closeEditTaskDialog()
+    preserveEditTaskDialog()
     const tasksContainer = document.getElementById('tasks-container')
-    const tasks = document.querySelectorAll('[data-task-item]')
     tasksContainer.replaceChildren('')
   }
 
@@ -208,6 +203,7 @@ const dom = (() => {
     )
 
     addProjectButton.addEventListener('click', openAddProjectDialog)
+
     addProjectDialogButton.addEventListener('click', (event) => {
       addProject(event)
     })
@@ -321,33 +317,28 @@ const dom = (() => {
     Storage.updateTodayProject()
     openProject('Today')
     currentProject = 'Today'
-    closeAllDialogs()
   }
 
   function openWeekTasks() {
     Storage.updateThisWeekProject()
     openProject('This week')
     currentProject = 'This week'
-    closeAllDialogs()
   }
 
   function openCompletedTasks() {
     openProject('Completed')
     currentProject = 'Completed'
-    closeAllDialogs()
   }
 
-  function openCustomProject(e) {
+  function openCustomProject() {
     const projectName = this.textContent
 
     openProject(projectName)
     currentProject = projectName
-    closeAllDialogs()
   }
 
   function stayOnCurrentProject() {
     openProject(currentProject)
-    closeAllDialogs()
   }
 
   // ADD TASK EVENT LISTENERS
@@ -362,6 +353,7 @@ const dom = (() => {
     )
 
     addTaskButton.addEventListener('click', openAddTaskDialog)
+
     addTaskDialogButton.addEventListener('click', (event) => {
       addTask(event)
     })
@@ -369,31 +361,41 @@ const dom = (() => {
   }
 
   function showAddTaskButton() {
+    const projectName = document.getElementById('project-heading').textContent
+    const addTaskDialog = document.getElementById('dialog-add-task')
+
+    if (addTaskDialog.classList.contains('active')) {
+      return
+    }
+
+    if (
+      projectName === 'Today' ||
+      projectName === 'This week' ||
+      projectName === 'Completed'
+    ) {
+      return
+    }
+
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.classList.remove('hidden')
+    addTaskButton.classList.add('active')
   }
 
   function hideAddTaskButton() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.classList.add('hidden')
+    addTaskButton.classList.remove('active')
   }
 
   function openAddTaskDialog() {
-    closeAddProjectDialog()
-
+    closeAllDialogs()
     const dialog = document.getElementById('dialog-add-task')
-    const showDialogButton = document.getElementById('button-add-task')
-
     dialog.classList.add('active')
-    showDialogButton.classList.add('active')
+    hideAddTaskButton()
   }
 
   function closeAddTaskDialog() {
     const dialog = document.getElementById('dialog-add-task')
-    const showDialogButton = document.getElementById('button-add-task')
-
     dialog.classList.remove('active')
-    showDialogButton.classList.remove('active')
+    showAddTaskButton()
     clearForms()
   }
 
@@ -424,8 +426,8 @@ const dom = (() => {
   }
 
   // TASK EVENT LISTENERS
+  // eslint-disable-next-line no-unused-vars
   function initTaskButtons() {
-    const projectName = document.getElementById('project-heading').textContent
     const checkboxLabels = document.querySelectorAll('label')
     const removeButtons = document.querySelectorAll('[data-remove]')
     const editButtons = document.querySelectorAll('[data-edit]')
@@ -455,6 +457,7 @@ const dom = (() => {
     Storage.changeTaskCompleteState(projectName, taskName, taskId)
     Storage.updateCompletedProject()
     renderTasks(projectName)
+    updateAvatar()
   }
 
   function styleIfCompleted(isCompleted, element) {
@@ -496,7 +499,6 @@ const dom = (() => {
 
   function editTask(e) {
     const { target } = e
-    const projectName = document.getElementById('project-heading').textContent
     const taskItem = target.closest('[data-task-item]')
     const taskName = taskItem.children[1].children[0].textContent
     const taskDate = taskItem.children[1].children[1].textContent
@@ -505,6 +507,7 @@ const dom = (() => {
   }
 
   function openEditTaskDialog(taskItem, taskName, taskDate) {
+    closeAllDialogs()
     hideAddTaskButton()
     const editTaskDialog = document.getElementById('dialog-edit-task')
     editTaskDialog.classList.add('active')
@@ -520,8 +523,16 @@ const dom = (() => {
   }
 
   function closeEditTaskDialog() {
+    const projectName = document.getElementById('project-heading').textContent
     const editTaskDialog = document.getElementById('dialog-edit-task')
     editTaskDialog.classList.remove('active')
+    if (
+      projectName === 'Today' ||
+      projectName === 'This week' ||
+      projectName === 'Completed'
+    ) {
+      return
+    }
     showAddTaskButton()
   }
 
@@ -569,6 +580,15 @@ const dom = (() => {
     renderTasks(projectName)
   }
 
+  function updateAvatar() {
+    const avatarScore = document.querySelector('[data-completed]')
+    const avatarTitle = document.querySelector('[data-character-title]')
+    const avatarImage = document.querySelector('[data-character]')
+    avatarScore.textContent = Avatar.avatar.getAvatarScore()
+    avatarTitle.textContent = Avatar.avatar.getAvatarTitle()
+    avatarImage.src = Avatar.avatar.getAvatarImage()
+  }
+
   function preserveEditTaskDialog() {
     const addTaskDialog = document.getElementById('dialog-add-task')
     const editTaskDialog = document.getElementById('dialog-edit-task')
@@ -576,8 +596,9 @@ const dom = (() => {
   }
 
   function closeAllDialogs() {
-    closeAddTaskDialog()
+    closeAddProjectDialog()
     closeEditTaskDialog()
+    closeAddTaskDialog()
   }
 
   function formatDate(date) {
