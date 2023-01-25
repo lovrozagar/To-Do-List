@@ -1,13 +1,17 @@
 /* LIGHT MODE */
-$white: #fcfcfc;
-$white-high-grey: #e0e0e0;
-$white-mid-grey: #f7f7f7;
-$white-low-grey: #f1f1f1;
+$white: #ffffff;
+$white-high-grey: #e5e5e5;
+$white-mid-grey: #f1f5f9;
+$white-low-grey: #f5f5f5;
 $black: #000000;
+$black-low: #222222;
 $grey: #808080;
+$grey-text: #666666;
 $grey-transparent: #8080807e;
 $box-shadow-btm: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);
+$box-shadow-right: 2px 0px 1px 0px rgba(0, 0, 0, 0.05);
 $green: #32cd32;
+$red: #dc2626;
 
 /* DARK MODE */
 /* --black: #202020;
@@ -18,4 +22,4 @@ $green: #32cd32;
   --medium-dark-grey: #282828;
   --grey-hover: #363636;
   --green: #32cd32; */
-$tasks-max-width: 800px;
+$tasks-max-width: 1000px;

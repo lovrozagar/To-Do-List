@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
 import { format, parseISO, add, isValid } from 'date-fns'
+import { v4 as uuidv4 } from 'uuid'
 import List from './ToDoList'
 import Project from './project'
 import Task from './tasks'
@@ -93,6 +94,7 @@ const dom = (() => {
 
     const projectHeading = document.createElement('h2')
     projectHeading.id = 'project-heading'
+    projectHeading.classList.add('project-heading')
     projectHeading.textContent = `${projectName}`
 
     const taskContainer = document.getElementById('tasks')
@@ -120,26 +122,33 @@ const dom = (() => {
       showAddTaskButton()
       initAddTaskButtons()
     } else {
+      console.log('afaefa')
+      console.log(projectName)
       hideAddTaskButton()
     }
 
     if (projectName === 'Completed') {
       const taskEditButtons = document.querySelectorAll('[data-edit]')
       taskEditButtons.forEach((button) => button.classList.add('hidden'))
+    } else {
+      initTaskButtons()
     }
-
-    initTaskButtons()
   }
 
   function loadTask(name, dueDate, isCompleted, taskId) {
     // CHECKBOX SECTION
+    const labelAndInputId = uuidv4()
     const checkbox = document.createElement('input')
+    checkbox.id = labelAndInputId
     checkbox.type = 'checkbox'
     checkbox.checked = isCompleted
+    const checkboxLabel = document.createElement('label')
+    checkboxLabel.id = labelAndInputId
 
     const taskCheckboxSection = document.createElement('div')
     taskCheckboxSection.classList.add('section-task-checkbox')
     taskCheckboxSection.appendChild(checkbox)
+    taskCheckboxSection.appendChild(checkboxLabel)
 
     // INFO SECTION
     const taskInfoSection = document.createElement('div')
@@ -155,10 +164,10 @@ const dom = (() => {
     // CHANGE SECTION
 
     const trashIcon = document.createElement('img')
-    trashIcon.src = './assets/trash.svg'
+    trashIcon.src = 'trash.svg'
     trashIcon.dataset.remove = ''
     const editIcon = document.createElement('img')
-    editIcon.src = './assets/edit.svg'
+    editIcon.src = 'edit.svg'
     editIcon.dataset.edit = ''
 
     const taskChangeSection = document.createElement('div')
@@ -312,17 +321,20 @@ const dom = (() => {
     Storage.updateTodayProject()
     openProject('Today')
     currentProject = 'Today'
+    closeAllDialogs()
   }
 
   function openWeekTasks() {
     Storage.updateThisWeekProject()
     openProject('This week')
     currentProject = 'This week'
+    closeAllDialogs()
   }
 
   function openCompletedTasks() {
     openProject('Completed')
     currentProject = 'Completed'
+    closeAllDialogs()
   }
 
   function openCustomProject(e) {
@@ -330,10 +342,12 @@ const dom = (() => {
 
     openProject(projectName)
     currentProject = projectName
+    closeAllDialogs()
   }
 
   function stayOnCurrentProject() {
     openProject(currentProject)
+    closeAllDialogs()
   }
 
   // ADD TASK EVENT LISTENERS
@@ -356,12 +370,12 @@ const dom = (() => {
 
   function showAddTaskButton() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.classList.remove('active')
+    addTaskButton.classList.remove('hidden')
   }
 
   function hideAddTaskButton() {
     const addTaskButton = document.getElementById('button-add-task')
-    addTaskButton.classList.add('active')
+    addTaskButton.classList.add('hidden')
   }
 
   function openAddTaskDialog() {
@@ -412,12 +426,12 @@ const dom = (() => {
   // TASK EVENT LISTENERS
   function initTaskButtons() {
     const projectName = document.getElementById('project-heading').textContent
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+    const checkboxLabels = document.querySelectorAll('label')
     const removeButtons = document.querySelectorAll('[data-remove]')
     const editButtons = document.querySelectorAll('[data-edit]')
 
-    checkboxes.forEach((checkbox) =>
-      checkbox.addEventListener('click', (event) =>
+    checkboxLabels.forEach((checkboxLabel) =>
+      checkboxLabel.addEventListener('click', (event) =>
         changeTaskCompleteState(event)
       )
     )
@@ -559,6 +573,11 @@ const dom = (() => {
     const addTaskDialog = document.getElementById('dialog-add-task')
     const editTaskDialog = document.getElementById('dialog-edit-task')
     insertAfter(editTaskDialog, addTaskDialog)
+  }
+
+  function closeAllDialogs() {
+    closeAddTaskDialog()
+    closeEditTaskDialog()
   }
 
   function formatDate(date) {

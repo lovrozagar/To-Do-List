@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import DOM from './modules/DOM'
 
 import './styles/main.scss'
@@ -14,10 +15,11 @@ import './assets/viking.png'
 import './assets/boss.png'
 import './assets/inbox.svg'
 import './assets/today.svg'
-import './assets/editPen.svg'
 import './assets/thisWeek.svg'
 import './assets/completed.svg'
+import './assets/bamboo.svg'
 import './assets/trash.svg'
+import './assets/editPen.svg'
 import './assets/edit.svg'
 
 DOM.loadContent()
