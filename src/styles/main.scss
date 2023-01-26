@@ -188,7 +188,7 @@ select {
       }
 
       .project-container:nth-of-type(4) {
-        margin-bottom: 2.25rem;
+        margin-bottom: 2.5rem;
         position: relative;
       }
 
@@ -224,7 +224,7 @@ select {
     }
 
     .dialog-add-project {
-      padding: 0.5rem 0.5rem;
+      padding: 0.25rem 0.5rem;
 
       .input-add-project-dialog {
         width: 100%;
@@ -435,10 +435,11 @@ select {
       }
 
       .task-item {
-        margin-top: 0.5rem;
         display: flex;
         justify-content: start;
         align-items: flex-start;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid $white-high-grey;
 
         .section-task-checkbox {
           margin-top: 0.325rem;
@@ -453,18 +454,19 @@ select {
           justify-content: space-between;
 
           p:first-child {
-            word-break: normal;
+            word-break: break-word;
             padding-right: 1rem;
           }
         }
 
         .section-task-change {
-          padding: 0.3rem 0 0.3rem 1rem;
+          padding: 0 0 0 1rem;
 
           img {
             cursor: pointer;
-            height: 1rem;
-            padding: 0 0.5rem;
+            height: 1.75rem;
+            padding: 0.25rem 0 0.25rem 0.5rem;
+            margin-left: 0.5rem;
           }
         }
       }
@@ -490,21 +492,24 @@ select {
       label.high {
         border: 2px solid $red;
         background-color: $red-transparent;
-        &:hover::after {
+        &:hover::after,
+        &::after {
           border-color: $red;
         }
       }
       label.medium {
         border: 2px solid $orange;
         background-color: $orange-transparent;
-        &:hover::after {
+        &:hover::after,
+        &::after {
           border-color: $orange;
         }
       }
       label.low {
         border: 2px solid $blue;
         background-color: $blue-transparent;
-        &:hover::after {
+        &:hover::after,
+        &::after {
           border-color: $blue;
         }
       }
@@ -516,7 +521,7 @@ select {
         left: 1.75px;
         height: 2.75px;
         width: 6.75px;
-        border: 2px solid $grey;
+        border: 2.75px solid $grey;
         border-top: none;
         border-right: none;
         opacity: 0;
@@ -693,6 +698,32 @@ input {
   }
 
   .main {
+    .sidebar {
+      .project-list {
+        .project-container {
+          li {
+            padding: 1rem 0 1rem 1.625rem !important;
+          }
+          li:before {
+            position: absolute;
+            top: 0.8rem;
+          }
+          &:nth-of-type(4) {
+            margin-bottom: 2.75rem;
+            position: relative;
+          }
+
+          &:nth-of-type(4)::after {
+            content: 'Projects';
+            position: absolute;
+            top: 4.25rem;
+          }
+        }
+      }
+      .button-add-project {
+        padding: 1rem;
+      }
+    }
     .tasks-wrapper {
       max-width: 100vw;
       transform: translate(0, 0);
@@ -702,38 +733,14 @@ input {
 
 @media only screen and (max-width: 480px) {
   .main {
-    .sidebar {
-      .project-list {
-        .project-container {
-          li {
-            padding: 1rem 0.5rem 1rem 1.625rem !important;
-          }
-          li:before {
-            position: absolute;
-            top: 0.75rem;
-          }
-          &:nth-of-type(4) {
-            margin-bottom: 2.65rem;
-            position: relative;
-          }
-
-          &:nth-of-type(4)::after {
-            content: 'Projects';
-            position: absolute;
-            top: 4.125rem;
-          }
-        }
-      }
-    }
     .tasks {
       .button-add-task.active {
         margin: 1.5rem auto;
       }
       .tasks-container {
         .task-item {
-          .section-task-change {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+          .section-task-info {
+            flex-direction: column;
           }
         }
       }

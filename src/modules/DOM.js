@@ -7,13 +7,11 @@ import Storage from './storage'
 import Avatar from './avatar'
 
 const DOM = (() => {
-  let currentProject = 'Inbox'
-
   function loadContent() {
     renderProjects()
     initProjectButtons()
     initEditTaskButtons()
-    openProject(currentProject)
+    openProject('Inbox')
     initHamburgerButton()
     updateAvatar()
     loadFooter()
@@ -302,7 +300,6 @@ const DOM = (() => {
     projectRemoveButtons.forEach((button) => {
       button.addEventListener('click', (event) => {
         deleteProject(event)
-        stayOnCurrentProject()
       })
     })
   }
@@ -311,43 +308,40 @@ const DOM = (() => {
     const { target } = e
     const taskItem = target.closest('[data-project-item]')
     const projectName = taskItem.children[0].textContent
+    const heading = document.getElementById('project-heading').textContent
 
     Storage.deleteProject(projectName)
     renderProjects()
     initProjectButtons()
+
+    // IF A DELETED PROJECT IS CURRENTLY OPEN, OPEN INBOX INSTEAD
+    if (projectName === heading) {
+      openProject('Inbox')
+    }
   }
 
   function openInboxTasks() {
     openProject('Inbox')
-    currentProject = 'Inbox'
   }
 
   function openTodayTasks() {
     Storage.updateTodayProject()
     openProject('Today')
-    currentProject = 'Today'
   }
 
   function openWeekTasks() {
     Storage.updateThisWeekProject()
     openProject('This week')
-    currentProject = 'This week'
   }
 
   function openCompletedTasks() {
     openProject('Completed')
-    currentProject = 'Completed'
   }
 
   function openCustomProject() {
     const projectName = this.textContent
 
     openProject(projectName)
-    currentProject = projectName
-  }
-
-  function stayOnCurrentProject() {
-    openProject(currentProject)
   }
 
   // ADD TASK EVENT LISTENERS
@@ -508,11 +502,12 @@ const DOM = (() => {
     const taskItem = target.closest('[data-task-item]')
     const taskName = taskItem.children[1].children[0].textContent
     const taskDate = taskItem.children[1].children[1].textContent
+    const checkboxLabel = taskItem.children[0].children[1]
 
-    openEditTaskDialog(taskItem, taskName, taskDate)
+    openEditTaskDialog(taskItem, taskName, taskDate, checkboxLabel)
   }
 
-  function openEditTaskDialog(taskItem, taskName, taskDate) {
+  function openEditTaskDialog(taskItem, taskName, taskDate, checkboxLabel) {
     closeAllDialogs()
     hideAddTaskButton()
     const editTaskDialog = document.getElementById('dialog-edit-task')
@@ -526,6 +521,10 @@ const DOM = (() => {
     const date = new Date(taskDate)
     date.setDate(date.getDate() + 1) // JS TIMEZONE FIX FOR CROATIA
     dateInput.valueAsDate = date
+
+    const prioritySelect = document.getElementById('priority-edit')
+    const priorityIndex = getPriority(checkboxLabel.className)
+    prioritySelect[priorityIndex].selected = true
   }
 
   function closeEditTaskDialog() {
@@ -645,7 +644,20 @@ const DOM = (() => {
         element.classList.add('low')
         break
       default:
-        element.classList.add('none')
+        element.classList.add('no-priority')
+    }
+  }
+
+  function getPriority(elementClassName) {
+    switch (elementClassName) {
+      case 'high':
+        return 0
+      case 'medium':
+        return 1
+      case 'low':
+        return 2
+      default:
+        return 3
     }
   }
 
