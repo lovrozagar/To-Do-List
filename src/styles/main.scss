@@ -16,6 +16,7 @@ html {
 body {
   background-color: $white;
   height: 100vh;
+  min-height: -webkit-fill-available;
   overflow-x: hidden;
 }
 
@@ -287,7 +288,7 @@ select {
     height: calc(100vh - 4rem);
     max-width: $tasks-max-width;
     margin: 0 auto;
-    padding: 2rem 0.75rem 2rem 2.25rem;
+    padding: 2rem;
     overflow: auto;
 
     .project-heading {
@@ -454,11 +455,11 @@ select {
         }
 
         .section-task-change {
-          padding: 0.3rem 1rem;
+          padding: 0.3rem 0 0.3rem 1rem;
 
           img {
             cursor: pointer;
-            height: 18px;
+            height: 1rem;
             padding: 0 0.5rem;
           }
         }

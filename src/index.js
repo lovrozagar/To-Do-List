@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import DOM from './modules/DOM'
+import dom from './modules/DOM'
 
 import './styles/main.scss'
 import './assets/more.png'
@@ -22,4 +22,4 @@ import './assets/trash.svg'
 import './assets/editPen.svg'
 import './assets/edit.svg'
 
-DOM.loadContent()
+dom.loadContent()

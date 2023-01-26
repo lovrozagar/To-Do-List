@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 /* eslint-disable no-use-before-define */
 // import Task from './tasks'
 // import { cloneDeep } from 'lodash'
@@ -91,6 +92,8 @@ const List = (() => {
         this.getProject('This week').tasks.push(task)
       })
     })
+
+    this.getProject('This week').tasks.sort(sortByDate)
   }
 
   function updateCompletedProject() {
@@ -112,6 +115,15 @@ const List = (() => {
         this.getProject('Completed').tasks.push(taskClone)
       })
     })
+  }
+
+  function sortByDate(task1, task2) {
+    const date1 = new Date(task1.dueDate)
+    const date2 = new Date(task2.dueDate)
+
+    if (date1 > date2) return 1
+    else if (date1 < date2) return -1
+    return 0
   }
 
   return { list }

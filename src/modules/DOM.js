@@ -13,9 +13,9 @@ const dom = (() => {
     renderProjects()
     initProjectButtons()
     initEditTaskButtons()
-    updateAvatar()
     openProject(currentProject)
     initHamburgerButton()
+    updateAvatar()
   }
 
   // RENDER PROJECTS LIST
@@ -405,12 +405,7 @@ const dom = (() => {
     const taskName = document.getElementById('task-name').value
     const taskDueDate = document.getElementById('task-due-date').value
 
-    if (
-      taskName === '' ||
-      taskName === null ||
-      taskDueDate === '' ||
-      taskDueDate === null
-    ) {
+    if (taskName === '' || taskName === null) {
       return
     }
     if (Storage.getList().getProject(projectName).contains(taskName)) {

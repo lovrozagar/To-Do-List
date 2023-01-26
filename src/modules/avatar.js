@@ -62,13 +62,12 @@ const Avatar = (() => {
           break
         }
       }
-      console.log(this.currentLevel)
       return this.currentLevel
     },
 
     getAvatarScore() {
-      const totalScore = this.getAvatarCompletedTasks()
       const currentLevel = this.getAvatarLevel()
+      const totalScore = this.getAvatarCompletedTasks()
       return `${totalScore} / ${this[currentLevel].nextLvlScore}`
     },
 
@@ -82,6 +81,8 @@ const Avatar = (() => {
       return this[currentLevel].characterImg
     },
   }
+
+  avatar.currentLevel = avatar.getAvatarLevel()
 
   return { avatar }
 })()
