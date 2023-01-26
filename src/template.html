@@ -7,7 +7,7 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <div id="content">
+    <div 5id="content">
       <header id="header" class="header">
         <div id="container-burger-menu" class="container-burger-menu">
           <a href="#" class="button-burger-menu">
@@ -103,9 +103,10 @@
                   class="task-priority"
                   value
                 >
-                  <option value="Low">Low</option>
-                  <option value="Medium" selected>Medium</option>
-                  <option value="High">High</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                  <option value="none" selected>None</option>
                 </select>
               </form>
               <div
@@ -149,13 +150,14 @@
                 />
                 <select
                   name="priority"
-                  id="priority"
+                  id="priority-edit"
                   class="task-priority"
                   value
                 >
-                  <option value="Low">Low</option>
-                  <option value="Medium" selected>Medium</option>
-                  <option value="High">High</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                  <option value="none" selected>None</option>
                 </select>
               </form>
               <div

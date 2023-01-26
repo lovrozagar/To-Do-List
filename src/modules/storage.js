@@ -49,7 +49,7 @@ const Storage = (() => {
     saveList(list)
   }
 
-  function editTask(projectName, taskId, newName, newDueDate) {
+  function editTask(projectName, taskId, newName, newDueDate, newPriority) {
     const list = getList()
 
     list.getProjects().forEach((project) => {
@@ -57,6 +57,7 @@ const Storage = (() => {
         if (task.getId() === taskId) {
           task.setName(newName)
           task.setDate(newDueDate)
+          task.setPriority(newPriority)
         }
       })
     })

@@ -9,7 +9,7 @@ html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color: $black;
-  font-size: 18px;
+  font-size: 16px;
   height: 100%;
 }
 
@@ -26,7 +26,7 @@ select {
   outline: none;
 }
 
-.content{
+.content {
   position: relative;
 }
 
@@ -481,19 +481,41 @@ select {
         width: 1rem;
         height: 1rem;
         background-color: transparent;
-        border: 1px solid $grey;
+        border: 2px solid $grey;
         border-radius: 50%;
         cursor: pointer;
         transition: opacity 200ms ease-in-out;
       }
 
+      label.high {
+        border: 2px solid $red;
+        background-color: $red-transparent;
+        &:hover::after {
+          border-color: $red;
+        }
+      }
+      label.medium {
+        border: 2px solid $orange;
+        background-color: $orange-transparent;
+        &:hover::after {
+          border-color: $orange;
+        }
+      }
+      label.low {
+        border: 2px solid $blue;
+        background-color: $blue-transparent;
+        &:hover::after {
+          border-color: $blue;
+        }
+      }
+
       label::after {
         content: '';
         position: absolute;
-        top: 4.25px;
-        left: 3px;
-        height: 4px;
-        width: 7.5px;
+        top: 3.5px;
+        left: 1.75px;
+        height: 2.75px;
+        width: 6.75px;
         border: 2px solid $grey;
         border-top: none;
         border-right: none;
@@ -505,8 +527,8 @@ select {
       label:hover::after {
         content: '';
         position: absolute;
-        top: 4.25px;
-        left: 2.5px;
+        top: 3.5px;
+        left: 1.75px;
         height: 2.75px;
         width: 6.75px;
         border: 2.75px solid $grey;
@@ -519,8 +541,8 @@ select {
       input[type='checkbox']:checked + label::after {
         content: '';
         position: absolute;
-        top: 4.25px;
-        left: 2.5px;
+        top: 3.5px;
+        left: 2px;
         height: 2.75px;
         width: 6.75px;
         border: 2.75px solid $white;
@@ -539,7 +561,7 @@ select {
       }
 
       input[type='checkbox']:checked + label {
-        border-color: $green;
+        border: 1px solid $green;
         background-color: $green;
       }
 
@@ -719,20 +741,20 @@ input {
   }
 }
 
-.low {
-  filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)
-    brightness(100%) contrast(103%);
-}
+// .low {
+//   filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)
+//     brightness(100%) contrast(103%);
+// }
 
-.medium {
-  filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)
-    brightness(101%) contrast(101%);
-}
+// .medium {
+//   filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)
+//     brightness(101%) contrast(101%);
+// }
 
-.high {
-  filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg)
-    brightness(96%) contrast(80%);
-}
+// .high {
+//   filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg)
+//     brightness(96%) contrast(80%);
+// }
 
 .dialog-add-project {
   display: none;

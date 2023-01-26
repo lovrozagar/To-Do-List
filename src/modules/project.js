@@ -47,7 +47,7 @@ const Project = (() => {
   }
 
   function addTask(newTask) {
-    if (this.tasks.find((task) => task.getName() === newTask.name)) return
+    if (this.tasks.find((task) => task.getId() === newTask.id)) return
     this.tasks.push(newTask)
   }
 

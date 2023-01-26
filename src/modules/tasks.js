@@ -10,7 +10,7 @@ const Task = (() => {
   const task = (
     name,
     dueDate = 'No date',
-    priority = 'Medium',
+    priority = 'None',
     completed = false
   ) => {
     const id = uuidv4()
@@ -24,10 +24,11 @@ const Task = (() => {
       getName,
       setDate,
       getDate,
-      getId,
       getDateFormatted,
+      setPriority,
       setCompleted,
       getCompleted,
+      getId,
     }
   }
 
@@ -47,16 +48,16 @@ const Task = (() => {
     return this.dueDate
   }
 
-  function getId() {
-    return this.id
-  }
-
   function getDateFormatted() {
     let dateF = 'No date'
     if (isValid(parseISO(this.dueDate))) {
       dateF = format(parseISO(this.dueDate), 'MM/dd/yy')
     }
     return dateF
+  }
+
+  function setPriority(priority) {
+    this.priority = priority
   }
 
   function setCompleted(isCompleted) {
@@ -67,8 +68,9 @@ const Task = (() => {
     return this.completed
   }
 
-  // function doStuff() {
-  // }
+  function getId() {
+    return this.id
+  }
 
   return { task }
 })()

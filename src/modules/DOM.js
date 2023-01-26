@@ -110,7 +110,13 @@ const DOM = (() => {
       .forEach((task) => {
         styleIfCompleted(
           task.completed,
-          loadTask(task.name, task.dueDate, task.completed, task.id)
+          loadTask(
+            task.name,
+            task.dueDate,
+            task.priority,
+            task.completed,
+            task.id
+          )
         )
       })
 
@@ -133,7 +139,7 @@ const DOM = (() => {
     closeAllDialogs()
   }
 
-  function loadTask(name, dueDate, isCompleted, taskId) {
+  function loadTask(name, dueDate, priority, isCompleted, taskId) {
     // CHECKBOX SECTION
     const labelAndInputId = uuidv4()
     const checkbox = document.createElement('input')
@@ -142,6 +148,7 @@ const DOM = (() => {
     checkbox.checked = isCompleted
     const checkboxLabel = document.createElement('label')
     checkboxLabel.id = labelAndInputId
+    styleByPriority(checkboxLabel, priority)
 
     const taskCheckboxSection = document.createElement('div')
     taskCheckboxSection.classList.add('section-task-checkbox')
@@ -405,6 +412,7 @@ const DOM = (() => {
     const projectName = document.getElementById('project-heading').textContent
     const taskName = document.getElementById('task-name').value
     const taskDueDate = document.getElementById('task-due-date').value
+    const priority = document.getElementById('priority').value
 
     if (taskName === '' || taskName === null) {
       return
@@ -416,7 +424,7 @@ const DOM = (() => {
     }
 
     e.preventDefault()
-    Storage.addTask(projectName, Task.task(taskName, taskDueDate))
+    Storage.addTask(projectName, Task.task(taskName, taskDueDate, priority))
     clearForms()
     closeAddTaskDialog()
     renderTasks(projectName)
@@ -561,18 +569,14 @@ const DOM = (() => {
     console.log(taskId)
     const taskName = document.getElementById('edit-task-name').value
     const taskDueDate = document.getElementById('edit-task-date').value
+    const taskPriority = document.getElementById('priority-edit').value
 
-    if (
-      taskName === '' ||
-      taskName === null ||
-      taskDueDate === '' ||
-      taskDueDate === null
-    ) {
+    if (taskName === '' || taskName === null) {
       return
     }
 
     e.preventDefault()
-    Storage.editTask(projectName, taskId, taskName, taskDueDate)
+    Storage.editTask(projectName, taskId, taskName, taskDueDate, taskPriority)
     clearForms()
     closeEditTaskDialog()
     renderTasks(projectName)
@@ -627,6 +631,22 @@ const DOM = (() => {
       dateF = format(parseISO(date), 'MM/dd/yy')
     }
     return dateF
+  }
+
+  function styleByPriority(element, priority) {
+    switch (priority) {
+      case 'high':
+        element.classList.add('high')
+        break
+      case 'medium':
+        element.classList.add('medium')
+        break
+      case 'low':
+        element.classList.add('low')
+        break
+      default:
+        element.classList.add('none')
+    }
   }
 
   function insertAfter(newNode, existingNode) {
