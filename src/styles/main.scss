@@ -26,6 +26,10 @@ select {
   outline: none;
 }
 
+.content{
+  position: relative;
+}
+
 .header {
   position: relative;
   z-index: 20;
@@ -100,7 +104,7 @@ select {
     min-height: calc(100vh - 4rem);
     width: 17.5rem;
     padding: 1.5rem 1rem;
-    transition: transform 300ms ease-out;
+    transition: transform 300ms ease-in-out, width 300ms ease-in-out;
     box-shadow: $box-shadow-right;
     font-weight: 500;
     background-color: $white-low-grey;
@@ -595,6 +599,23 @@ select {
 
     // COMBINED ELEMENTS FROM DIFFERENT PARENTS
   }
+}
+
+.footer {
+  position: fixed;
+  z-index: 90;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0;
+  box-shadow: $box-shadow-top;
+  font-weight: 400;
+  word-spacing: 0.25rem;
+  background-color: $black-low;
+  color: $white-high-grey;
 }
 
 input {

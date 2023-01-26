@@ -6,7 +6,7 @@ import Task from './tasks'
 import Storage from './storage'
 import Avatar from './avatar'
 
-const dom = (() => {
+const DOM = (() => {
   let currentProject = 'Inbox'
 
   function loadContent() {
@@ -16,6 +16,7 @@ const dom = (() => {
     openProject(currentProject)
     initHamburgerButton()
     updateAvatar()
+    loadFooter()
   }
 
   // RENDER PROJECTS LIST
@@ -608,6 +609,18 @@ const dom = (() => {
     sidebar.classList.toggle('active')
   }
 
+  function loadFooter() {
+    const currentYear = new Date().getFullYear()
+    const copyrightText = document.getElementById('copyright')
+    copyrightText.textContent = `Copyright © ${currentYear} @lovrozagar`
+
+    const gitLogo = document.createElement('i')
+    gitLogo.classList.add('fab', 'fa-github')
+
+    const footer = document.getElementById('footer')
+    footer.appendChild(gitLogo)
+  }
+
   function formatDate(date) {
     let dateF = 'No date'
     if (isValid(parseISO(date))) {
@@ -623,4 +636,4 @@ const dom = (() => {
   return { loadContent }
 })()
 
-export default dom
+export default DOM

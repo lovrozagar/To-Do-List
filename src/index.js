@@ -1,5 +1,9 @@
 /* eslint-disable func-names */
-import dom from './modules/DOM'
+import '@fortawesome/fontawesome-free/js/fontawesome'
+import '@fortawesome/fontawesome-free/js/solid'
+import '@fortawesome/fontawesome-free/js/regular'
+import '@fortawesome/fontawesome-free/js/brands'
+import DOM from './modules/DOM'
 
 import './styles/main.scss'
 import './assets/more.png'
@@ -22,4 +26,4 @@ import './assets/trash.svg'
 import './assets/editPen.svg'
 import './assets/edit.svg'
 
-dom.loadContent()
+DOM.loadContent()
