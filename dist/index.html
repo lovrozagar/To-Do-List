@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundlee30a95c77ea62dd048bf.js"></script></head>
+  <script defer src="bundle23d85189ab731b1afd68.js"></script></head>
   <body>
     <div 5id="content">
       <header id="header" class="header">
@@ -91,13 +91,17 @@
                   />
                 </div>
                 <input
-                  type="date"
+                  type="text"
                   id="task-due-date"
                   class="task-due-date"
                   name="date"
+                  minlength="2"
+                  maxlength="3"
                   value=""
-                  onchange="this.setAttribute('value', this.value);"
+                  onfocus="(this.type='date'); this.setAttribute('value', this.value);"
+                  onfocusout="(this.type='text'); this.setAttribute('value', this.value);"
                 />
+                <span></span>
                 <select name="priority" id="priority" class="task-priority">
                   <option value="high">High</option>
                   <option value="medium">Medium</option>
