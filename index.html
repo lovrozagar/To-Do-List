@@ -93,11 +93,13 @@
                 <div class="optional-info">
                   <label for="task-due-date">Due date: </label>
                   <input
-                    type="date"
+                    type="text"
                     id="task-due-date"
                     class="task-due-date"
                     name="date"
                     value=""
+                    placeholder="Due Date"
+                    onfocus="(this.type = 'date')"
                   />
                   <label for="priority">Priority: </label>
                   <select name="priority" id="priority" class="task-priority">
