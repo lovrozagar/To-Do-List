@@ -5999,9 +5999,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/isValid/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/isValid/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/dist/esm-browser/v4.js");
 /* harmony import */ var _project__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./project */ "./src/modules/project.js");
 /* harmony import */ var _tasks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tasks */ "./src/modules/tasks.js");
@@ -6315,7 +6315,7 @@ var DOM = function () {
     closeAllDialogs();
     var dialog = document.getElementById('dialog-add-task');
     dialog.classList.add('active');
-    loadDateValue();
+    // loadDateValue()
     hideAddTaskButton();
   }
   function closeAddTaskDialog() {
@@ -6503,15 +6503,17 @@ var DOM = function () {
     var footer = document.getElementById('footer');
     footer.appendChild(gitLogo);
   }
-  function loadDateValue() {
-    var date = document.getElementById('task-due-date');
-    var today = new Date();
-    date.value = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])(today, 'yyyy-MM-dd');
-  }
+
+  // function loadDateValue() {
+  //   const date = document.getElementById('task-due-date')
+  //   const today = new Date()
+  //   date.value = format(today, 'yyyy-MM-dd')
+  // }
+
   function formatDate(date) {
     var dateF = 'No date';
-    if ((0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(date))) {
-      dateF = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])(date), 'MM/dd/yy');
+    if ((0,date_fns__WEBPACK_IMPORTED_MODULE_5__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])(date))) {
+      dateF = (0,date_fns__WEBPACK_IMPORTED_MODULE_7__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_6__["default"])(date), 'MM/dd/yy');
     }
     return dateF;
   }
@@ -29405,4 +29407,4 @@ _modules_DOM__WEBPACK_IMPORTED_MODULE_4__["default"].loadContent();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle936745f0f2e24556354a.js.map
+//# sourceMappingURL=bundleaa892b24f2a59aa7f9ae.js.map
