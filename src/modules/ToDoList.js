@@ -112,11 +112,9 @@ const List = (() => {
       completedTasks.forEach((task) => {
         const taskClone = cloneDeep(task)
         if (this.getProject('Completed').contains(task.id)) return
-        this.getProject('Completed').tasks.push(taskClone)
+        this.getProject('Completed').tasks.unshift(taskClone)
       })
     })
-
-    this.getProject('Completed').tasks.reverse()
   }
 
   function sortByDate(task1, task2) {
