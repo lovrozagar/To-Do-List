@@ -115,6 +115,8 @@ const List = (() => {
         this.getProject('Completed').tasks.push(taskClone)
       })
     })
+
+    this.getProject('Completed').tasks.reverse()
   }
 
   function sortByDate(task1, task2) {

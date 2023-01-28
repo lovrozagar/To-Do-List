@@ -243,7 +243,7 @@ const DOM = (() => {
     projectForm.reset()
     taskForm.reset()
     const date = document.getElementById('task-due-date')
-    date.value = ''
+    date.removeAttribute('value')
     editTaskForm.reset()
   }
 
@@ -393,7 +393,8 @@ const DOM = (() => {
 
   function openAddTaskDialog() {
     closeAllDialogs()
-    clearForms()
+    const date = document.getElementById('task-due-date')
+    date.setAttribute('value', '')
     const dialog = document.getElementById('dialog-add-task')
     dialog.classList.add('active')
     hideAddTaskButton()

@@ -401,8 +401,15 @@ select {
             outline: none;
             text-align-last: center;
             font-size: 1rem;
+            color: black;
             background-color: transparent;
           }
+
+          // input[type='date']::-webkit-inner-spin-button,
+          // input[type='date']::-webkit-calendar-picker-indicator {
+          //   display: none;
+          //   -webkit-appearance: none;
+          // }
 
           select {
             min-width: 6rem;
