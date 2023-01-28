@@ -6655,10 +6655,9 @@ var List = function () {
       completedTasks.forEach(function (task) {
         var taskClone = (0,lodash__WEBPACK_IMPORTED_MODULE_0__.cloneDeep)(task);
         if (_this3.getProject('Completed').contains(task.id)) return;
-        _this3.getProject('Completed').tasks.push(taskClone);
+        _this3.getProject('Completed').tasks.unshift(taskClone);
       });
     });
-    this.getProject('Completed').tasks.reverse();
   }
   function sortByDate(task1, task2) {
     var date1 = new Date(task1.dueDate);
@@ -29391,4 +29390,4 @@ _modules_DOM__WEBPACK_IMPORTED_MODULE_4__["default"].loadContent();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle82fe5cc274db18c07c8d.js.map
+//# sourceMappingURL=bundle64720e7a1c28d79e8a29.js.map
