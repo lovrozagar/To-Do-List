@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To Do</title>
-  <script defer src="bundle64720e7a1c28d79e8a29.js"></script></head>
+  <script defer src="bundle789047789bfc77e723bb.js"></script></head>
   <body>
     <div 5id="content">
       <header id="header" class="header">
@@ -38,7 +38,14 @@
         <div id="sidebar" class="sidebar">
           <ul id="project-list" class="project-list"></ul>
           <button id="button-add-project" class="button-add-project">
-            + Add project
+            <svg>
+              <path
+                d="M6 6V.5a.5.5 0 0 1 1 0V6h5.5a.5.5 0 1 1 0 1H7v5.5a.5.5 0 1 1-1 0V7H.5a.5.5 0 0 1 0-1H6z"
+                fill="currentColor"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
+            Add project
           </button>
           <form action="#" id="dialog-add-project" class="dialog-add-project">
             <input
@@ -86,7 +93,7 @@
                     id="task-name"
                     class="task-name"
                     name="name"
-                    placeholder="Task name"
+                    placeholder="Task name *"
                     required="true"
                   />
                 </div>
@@ -136,7 +143,8 @@
                     id="edit-task-name"
                     class="task-name"
                     name="name"
-                    placeholder="Task name"
+                    placeholder="Task name *"
+                    required="true"
                   />
                 </div>
                 <div class="optional-data">
