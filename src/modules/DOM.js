@@ -15,6 +15,7 @@ const DOM = (() => {
     initHamburgerButton()
     updateAvatar()
     loadFooter()
+    // loadDateValue()
   }
 
   // RENDER PROJECTS LIST
@@ -241,6 +242,8 @@ const DOM = (() => {
     const editTaskForm = document.getElementById('form-edit-task')
     projectForm.reset()
     taskForm.reset()
+    const date = document.getElementById('task-due-date')
+    date.value = ''
     editTaskForm.reset()
   }
 
@@ -390,6 +393,7 @@ const DOM = (() => {
 
   function openAddTaskDialog() {
     closeAllDialogs()
+    clearForms()
     const dialog = document.getElementById('dialog-add-task')
     dialog.classList.add('active')
     hideAddTaskButton()

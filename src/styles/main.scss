@@ -1,7 +1,9 @@
 @import './reset.css';
 @import 'variables';
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -292,7 +294,7 @@ select {
     height: calc(100vh - 4rem);
     max-width: $tasks-max-width;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 2rem 3rem 2rem;
     overflow: auto;
 
     .project-heading {
@@ -339,48 +341,72 @@ select {
         }
 
         .task-name {
-          font-size: 1.125rem;
-        }
-
-        .task-due-date,
-        .task-priority {
-          margin-top: 0.5rem;
+          appearance: none;
+          display: inline-block;
+          min-height: 2.375rem;
+          min-width: 4rem;
+          padding-left: 0.5rem;
+          border: 2px solid $grey-transparent;
+          border-radius: 5px;
           font-size: 1rem;
-          height: 2rem;
-        }
-
-        /* Removes the clear button from date inputs */
-        input[type='date']::-webkit-clear-button {
-          display: none;
-        }
-
-        /* Removes the spin button */
-        input[type='date']::-webkit-inner-spin-button {
-          display: none;
-        }
-
-        /* Always display the drop down caret */
-        input[type='date']::-webkit-calendar-picker-indicator {
-          filter: invert(0.5);
-        }
-
-        /* A few custom styles for date inputs */
-        input[type='date'] {
-          appearance: none;
-          margin-right: 0.5rem;
-          padding: 5px;
-          border: 2px solid $grey-transparent;
-          border-radius: 5px;
-          color: $grey;
-        }
-
-        select {
-          appearance: none;
-          padding: 5px;
-          border: 2px solid $grey-transparent;
-          border-radius: 5px;
           background-color: transparent;
-          color: $grey;
+        }
+
+        // FLEX CONTAINER -> WEBKIT PADDING/MARGIN FIX FOR SELECT
+        .optional-data {
+          display: flex;
+
+          input[type='date'] {
+            position: relative;
+            min-width: 7.5rem;
+            color: black;
+          }
+
+          input[type='date'][value=''] {
+            color: transparent;
+          }
+
+          input[type='date'][value='']::after {
+            content: 'Due date';
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            left: 0;
+            margin: 0 auto;
+            line-height: 1.5rem;
+            min-width: 7.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+              Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+              sans-serif;
+            color: black;
+          }
+
+          input[type='date'][value='']:focus {
+            color: black;
+          }
+
+          input[type='date'][value='']:focus::after {
+            display: none;
+          }
+
+          input[type='date'],
+          select {
+            appearance: none;
+            display: inline-block;
+            min-height: 2rem;
+            margin-top: 0.5rem;
+            margin-right: 0.5rem;
+            border: 2px solid $grey-transparent;
+            border-radius: 5px;
+            outline: none;
+            text-align-last: center;
+            font-size: 1rem;
+            background-color: transparent;
+          }
+
+          select {
+            min-width: 6rem;
+          }
         }
       }
     }
@@ -517,11 +543,11 @@ select {
       label::after {
         content: '';
         position: absolute;
-        top: 3.5px;
-        left: 1.75px;
-        height: 2.75px;
-        width: 6.75px;
-        border: 2.75px solid $grey;
+        top: 2.5px;
+        left: 1.5px;
+        height: 5px;
+        width: 9px;
+        border: 2.5px solid $grey;
         border-top: none;
         border-right: none;
         opacity: 0;
@@ -532,11 +558,11 @@ select {
       label:hover::after {
         content: '';
         position: absolute;
-        top: 3.5px;
-        left: 1.75px;
-        height: 2.75px;
-        width: 6.75px;
-        border: 2.75px solid $grey;
+        top: 2.5px;
+        left: 1.5px;
+        height: 5px;
+        width: 9px;
+        border: 2.5px solid $grey;
         border-top: none;
         border-right: none;
         opacity: 1;
@@ -546,11 +572,11 @@ select {
       input[type='checkbox']:checked + label::after {
         content: '';
         position: absolute;
-        top: 3.5px;
-        left: 2px;
-        height: 2.75px;
-        width: 6.75px;
-        border: 2.75px solid $white;
+        top: 4px;
+        left: 2.5px;
+        height: 5px;
+        width: 9px;
+        border: 2.5px solid $white;
         border-top: none;
         border-right: none;
         opacity: 0;
@@ -643,12 +669,6 @@ select {
   word-spacing: 0.25rem;
   background-color: $black-low;
   color: $white-high-grey;
-}
-
-input {
-  background-color: transparent;
-  border: none;
-  outline: none;
 }
 
 ::-webkit-scrollbar {

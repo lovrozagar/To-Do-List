@@ -23,7 +23,6 @@ import './assets/thisWeek.svg'
 import './assets/completed.svg'
 import './assets/bamboo.svg'
 import './assets/trash.svg'
-import './assets/editPen.svg'
 import './assets/edit.svg'
 
 DOM.loadContent()

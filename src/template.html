@@ -90,24 +90,22 @@
                     required="true"
                   />
                 </div>
-                <input
-                  type="date"
-                  id="task-due-date"
-                  class="task-due-date"
-                  name="date"
-                  required="true"
-                />
-                <select
-                  name="priority"
-                  id="priority"
-                  class="task-priority"
-                  value
-                >
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                  <option value="none" selected>None</option>
-                </select>
+                <div class="optional-data">
+                  <input
+                    type="date"
+                    id="task-due-date"
+                    class="task-due-date"
+                    name="date"
+                    value=""
+                    onchange="this.setAttribute('value', this.value);"
+                  />
+                  <select name="priority" id="priority" class="task-priority">
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                    <option value="none" selected>No priority</option>
+                  </select>
+                </div>
               </form>
               <div
                 id="container-dialog-buttons"
@@ -139,26 +137,26 @@
                     class="task-name"
                     name="name"
                     placeholder="Task name"
-                    required="true"
                   />
                 </div>
-                <input
-                  type="date"
-                  id="edit-task-date"
-                  class="task-due-date"
-                  name="date"
-                />
-                <select
-                  name="priority"
-                  id="priority-edit"
-                  class="task-priority"
-                  value
-                >
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                  <option value="none" selected>None</option>
-                </select>
+                <div class="optional-data">
+                  <input
+                    type="date"
+                    id="edit-task-date"
+                    class="task-due-date"
+                    name="date"
+                  />
+                  <select
+                    name="priority"
+                    id="priority-edit"
+                    class="task-priority"
+                  >
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                    <option value="none" selected>None</option>
+                  </select>
+                </div>
               </form>
               <div
                 id="container-dialog-buttons"
