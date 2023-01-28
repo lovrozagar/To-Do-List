@@ -15,11 +15,15 @@ html {
   height: 100%;
 }
 
+html,
 body {
-  background-color: $white;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
   height: 100vh;
-  min-height: -webkit-fill-available;
-  overflow-x: hidden;
+  height: var(--app-height);
+  background-color: $white;
 }
 
 button,
@@ -105,7 +109,7 @@ select {
     z-index: 30;
     min-height: calc(100vh - 4rem);
     width: 17.5rem;
-    padding: 1.5rem 1rem;
+    padding: 2rem 1rem;
     transition: transform 300ms ease-in-out, width 300ms ease-in-out;
     box-shadow: $box-shadow-right;
     font-weight: 500;
@@ -115,9 +119,8 @@ select {
       .project-container {
         display: flex;
         align-items: center;
-        margin-bottom: 0.25rem;
         padding: 0 0.75rem 0 0.5rem;
-        border-radius: 1rem;
+        border-radius: 5px;
 
         li {
           flex: 1;
@@ -134,7 +137,7 @@ select {
 
       li {
         position: relative;
-        padding: 0.5rem 0.5rem 0.5rem 1.625rem !important;
+        padding: 0.5rem 0.5rem 0.5rem 2rem !important;
         cursor: pointer;
         color: $grey-text;
         font-weight: 500;
@@ -157,11 +160,11 @@ select {
         content: '';
         position: absolute;
         z-index: 20;
-        top: 0.375rem;
         left: 0;
+        top: 0.25rem;
         display: inline-block;
-        height: 1.25rem;
-        width: 1.25rem;
+        height: 1.5rem;
+        width: 1.5rem;
         background: url('../assets/bamboo.svg');
       }
 
@@ -190,35 +193,46 @@ select {
       }
 
       .project-container:nth-of-type(4) {
-        margin-bottom: 2.5rem;
+        margin-bottom: 3rem;
         position: relative;
       }
 
       .project-container:nth-of-type(4)::after {
         content: 'Projects';
         position: absolute;
-        top: 3rem;
+        top: 3.5rem;
         left: 0;
         display: inline;
         pointer-events: none;
         font-size: 0.925rem;
-        font-weight: normal;
-        font-style: italic;
+        font-weight: bold;
         color: $grey-text;
       }
     }
 
+    .button-add-project.active {
+      display: none;
+    }
+
     .button-add-project {
+      display: flex;
+      align-items: center;
       width: 100%;
-      padding: 0.5rem 0.5rem;
-      border-radius: 1rem;
+      margin-top: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 5px;
       cursor: pointer;
       text-align: start;
       font-size: 0.925rem;
       font-weight: 600;
       color: $grey-text;
       background-color: transparent;
-      transition: 150ms;
+
+      svg {
+        height: 0.875rem;
+        width: 0.875rem;
+        margin-right: 0.5rem;
+      }
     }
 
     .button-add-project:hover {
@@ -226,6 +240,7 @@ select {
     }
 
     .dialog-add-project {
+      margin-top: 1rem;
       padding: 0.25rem 0.5rem;
 
       .input-add-project-dialog {
@@ -254,17 +269,18 @@ select {
       }
 
       .button-cancel-project-dialog {
-        background-color: $red;
+        background-color: $white;
+        color: $black-low;
       }
       .button-cancel-project-dialog:hover {
-        background-color: $red-hover;
+        background-color: $white-high-grey;
       }
 
       .button-add-project-dialog {
-        background-color: $green;
+        background-color: $black-low;
       }
       .button-add-project-dialog:hover {
-        background-color: $green-hover;
+        background-color: $black-low-hover;
       }
     }
 
@@ -311,7 +327,7 @@ select {
       display: none;
       margin-top: 1rem;
       padding: 0.5rem 4rem;
-      border-radius: 1rem;
+      border-radius: 5px;
       cursor: pointer;
       text-align: start;
       font-size: 1rem;
@@ -332,8 +348,17 @@ select {
       .form-edit-task {
         padding: 0.85rem 1rem 1rem 1rem;
         border-radius: 10px;
-        border: 2px solid $white-high-grey;
-        background-color: $white-low-grey;
+        border: 1px solid #e5e5e5;
+
+        input,
+        select {
+          background-color: transparent;
+          border: none;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+            Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          border-bottom: 1px solid #e5e5e5;
+          color: $grey-transparent;
+        }
 
         .task-text {
           display: grid;
@@ -346,20 +371,20 @@ select {
           min-height: 2.375rem;
           min-width: 4rem;
           padding-left: 0.5rem;
-          border: 2px solid $grey-transparent;
-          border-radius: 5px;
+          outline: none;
           font-size: 1rem;
-          background-color: transparent;
         }
 
         // FLEX CONTAINER -> WEBKIT PADDING/MARGIN FIX FOR SELECT
         .optional-data {
-          display: flex;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
 
           input[type='date'] {
             position: relative;
             min-width: 7.5rem;
-            color: black;
+            color: $grey;
           }
 
           input[type='date'][value=''] {
@@ -375,14 +400,12 @@ select {
             margin: 0 auto;
             line-height: 1.5rem;
             min-width: 7.5rem;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-              Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-              sans-serif;
-            color: black;
+            font-weight: 400;
+            color: $grey;
           }
 
           input[type='date'][value='']:focus {
-            color: black;
+            color: $grey;
           }
 
           input[type='date'][value='']:focus::after {
@@ -395,21 +418,17 @@ select {
             display: inline-block;
             min-height: 2rem;
             margin-top: 0.5rem;
-            margin-right: 0.5rem;
-            border: 2px solid $grey-transparent;
-            border-radius: 5px;
             outline: none;
             text-align-last: center;
             font-size: 1rem;
-            color: black;
-            background-color: transparent;
+            color: $grey;
           }
 
-          // input[type='date']::-webkit-inner-spin-button,
-          // input[type='date']::-webkit-calendar-picker-indicator {
-          //   display: none;
-          //   -webkit-appearance: none;
-          // }
+          input[type='date']::-webkit-inner-spin-button,
+          input[type='date']::-webkit-calendar-picker-indicator {
+            filter: invert(56%) sepia(0%) saturate(134%) hue-rotate(137deg)
+              brightness(90%) contrast(92%);
+          }
 
           select {
             min-width: 6rem;
@@ -428,6 +447,7 @@ select {
       .button-dialog-add-task,
       .button-dialog-cancel-edit-task,
       .button-dialog-edit-task {
+        width: 7.5rem;
         padding: 0.65em 1.125em;
         border-radius: 5px;
         font-size: 0.9rem;
@@ -437,22 +457,23 @@ select {
 
       .button-dialog-cancel-task,
       .button-dialog-cancel-edit-task {
-        background-color: $red;
+        background-color: $white-high-grey;
+        color: $black-low;
       }
 
       .button-dialog-cancel-task:hover,
       .button-dialog-cancel-edit-task:hover {
-        background-color: $red-hover;
+        background-color: $white-high-grey-hover;
       }
 
       .button-dialog-add-task,
       .button-dialog-edit-task {
-        background-color: $green;
+        background-color: $black-low;
       }
 
       .button-dialog-add-task:hover,
       .button-dialog-edit-task:hover {
-        background-color: $green-hover;
+        background-color: $black-low-hover;
       }
     }
 

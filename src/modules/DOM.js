@@ -8,6 +8,7 @@ import Avatar from './avatar'
 
 const DOM = (() => {
   function loadContent() {
+    initAppHeight()
     renderProjects()
     initProjectButtons()
     initEditTaskButtons()
@@ -16,6 +17,16 @@ const DOM = (() => {
     updateAvatar()
     loadFooter()
     // loadDateValue()
+  }
+
+  // APP HEIGHT
+  function initAppHeight() {
+    const appHeight = () => {
+      const doc = document.documentElement
+      doc.style.setProperty('--app-height', `${window.innerHeight}px`)
+    }
+    window.addEventListener('resize', appHeight)
+    appHeight()
   }
 
   // RENDER PROJECTS LIST
@@ -74,6 +85,8 @@ const DOM = (() => {
       if (button.textContent === projectName) button.classList.add('active')
       else button.classList.remove('active')
     })
+
+    closeSidebar()
 
     renderProjectContent(projectName)
   }
@@ -615,6 +628,11 @@ const DOM = (() => {
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar')
     sidebar.classList.toggle('active')
+  }
+
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar')
+    sidebar.classList.remove('active')
   }
 
   function loadFooter() {

@@ -24,5 +24,6 @@ import './assets/completed.svg'
 import './assets/bamboo.svg'
 import './assets/trash.svg'
 import './assets/edit.svg'
+import './assets/plus.svg'
 
 DOM.loadContent()
