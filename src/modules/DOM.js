@@ -16,7 +16,6 @@ const DOM = (() => {
     initHamburgerButton()
     updateAvatar()
     loadFooter()
-    // loadDateValue()
   }
 
   // APP HEIGHT
@@ -59,7 +58,6 @@ const DOM = (() => {
 
       const projectRemoveButton = document.createElement('a')
       projectRemoveButton.dataset.removeProject = ''
-      projectRemoveButton.textContent = '❌'
       project.appendChild(projectRemoveButton)
 
       projectContainer.appendChild(project)
@@ -149,6 +147,11 @@ const DOM = (() => {
     }
     initTaskButtons()
     closeAllDialogs()
+
+    renderQuoteIfNoTasks(
+      Storage.getList().getProject(projectName).getTasks().length
+    )
+    console.log(Storage.getList().getProject(projectName).getTasks().length)
   }
 
   function loadTask(name, dueDate, priority, isCompleted, taskId) {
@@ -682,6 +685,15 @@ const DOM = (() => {
       default:
         return 3
     }
+  }
+
+  function renderQuoteIfNoTasks(taskNumber) {
+    const quoteSection = document.getElementById('quote')
+    if (taskNumber === 0) {
+      quoteSection.classList.remove('hidden')
+      return
+    }
+    quoteSection.classList.add('hidden')
   }
 
   function insertAfter(newNode, existingNode) {

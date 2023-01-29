@@ -127,7 +127,31 @@ select {
         }
 
         a {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 1rem;
+          width: 1rem;
           opacity: 0;
+          &::before {
+            content: '';
+            position: absolute;
+            z-index: 10;
+            width: 0.875rem;
+            height: 0.15rem;
+            rotate: 45deg;
+            background-color: $grey;
+          }
+          &::after {
+            content: '';
+            position: absolute;
+            z-index: 10;
+            width: 0.15rem;
+            height: 0.875rem;
+            rotate: 45deg;
+            background-color: $grey;
+          }
         }
 
         &:hover a {
@@ -227,16 +251,50 @@ select {
       font-weight: 600;
       color: $grey-text;
       background-color: transparent;
+    }
 
-      svg {
-        height: 0.875rem;
+    .button-add-project > span {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 1.25rem;
+      width: 1.25rem;
+      margin-right: 0.5rem;
+      border-radius: 50%;
+      background-color: transparent;
+      &::before {
+        content: '';
+        position: absolute;
+        z-index: 10;
         width: 0.875rem;
-        margin-right: 0.5rem;
+        height: 0.1rem;
+        background-color: $grey;
+      }
+      &::after {
+        content: '';
+        position: absolute;
+        z-index: 10;
+        width: 0.1rem;
+        height: 0.875rem;
+        background-color: $grey;
       }
     }
 
     .button-add-project:hover {
-      background-color: $white;
+      color: $black-low;
+    }
+
+    .button-add-project:hover > span {
+      background-color: $black-low-hover;
+      &::before {
+        height: 0.06rem;
+        background-color: $white-high-grey;
+      }
+      &::after {
+        width: 0.06rem;
+        background-color: $white-high-grey;
+      }
     }
 
     .dialog-add-project {
@@ -248,6 +306,7 @@ select {
         padding: 0.5rem;
         border: 2px solid $white-high-grey;
         border-radius: 5px;
+        outline: none;
         font-size: 0.85rem;
         background-color: $white;
       }
@@ -300,12 +359,14 @@ select {
   }
 
   .tasks-wrapper {
+    position: relative;
     transform: translate(17.5rem, 0);
     max-width: calc(100vw - 17.5rem);
     transition: transform 300ms ease-out;
   }
 
   .tasks {
+    position: relative;
     flex: 1;
     height: calc(100vh - 4rem);
     max-width: $tasks-max-width;
@@ -320,30 +381,71 @@ select {
     }
 
     .button-add-task.active {
-      display: block;
+      display: flex;
+      align-items: center;
     }
 
     .button-add-task {
       display: none;
       margin-top: 1rem;
-      padding: 0.5rem 4rem;
+      padding: 0.5rem 10% 0.5rem 0;
       border-radius: 5px;
       cursor: pointer;
       text-align: start;
       font-size: 1rem;
       font-weight: 600;
       color: $grey-text;
-      background-color: $white-low-grey;
-      transition: 200ms;
+      background-color: transparent;
+
+      span {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 1.25rem;
+        width: 1.25rem;
+        margin-right: 0.5rem;
+        border-radius: 50%;
+        background-color: transparent;
+        &::before {
+          content: '';
+          position: absolute;
+          z-index: 10;
+          width: 0.875rem;
+          height: 0.11175rem;
+          background-color: $grey;
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          z-index: 10;
+          width: 0.11175rem;
+          height: 0.875rem;
+          background-color: $grey;
+        }
+      }
     }
 
     .button-add-task:hover {
-      background-color: $white-high-grey;
+      color: $black-low;
+    }
+
+    .button-add-task:hover > span {
+      background-color: $black-low-hover;
+      &::before {
+        height: 0.06rem;
+        background-color: $white-high-grey;
+      }
+      &::after {
+        width: 0.06rem;
+        background-color: $white-high-grey;
+      }
     }
 
     .dialog-add-task,
     .dialog-edit-task {
-      margin-top: 0.5rem;
+      padding: 0.5rem 0 1rem 0;
+      background-color: $white; // NECESSARY FOR QUOTE COVER
       .form-add-task,
       .form-edit-task {
         padding: 0.85rem 1rem 1rem 1rem;
@@ -356,7 +458,6 @@ select {
           border: none;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
             Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-          border-bottom: 1px solid #e5e5e5;
           color: $grey-transparent;
         }
 
@@ -368,22 +469,27 @@ select {
         .task-name {
           appearance: none;
           display: inline-block;
-          min-height: 2.375rem;
+          line-height: 2rem;
           min-width: 4rem;
-          padding-left: 0.5rem;
+          border-bottom: 1px solid #e5e5e5;
           outline: none;
-          font-size: 1rem;
+          font-size: 0.9rem;
+          color: $black-low;
+        }
+
+        .task-name::placeholder {
+          color: $grey;
         }
 
         // FLEX CONTAINER -> WEBKIT PADDING/MARGIN FIX FOR SELECT
         .optional-data {
+          position: relative;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 2rem;
+          gap: 1rem;
 
           input[type='date'] {
             position: relative;
-            min-width: 7.5rem;
             color: $grey;
           }
 
@@ -399,7 +505,6 @@ select {
             left: 0;
             margin: 0 auto;
             line-height: 1.5rem;
-            min-width: 7.5rem;
             font-weight: 400;
             color: $grey;
           }
@@ -417,20 +522,21 @@ select {
             appearance: none;
             display: inline-block;
             min-height: 2rem;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
+            border: 1px solid #e5e5e5;
             outline: none;
             text-align-last: center;
-            font-size: 1rem;
             color: $grey;
           }
-
           input[type='date']::-webkit-inner-spin-button,
           input[type='date']::-webkit-calendar-picker-indicator {
             filter: invert(56%) sepia(0%) saturate(134%) hue-rotate(137deg)
               brightness(90%) contrast(92%);
+            margin-right: 1rem;
           }
 
           select {
+            position: relative;
             min-width: 6rem;
           }
         }
@@ -441,7 +547,7 @@ select {
       display: flex;
       justify-content: flex-end;
       gap: 0.5rem;
-      margin-top: 0.375rem;
+      margin-top: 0.5rem;
 
       .button-dialog-cancel-task,
       .button-dialog-add-task,
@@ -677,9 +783,28 @@ select {
       font-size: 0.8rem;
       color: $grey;
     }
-
-    // COMBINED ELEMENTS FROM DIFFERENT PARENTS
   }
+}
+
+.quote {
+  position: absolute;
+  z-index: -10;
+  top: calc(50% - 2rem);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  margin: auto;
+  padding: 0 2rem;
+  line-height: 1.6;
+  text-align: center;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: $grey;
+}
+
+.quote.hidden {
+  display: none;
 }
 
 .footer {
@@ -782,8 +907,9 @@ select {
 @media only screen and (max-width: 480px) {
   .main {
     .tasks {
-      .button-add-task.active {
-        margin: 1.5rem auto;
+      .button-add-task {
+        padding: 0.5rem 5% 0.5rem 5%;
+        margin: 1rem 0 1rem auto;
       }
       .tasks-container {
         .task-item {
@@ -793,23 +919,21 @@ select {
         }
       }
     }
+
+    input[type='date'],
+    select {
+      font-size: 0.85rem !important;
+    }
+
+    input[type='date']::-webkit-inner-spin-button,
+    input[type='date']::-webkit-calendar-picker-indicator {
+      display: none;
+    }
+  }
+  .footer {
+    font-size: 0.9rem;
   }
 }
-
-// .low {
-//   filter: invert(55%) sepia(19%) saturate(1713%) hue-rotate(180deg)
-//     brightness(100%) contrast(103%);
-// }
-
-// .medium {
-//   filter: invert(79%) sepia(37%) saturate(5702%) hue-rotate(348deg)
-//     brightness(101%) contrast(101%);
-// }
-
-// .high {
-//   filter: invert(21%) sepia(85%) saturate(7154%) hue-rotate(355deg)
-//     brightness(96%) contrast(80%);
-// }
 
 .dialog-add-project {
   display: none;

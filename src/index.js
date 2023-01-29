@@ -6,11 +6,6 @@ import '@fortawesome/fontawesome-free/js/brands'
 import DOM from './modules/DOM'
 
 import './styles/main.scss'
-import './assets/more.png'
-import './assets/editPen.png'
-import './assets/priority.png'
-import './assets/trash.png'
-import './assets/lazyPanda.png'
 import './assets/novice.png'
 import './assets/student.png'
 import './assets/apprentice.png'
@@ -24,6 +19,5 @@ import './assets/completed.svg'
 import './assets/bamboo.svg'
 import './assets/trash.svg'
 import './assets/edit.svg'
-import './assets/plus.svg'
 
 DOM.loadContent()
