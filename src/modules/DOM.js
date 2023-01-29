@@ -253,14 +253,28 @@ const DOM = (() => {
   }
 
   function clearForms() {
+    clearProjectForm()
+    clearAddTaskForm()
+    clearEditTaskForm()
+  }
+
+  function clearProjectForm() {
     const projectForm = document.getElementById('dialog-add-project')
-    const taskForm = document.getElementById('form-add-task')
-    const editTaskForm = document.getElementById('form-edit-task')
     projectForm.reset()
+  }
+
+  function clearAddTaskForm() {
+    const taskForm = document.getElementById('form-add-task')
     taskForm.reset()
     const date = document.getElementById('task-due-date')
     date.removeAttribute('value')
+  }
+
+  function clearEditTaskForm() {
+    const editTaskForm = document.getElementById('form-edit-task')
     editTaskForm.reset()
+    const editDate = document.getElementById('edit-task-date')
+    editDate.setAttribute('value', '')
   }
 
   function addProject(event) {
@@ -521,8 +535,17 @@ const DOM = (() => {
   function editTask(e) {
     const { target } = e
     const taskItem = target.closest('[data-task-item]')
+    // IF EDIT DIALOG IS CLICKED AGAIN FOR THE SAME TASK, CLOSE IT
+    if (
+      taskItem.nextElementSibling ===
+        document.getElementById('dialog-edit-task') &&
+      document.getElementById('dialog-edit-task').classList.contains('active')
+    ) {
+      closeEditTaskDialog()
+      return
+    }
     const taskName = taskItem.children[1].children[0].textContent
-    const taskDate = taskItem.children[1].children[1].textContent
+    const taskDate = taskItem.children[1].children[1].textContent || ''
     const checkboxLabel = taskItem.children[0].children[1]
 
     openEditTaskDialog(taskItem, taskName, taskDate, checkboxLabel)
@@ -531,6 +554,7 @@ const DOM = (() => {
   function openEditTaskDialog(taskItem, taskName, taskDate, checkboxLabel) {
     closeAllDialogs()
     hideAddTaskButton()
+    clearForms()
     const editTaskDialog = document.getElementById('dialog-edit-task')
     editTaskDialog.classList.add('active')
     insertAfter(editTaskDialog, taskItem)
@@ -542,6 +566,9 @@ const DOM = (() => {
     const date = new Date(taskDate)
     date.setDate(date.getDate() + 1) // JS TIMEZONE FIX FOR CROATIA
     dateInput.valueAsDate = date
+    if (isValid(date)) {
+      dateInput.setAttribute('value', formatDate(date, 'yyyy-MM-dd'))
+    }
 
     const prioritySelect = document.getElementById('priority-edit')
     const priorityIndex = getPriority(checkboxLabel.className)

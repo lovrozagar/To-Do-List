@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
@@ -93,19 +96,25 @@
                   />
                 </div>
                 <div class="optional-data">
-                  <input
-                    type="date"
-                    id="task-due-date"
-                    class="task-due-date"
-                    name="date"
-                    value=""
-                    onchange="this.setAttribute('value', this.value);"
-                  />
+                  <div class="datePicker">
+                    <input
+                      type="date"
+                      id="task-due-date"
+                      class="task-due-date"
+                      name="date"
+                      value=""
+                      onchange="this.setAttribute('value', this.value);"
+                    />
+                    <label for="task-due-date">Date</label>
+                  </div>
                   <select name="priority" id="priority" class="task-priority">
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
-                    <option value="none" selected>No priority</option>
+                    <option value="none">No priority</option>
+                    <option value="priority" disabled selected hidden>
+                      Priority
+                    </option>
                   </select>
                 </div>
               </form>
@@ -143,12 +152,17 @@
                   />
                 </div>
                 <div class="optional-data">
-                  <input
-                    type="date"
-                    id="edit-task-date"
-                    class="task-due-date"
-                    name="date"
-                  />
+                  <div class="datePicker">
+                    <input
+                      type="date"
+                      id="edit-task-date"
+                      class="task-due-date"
+                      name="date"
+                      value=""
+                      onchange="this.setAttribute('value', this.value);"
+                    />
+                    <label for="edit-task-date">Due Date</label>
+                  </div>
                   <select
                     name="priority"
                     id="priority-edit"
@@ -157,7 +171,10 @@
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
-                    <option value="none" selected>None</option>
+                    <option value="none">No priority</option>
+                    <option value="priority" disabled selected hidden>
+                      Priority
+                    </option>
                   </select>
                 </div>
               </form>
@@ -178,7 +195,7 @@
                   id="button-dialog-edit-task"
                   class="button-dialog-edit-task"
                 >
-                  Edit task
+                  Update task
                 </button>
               </div>
             </div>
