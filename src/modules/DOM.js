@@ -10,7 +10,7 @@ const DOM = (() => {
   function loadContent() {
     initAppHeight()
     renderProjects()
-    initProjectButtons()
+    // initProjectButtons()
     initEditTaskButtons()
     openProject('Inbox')
     initHamburgerButton()
@@ -18,7 +18,7 @@ const DOM = (() => {
     loadFooter()
   }
 
-  // APP HEIGHT
+  // APP HEIGHT 100VH FIX
   function initAppHeight() {
     const appHeight = () => {
       const doc = document.documentElement
@@ -38,6 +38,7 @@ const DOM = (() => {
       .forEach((project) => loadProject(project.name))
 
     initAddProjectButtons()
+    initProjectButtons()
   }
 
   function loadProject(projectName) {
@@ -73,7 +74,7 @@ const DOM = (() => {
 
   function clearProjects() {
     const projectList = document.getElementById('project-list')
-    projectList.replaceChildren('')
+    projectList.replaceChildren()
   }
 
   function openProject(projectName) {
@@ -213,7 +214,7 @@ const DOM = (() => {
     closeEditTaskDialog()
     preserveEditTaskDialog()
     const tasksContainer = document.getElementById('tasks-container')
-    tasksContainer.replaceChildren('')
+    tasksContainer.replaceChildren()
   }
 
   // ADD PROJECT EVENT LISTENERS
@@ -299,10 +300,10 @@ const DOM = (() => {
     }
 
     Storage.addProject(Project.project(projectName))
-    loadProject(projectName)
-    initProjectButtons()
     closeAddProjectDialog()
     clearForms()
+    renderProjects()
+    openProject(projectName)
   }
 
   function cancelAddProjectDialog() {
@@ -340,17 +341,18 @@ const DOM = (() => {
   function deleteProject(e) {
     const { target } = e
     const taskItem = target.closest('[data-project-item]')
+    console.log(taskItem)
     const projectName = taskItem.children[0].textContent
     const heading = document.getElementById('project-heading').textContent
 
     Storage.deleteProject(projectName)
     renderProjects()
-    initProjectButtons()
-
     // IF A DELETED PROJECT IS CURRENTLY OPEN, OPEN INBOX INSTEAD
     if (projectName === heading) {
       openProject('Inbox')
+      return
     }
+    openProject(heading)
   }
 
   function openInboxTasks() {
@@ -556,8 +558,8 @@ const DOM = (() => {
     hideAddTaskButton()
     clearForms()
     const editTaskDialog = document.getElementById('dialog-edit-task')
-    editTaskDialog.classList.add('active')
     insertAfter(editTaskDialog, taskItem)
+    editTaskDialog.classList.add('active')
 
     const nameInput = document.getElementById('edit-task-name')
     nameInput.value = taskName

@@ -107,13 +107,14 @@ select {
   .sidebar {
     position: absolute;
     z-index: 30;
-    min-height: calc(100vh - 4rem);
+    height: calc(100vh - 4rem);
     width: 17.5rem;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 6rem 1rem;
     transition: transform 300ms ease-in-out, width 300ms ease-in-out;
     box-shadow: $box-shadow-right;
     font-weight: 500;
     background-color: $white-low-grey;
+    overflow-y: auto;
 
     .project-list {
       .project-container {
@@ -128,6 +129,7 @@ select {
 
         a {
           position: relative;
+          z-index: 10;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -142,6 +144,7 @@ select {
             height: 0.15rem;
             rotate: 45deg;
             background-color: $grey;
+            pointer-events: none;
           }
           &::after {
             content: '';
@@ -151,6 +154,7 @@ select {
             height: 0.875rem;
             rotate: 45deg;
             background-color: $grey;
+            pointer-events: none;
           }
         }
 
@@ -371,7 +375,7 @@ select {
     height: calc(100vh - 4rem);
     max-width: $tasks-max-width;
     margin: 0 auto;
-    padding: 2rem 2rem 6rem 2rem;
+    padding: 2rem 2rem 10rem 2rem;
     overflow: auto;
 
     .project-heading {
@@ -799,7 +803,7 @@ select {
 .quote {
   position: absolute;
   z-index: -10;
-  top: calc(50% - 2rem);
+  top: max(calc(50% - 3rem), 8rem); // TABLET MOBILE WIDESCREEN SUPPORT
   right: 0;
   bottom: 0;
   left: 0;
@@ -945,12 +949,8 @@ select {
         }
       }
     }
-
-    // input[type='date']::-webkit-inner-spin-button,
-    // input[type='date']::-webkit-calendar-picker-indicator {
-    //   display: none;
-    // }
   }
+
   .footer {
     font-size: 0.9rem;
   }
