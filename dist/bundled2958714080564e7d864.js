@@ -6030,7 +6030,6 @@ var DOM = function () {
   function loadContent() {
     initAppHeight();
     renderProjects();
-    // initProjectButtons()
     initEditTaskButtons();
     openProject('Inbox');
     initHamburgerButton();
@@ -6088,7 +6087,6 @@ var DOM = function () {
     allProjectButtons.forEach(function (button) {
       if (button.textContent === projectName) button.classList.add('active');else button.classList.remove('active');
     });
-    closeSidebar();
     renderProjectContent(projectName);
   }
 
@@ -6130,7 +6128,6 @@ var DOM = function () {
     initTaskButtons();
     closeAllDialogs();
     renderQuoteIfNoTasks(_storage__WEBPACK_IMPORTED_MODULE_2__["default"].getList().getProject(projectName).getTasks().length);
-    console.log(_storage__WEBPACK_IMPORTED_MODULE_2__["default"].getList().getProject(projectName).getTasks().length);
   }
   function loadTask(name, dueDate, priority, isCompleted, taskId) {
     // CHECKBOX SECTION
@@ -6233,6 +6230,7 @@ var DOM = function () {
     editDate.setAttribute('value', '');
   }
   function addProject(event) {
+    console.log(event);
     var addProjectDialogInput = document.getElementById('input-add-project-dialog');
     var projectName = addProjectDialogInput.value;
     // FORM VALIDATION IF FORM NOT VALID
@@ -6241,8 +6239,8 @@ var DOM = function () {
     }
     event.preventDefault();
     if (_storage__WEBPACK_IMPORTED_MODULE_2__["default"].getList().contains(projectName)) {
-      addProjectDialogInput.value = '';
       alert('Project names must be different');
+      clearForms();
       return;
     }
     _storage__WEBPACK_IMPORTED_MODULE_2__["default"].addProject(_project__WEBPACK_IMPORTED_MODULE_0__["default"].project(projectName));
@@ -6262,7 +6260,7 @@ var DOM = function () {
     var todayProjectButton = document.getElementById('today');
     var weekProjectButton = document.getElementById('this-week');
     var completed = document.getElementById('completed');
-    var projectButtons = document.querySelectorAll('[data-project-button]');
+    var projectButtons = document.querySelectorAll('[data-project-item]');
     var projectRemoveButtons = document.querySelectorAll('[data-remove-project]');
     inboxProjectButton.addEventListener('click', openInboxTasks);
     todayProjectButton.addEventListener('click', openTodayTasks);
@@ -6279,8 +6277,8 @@ var DOM = function () {
   }
   function deleteProject(e) {
     var target = e.target;
+    e.stopPropagation();
     var taskItem = target.closest('[data-project-item]');
-    console.log(taskItem);
     var projectName = taskItem.children[0].textContent;
     var heading = document.getElementById('project-heading').textContent;
     _storage__WEBPACK_IMPORTED_MODULE_2__["default"].deleteProject(projectName);
@@ -6294,21 +6292,26 @@ var DOM = function () {
   }
   function openInboxTasks() {
     openProject('Inbox');
+    closeSidebar();
   }
   function openTodayTasks() {
     _storage__WEBPACK_IMPORTED_MODULE_2__["default"].updateTodayProject();
     openProject('Today');
+    closeSidebar();
   }
   function openWeekTasks() {
     _storage__WEBPACK_IMPORTED_MODULE_2__["default"].updateThisWeekProject();
     openProject('This week');
+    closeSidebar();
   }
   function openCompletedTasks() {
     openProject('Completed');
+    closeSidebar();
   }
   function openCustomProject() {
     var projectName = this.textContent;
     openProject(projectName);
+    closeSidebar();
   }
 
   // ADD TASK EVENT LISTENERS
@@ -6375,7 +6378,7 @@ var DOM = function () {
   // TASK EVENT LISTENERS
   // eslint-disable-next-line no-unused-vars
   function initTaskButtons() {
-    var checkboxLabels = document.querySelectorAll('label');
+    var checkboxLabels = document.querySelectorAll('.section-task-checkbox label');
     var removeButtons = document.querySelectorAll('[data-remove]');
     var editButtons = document.querySelectorAll('[data-edit]');
     checkboxLabels.forEach(function (checkboxLabel) {
@@ -6421,7 +6424,6 @@ var DOM = function () {
     if (projectName !== 'Completed') {
       if (_storage__WEBPACK_IMPORTED_MODULE_2__["default"].getList().getProject(projectName).getTask(taskId).completed === true) {
         var completedTaskSave = _objectSpread({}, _storage__WEBPACK_IMPORTED_MODULE_2__["default"].getList().getProject(projectName).getTask(taskId));
-        console.log(completedTaskSave);
         _storage__WEBPACK_IMPORTED_MODULE_2__["default"].addTask('Completed', completedTaskSave);
       }
     } else {
@@ -6490,9 +6492,7 @@ var DOM = function () {
     var editTaskDialog = document.getElementById('dialog-edit-task');
     var index = _toConsumableArray(editTaskDialog.parentElement.children).indexOf(editTaskDialog);
     var taskItem = tasksContainer.children[index - 1];
-    console.log(taskItem);
     var taskId = taskItem.id;
-    console.log(taskId);
     var taskName = document.getElementById('edit-task-name').value;
     var taskDueDate = document.getElementById('edit-task-date').value;
     var taskPriority = document.getElementById('priority-edit').value;
@@ -6666,7 +6666,6 @@ var List = function () {
     var projectToDelete = this.projects.find(function (project) {
       return project.getName() === projectName;
     });
-    console.log(this.projects.indexOf(projectToDelete));
     this.projects.splice(this.projects.indexOf(projectToDelete), 1);
   }
   function updateTodayProject() {
@@ -6898,7 +6897,6 @@ var Project = function () {
   function getTasksThisWeek() {
     return this.tasks.filter(function (task) {
       var taskDate = new Date(task.getDateFormatted());
-      console.log((0,date_fns__WEBPACK_IMPORTED_MODULE_2__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_3__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_1__["default"])(taskDate), 0)));
       return (0,date_fns__WEBPACK_IMPORTED_MODULE_2__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_3__["default"])((0,date_fns__WEBPACK_IMPORTED_MODULE_1__["default"])(taskDate), 0));
     });
   }
@@ -29093,6 +29091,17 @@ module.exports = __webpack_require__.p + "edit.svg";
 
 /***/ }),
 
+/***/ "./src/assets/favicon.png":
+/*!********************************!*\
+  !*** ./src/assets/favicon.png ***!
+  \********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+module.exports = __webpack_require__.p + "favicon.png";
+
+/***/ }),
+
 /***/ "./src/assets/inbox.svg":
 /*!******************************!*\
   !*** ./src/assets/inbox.svg ***!
@@ -29347,7 +29356,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _assets_bamboo_svg__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./assets/bamboo.svg */ "./src/assets/bamboo.svg");
 /* harmony import */ var _assets_trash_svg__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./assets/trash.svg */ "./src/assets/trash.svg");
 /* harmony import */ var _assets_edit_svg__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./assets/edit.svg */ "./src/assets/edit.svg");
+/* harmony import */ var _assets_favicon_png__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./assets/favicon.png */ "./src/assets/favicon.png");
 /* eslint-disable func-names */
+
 
 
 
@@ -29372,4 +29383,4 @@ _modules_DOM__WEBPACK_IMPORTED_MODULE_4__["default"].loadContent();
 
 /******/ })()
 ;
-//# sourceMappingURL=bundle58600d3287d6cc78da8a.js.map
+//# sourceMappingURL=bundled2958714080564e7d864.js.map
