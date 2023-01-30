@@ -8,7 +8,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1"
     />
     <title>To Do</title>
-  <script defer src="bundle84ceedb5cd68d49d499f.js"></script></head>
+  <script defer src="bundle58600d3287d6cc78da8a.js"></script></head>
   <body>
     <div 5id="content">
       <header id="header" class="header">
@@ -108,13 +108,13 @@
                     <label for="task-due-date">Date</label>
                   </div>
                   <select name="priority" id="priority" class="task-priority">
-                    <option value="priority" disabled selected hidden>
-                      Priority
-                    </option>
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
                     <option value="none">No priority</option>
+                    <option value="priority" disabled selected hidden>
+                      Priority
+                    </option>
                   </select>
                 </div>
               </form>
@@ -152,12 +152,17 @@
                   />
                 </div>
                 <div class="optional-data">
-                  <input
-                    type="date"
-                    id="edit-task-date"
-                    class="task-due-date"
-                    name="date"
-                  />
+                  <div class="datePicker">
+                    <input
+                      type="date"
+                      id="edit-task-date"
+                      class="task-due-date"
+                      name="date"
+                      value=""
+                      onchange="this.setAttribute('value', this.value);"
+                    />
+                    <label for="edit-task-date">Due Date</label>
+                  </div>
                   <select
                     name="priority"
                     id="priority-edit"
@@ -166,7 +171,10 @@
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
-                    <option value="none" selected>None</option>
+                    <option value="none">No priority</option>
+                    <option value="priority" disabled selected hidden>
+                      Priority
+                    </option>
                   </select>
                 </div>
               </form>
@@ -187,7 +195,7 @@
                   id="button-dialog-edit-task"
                   class="button-dialog-edit-task"
                 >
-                  Edit task
+                  Update task
                 </button>
               </div>
             </div>
