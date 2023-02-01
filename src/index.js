@@ -19,5 +19,6 @@ import './assets/completed.svg'
 import './assets/bamboo.svg'
 import './assets/trash.svg'
 import './assets/edit.svg'
+import './assets/favicon.png'
 
 DOM.loadContent()

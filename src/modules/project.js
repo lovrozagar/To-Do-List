@@ -65,7 +65,6 @@ const Project = (() => {
   function getTasksThisWeek() {
     return this.tasks.filter((task) => {
       const taskDate = new Date(task.getDateFormatted())
-      console.log(isThisWeek(subDays(toDate(taskDate), 0)))
       return isThisWeek(subDays(toDate(taskDate), 0))
     })
   }

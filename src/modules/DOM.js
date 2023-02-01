@@ -10,7 +10,6 @@ const DOM = (() => {
   function loadContent() {
     initAppHeight()
     renderProjects()
-    // initProjectButtons()
     initEditTaskButtons()
     openProject('Inbox')
     initHamburgerButton()
@@ -85,8 +84,6 @@ const DOM = (() => {
       else button.classList.remove('active')
     })
 
-    closeSidebar()
-
     renderProjectContent(projectName)
   }
 
@@ -152,7 +149,6 @@ const DOM = (() => {
     renderQuoteIfNoTasks(
       Storage.getList().getProject(projectName).getTasks().length
     )
-    console.log(Storage.getList().getProject(projectName).getTasks().length)
   }
 
   function loadTask(name, dueDate, priority, isCompleted, taskId) {
@@ -279,6 +275,7 @@ const DOM = (() => {
   }
 
   function addProject(event) {
+    console.log(event)
     const addProjectDialogInput = document.getElementById(
       'input-add-project-dialog'
     )
@@ -294,8 +291,8 @@ const DOM = (() => {
 
     event.preventDefault()
     if (Storage.getList().contains(projectName)) {
-      addProjectDialogInput.value = ''
       alert('Project names must be different')
+      clearForms()
       return
     }
 
@@ -317,7 +314,7 @@ const DOM = (() => {
     const todayProjectButton = document.getElementById('today')
     const weekProjectButton = document.getElementById('this-week')
     const completed = document.getElementById('completed')
-    const projectButtons = document.querySelectorAll('[data-project-button]')
+    const projectButtons = document.querySelectorAll('[data-project-item]')
     const projectRemoveButtons = document.querySelectorAll(
       '[data-remove-project]'
     )
@@ -340,8 +337,8 @@ const DOM = (() => {
 
   function deleteProject(e) {
     const { target } = e
+    e.stopPropagation()
     const taskItem = target.closest('[data-project-item]')
-    console.log(taskItem)
     const projectName = taskItem.children[0].textContent
     const heading = document.getElementById('project-heading').textContent
 
@@ -357,26 +354,30 @@ const DOM = (() => {
 
   function openInboxTasks() {
     openProject('Inbox')
+    closeSidebar()
   }
 
   function openTodayTasks() {
     Storage.updateTodayProject()
     openProject('Today')
+    closeSidebar()
   }
 
   function openWeekTasks() {
     Storage.updateThisWeekProject()
     openProject('This week')
+    closeSidebar()
   }
 
   function openCompletedTasks() {
     openProject('Completed')
+    closeSidebar()
   }
 
   function openCustomProject() {
     const projectName = this.textContent
-
     openProject(projectName)
+    closeSidebar()
   }
 
   // ADD TASK EVENT LISTENERS
@@ -464,7 +465,9 @@ const DOM = (() => {
   // TASK EVENT LISTENERS
   // eslint-disable-next-line no-unused-vars
   function initTaskButtons() {
-    const checkboxLabels = document.querySelectorAll('label')
+    const checkboxLabels = document.querySelectorAll(
+      '.section-task-checkbox label'
+    )
     const removeButtons = document.querySelectorAll('[data-remove]')
     const editButtons = document.querySelectorAll('[data-edit]')
 
@@ -519,7 +522,6 @@ const DOM = (() => {
         const completedTaskSave = {
           ...Storage.getList().getProject(projectName).getTask(taskId),
         }
-        console.log(completedTaskSave)
 
         Storage.addTask('Completed', completedTaskSave)
       }
@@ -613,9 +615,7 @@ const DOM = (() => {
       editTaskDialog
     )
     const taskItem = tasksContainer.children[index - 1]
-    console.log(taskItem)
     const taskId = taskItem.id
-    console.log(taskId)
     const taskName = document.getElementById('edit-task-name').value
     const taskDueDate = document.getElementById('edit-task-date').value
     const taskPriority = document.getElementById('priority-edit').value

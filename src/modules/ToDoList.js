@@ -54,7 +54,6 @@ const List = (() => {
     const projectToDelete = this.projects.find(
       (project) => project.getName() === projectName
     )
-    console.log(this.projects.indexOf(projectToDelete))
     this.projects.splice(this.projects.indexOf(projectToDelete), 1)
   }
 

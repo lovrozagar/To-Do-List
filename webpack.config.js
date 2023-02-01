@@ -28,7 +28,12 @@ module.exports = {
     rules: [
       {
         test: /\.s[ac]ss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: [
+          'style-loader',
+          'css-loader',
+          'resolve-url-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.js$/,
@@ -41,23 +46,14 @@ module.exports = {
         },
       },
       {
-        test: /\.(?:ico|gif|png|jpg|jpeg|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: 'assets/',
-              publicPath: '/',
-            },
-          },
-        ],
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: 'asset/resource',
       },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'To Do',
+      title: 'Pan Do App',
       filename: 'index.html',
       template: 'src/template.html',
     }),
